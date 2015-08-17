@@ -1,0 +1,128 @@
+#!/bin/bash -e
+#
+# gpstime: simple script to return GPS time for a given date string
+#
+# see http://hpiers.obspm.fr/eoppc/bul/bulc/bulletinc.dat for leapsecond updates
+#
+# Jameson Graef Rollins <jrollins@phys.columbia.edu>
+
+usage() {
+    cat <<EOF
+usage: gpstime [-d STRING]           convert time string ('now') to gps
+       gpstime -g GPSTIME [+FORMAT]  convert gps time
+EOF
+}
+
+######################################################################
+
+# known leap second data
+leapdata=( \
+    46828800 \
+    78364801 \
+    109900802 \
+    173059203 \
+    252028804 \
+    315187205 \
+    346723206 \
+    393984007 \
+    425520008 \
+    457056009 \
+    504489610 \
+    551750411 \
+    599184012 \
+    820108813 \
+    914803214 \
+    )
+
+# limit of validity of leap second data
+leapvalid=946339214;
+
+######################################################################
+
+# unix time corresponding to gps 0
+gps0=315964800
+
+######################################################################
+
+# check gps leap-second validity
+check_leap_valid() {
+    local gtime="$1"
+    if (( gtime >= leapvalid )) ; then
+	echo "WARNING: GPS time is beyond known leap second validity ($gtime >= $leapvalid)" >&2
+    fi
+}
+
+# convert unix time to gps time
+unix2gps() {
+    local utime
+    local gtime
+    local leap
+
+    # get the current unix time
+    utime=$(date -d "$1" +%s)
+
+    # determine non-leap second adjusted gps time
+    gtime=$(( utime - gps0 ))
+
+    # adjust for known leap seconds
+    for leap in ${leapdata[@]} ; do
+	if (( gtime >= leap )) ; then
+	    gtime=$(( ++gtime ))
+	fi
+    done
+
+    # check gpstime valid
+    check_leap_valid $gtime
+
+    echo $gtime
+}
+
+gps2unix() {
+    local gtime=$(printf '%0.0f' "$1")
+    local leap
+
+    # check gpstime valid
+    check_leap_valid $gtime
+
+    # adjust for known leap seconds
+    for leap in ${leapdata[@]} ; do
+	if (( gtime >= leap )) ; then
+	    gtime=$(( --gtime ))
+	fi
+    done
+
+    # determine non-leap second adjusted gps time
+    utime=$(( gtime + gps0 ))
+
+    echo $utime
+}
+
+######################################################################
+
+case "$1" in
+    '-d')
+	unix2gps "$2"
+	shift 2
+	;;
+    '-g')
+	utime=$(gps2unix "$2")
+	shift 2
+	if [ "$1" ] ; then
+	    date -d "@${utime}" "$1"
+	else
+	    echo "$utime"
+	fi
+	;;
+    '-h'|'-help'|'--help')
+	usage
+	exit
+	;;
+    *)
+	if [ -z "$1" ] ; then
+	    unix2gps 'now'
+	else
+	    echo "unknown argument '$1'" >&2
+	    exit 1
+	fi
+	;;
+esac

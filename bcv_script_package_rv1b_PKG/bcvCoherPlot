@@ -1,0 +1,129 @@
+#!/usr/bin/python
+
+import sys
+import  os
+import time
+import optparse
+import ConfigParser
+import re
+import glob
+from numpy import *
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.cm as cm
+from pylab import *
+
+from bcv import git_version
+# ----------------------------------------------------------load file(s)
+import numpy as np
+
+#fs = 16384
+hfs = 0.5;  # initialize max frequency variable
+#path = "/home/bernard.hall/DETCHAR/omega_test/ER6_Full/bcvCoherTime_Results/bcvCohTime_(9)_1102763973.0_L1:TCS-ITMY_CO2_ISS_OUT_AC_OUT_DQ+L1:ASC-AS_A_RF45_Q_PIT_OUT_DQ/"
+
+ppath = "bcvCoherTime_Results/"
+
+alphon = 0;
+szon = 1;
+
+pathdir = os.listdir(ppath)
+
+for path in pathdir:
+	
+	npath = path
+	
+	print npath
+
+	path = ppath + path + "/"	
+
+	subtitle = path.split(")_")
+	subtitle = subtitle[1]
+	subtitle = subtitle[0:len(subtitle)-1]
+
+	time = subtitle[0:12]
+	subtitle = subtitle[13:len(subtitle)]
+
+	subtitle = "GPS: " + time + ", Pair: " + subtitle
+
+	#print subtitle
+
+	c_directory = os.listdir(path)
+
+	#file = "coherence_16.txt"
+
+	colors = iter(cm.gist_rainbow(np.linspace(1,0,len(c_directory))))
+	if szon:
+		#sizes = iter(np.linspace(125,5,len(c_directory)))
+		sizes = iter(np.linspace(20,1,len(c_directory)))
+	if alphon:
+		alphas = iter(np.linspace(1,0.4,len(c_directory)))
+	#colors = cm.rainbow(c_directory.linspace(0,1,length(c_directory)))
+
+	#c_directory.sort(reverse = True)
+
+	c_directory.reverse()
+
+	#colors = reversed(colors)
+	#sizes = reversed(sizes)
+
+	#lhandle = []
+
+	#print c_directory[:]
+
+	figure(figsize = (11.24,5.5))
+
+#matplotlib.rcParams.update({
+#                "font.size": 8.0,
+#                "axes.titlesize": 18.0,
+#                "axes.labelsize": 18.0,
+#                "xtick.labelsize": 13.0,
+#                "ytick.labelsize": 13.0,
+#                "legend.fontsize": 13.0,
+#                "text.usetex": True})
+
+	matplotlib.rcParams.update({
+        	        "font.size": 8.0,
+                	"axes.titlesize": 13.0,
+	                "axes.labelsize": 13.0,
+        	        "xtick.labelsize": 13.0,
+                	"ytick.labelsize": 13.0,
+	                "legend.fontsize": 13.0})
+
+	for file in c_directory:
+
+		pathFile = path + file
+	
+		coh = np.loadtxt(pathFile,delimiter = " ")
+
+		mxtest = np.int_(coh[:,1])
+		mxtest = mxtest.max(axis=0)
+
+		if hfs != mxtest:
+			hfs = mxtest		
+		# ------------------------------------------------------ plot
+		if alphon and szon:
+			scatter(coh[:,1],coh[:,0],s=next(sizes),marker = 'o',color = next(colors),alpha = next(alphas),hold = True, label = str(coh[0,2]))
+		elif not alphon and not szon:
+			scatter(coh[:,1],coh[:,0],1,marker = 'o',color = next(colors),alpha = 1.0,hold = True, label = str(coh[0,2]))
+		elif not alphon and szon:
+			scatter(coh[:,1],coh[:,0],s=next(sizes),marker = 'o',color = next(colors),alpha = 1.0,hold = True, label = str(coh[0,2])),
+		elif alphon and not szon:
+                        scatter(coh[:,1],coh[:,0],1,marker = 'o',color = next(colors),alpha = next(alphas),hold = True, label = str(coh[0,2])),
+
+	lgd = legend(bbox_to_anchor = (1.28,1),ncol = 2,scatterpoints = 1)
+	ylim([0,1])
+	xlim([0,hfs])
+	xlabel("Frequency (Hz)")
+	ylabel("Coherence (M^2)")
+	title("Coherence vs. Frequency vs. Time around Trigger CT\n" + subtitle + '\n')
+	#legend(loc='upper right')
+	grid("on")
+	
+	savestr = path + npath + ".png"	
+
+	savefig(savestr,bbox_extra_artists=[lgd.legendPatch],bbox_inches='tight',pad_inches = 0.2)
+
+	#savefig("test_plot.png")
+	# ----------------------------------------------------------------------Cleanup
+

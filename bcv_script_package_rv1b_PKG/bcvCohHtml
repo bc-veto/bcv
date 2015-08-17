@@ -1,0 +1,100 @@
+#!/usr/bin/python
+
+
+import os
+import sys
+import shutil
+import re
+import optparse
+import os.path
+import ConfigParser
+
+
+from bcv import git_version
+
+
+#-------------------------------------------
+
+parser = optparse.OptionParser(usage=__doc__,version=git_version.verbose_msg)
+
+parser.add_option("-i", "--ini_file",
+                    help="Path to the .ini file used. Required.")
+
+opts, args = parser.parse_args()
+
+#-------------------------------------------
+
+#--------------------------------------------
+
+# access configuration file
+cp = ConfigParser.ConfigParser()
+cp.read(opts.ini_file)
+name_tag = cp.get("general","tag")
+
+webdir = cp.get("webpage","outdir")
+webadd = cp.get("veto","web_address")
+
+webadd = webadd.split("/")
+webadd = webadd[len(webadd)-2]
+
+#print webadd
+#---------------------------------------------
+
+nfdir = 'bcvCoherTime_Results'
+fdir = os.listdir(nfdir)
+
+plotpageI = open("plotindex.html","w")
+mcontent = ["""
+        <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html
+        4/strict.dtd">
+        <html>
+        <body>
+	<ol>"""]
+
+
+#print fdir
+
+for folder in fdir:
+	file = folder + '.png'
+	plotpage = open(nfdir+ "/" + folder + "/" + folder + "_plot.html","w")
+	content = """
+	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html
+	4/strict.dtd">
+	<html>
+	<body>
+	<img src = '%s' />
+	<a href = '../../plotindex.html'>Plot Index</a>
+	</body>
+	</html>"""%file
+
+	plotpage.write(content)
+	plotpage.close()
+
+	mcontent.append("""
+	<li><a href='%s_plot.html'>%s</a></li>
+	"""%((nfdir + "/" + folder + "/" + folder),folder))
+
+mcontent.append("""
+        </ol>
+        </body>
+	</html>
+        """)
+
+plotpageI.write("\n".join(mcontent))
+
+plotpageI.close()
+
+webdirstr = webdir + "/" + webadd + "_supplementary_1"
+
+if not os.path.isdir(webdirstr):
+	os.mkdir(webdirstr)
+else:
+	num = 1
+	while os.path.isdir(webdirstr):
+		num = num + 1
+		webdirstr = webdir + "/" + webadd + "_supplementary"
+		webdirstr = webdirstr + "_" + str(num)	
+	os.mkdir(webdirstr)
+
+os.rename(nfdir, webdirstr + "/" + nfdir)
+os.rename("plotindex.html",webdirstr + "/plotindex.html")

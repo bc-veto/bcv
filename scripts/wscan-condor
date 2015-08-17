@@ -1,0 +1,87 @@
+#!/bin/bash -e
+
+PGRM=$(basename "$0")
+
+usage() {
+    cat <<EOF >&2
+Usage: $PGRM run|submit OUTDIR TIME [WSCAN_OPTIONS]
+condor_run or condor_submit an omega scan (wscan).
+must specify OUTDIR and TIME.
+other options may be specified as they would to wscan.
+EOF
+}
+
+failure() {
+    [ "$1" ] && echo "$1" >&2
+    exit ${2:-'1'}
+}
+
+# condor_run
+crun() {
+    exec condor_run wpipeline scan \
+	"$OPTIONS" \
+	--outdir "$OUTDIR" \
+	"$TIME"
+}
+
+# condor_submit
+csubmit() {
+    cat <<EOF > "${OUTDIR}/wscan-condor.run"
+#!/bin/bash
+wpipeline scan \\
+    $OPTIONS \\
+    --outdir "$OUTDIR" \\
+    $TIME
+EOF
+    chmod 755 "${OUTDIR}/wscan-condor.run"
+
+    cat <<EOF > "${OUTDIR}/wscan-condor.submit"
+universe = vanilla
+executable = ${OUTDIR}/wscan-condor.run
+notification = NEVER
+log = ${OUTDIR}/wscan-condor.log
+output = ${OUTDIR}/wscan-condor.out
+error = ${OUTDIR}/wscan-condor.err
+getenv = True
+queue
+EOF
+
+    exec condor_submit "${OUTDIR}/wscan-condor.submit"
+}
+
+##################################################
+
+CMD="$1"
+case "$CMD" in
+    'run'|'submit')
+	shift
+	OUTDIR="$1"
+	TIME="$2"
+	for var in OUTDIR TIME ; do
+	    if [ -z "${!var}" ] ; then
+		failure "must specify ${var}."
+	    fi
+	done
+	shift 2
+
+	OPTIONS="$@"
+
+	# make output directory
+	mkdir -p "$OUTDIR"
+	OUTDIR=$(readlink -f $(cd "${OUTDIR}" && pwd))
+
+	# launch scan
+	case "$CMD" in
+	    'run') crun "$@" ;;
+	    'submit') csubmit "$@" ;;
+	esac
+	;;
+
+    'help'|'--help'|'-h')
+	usage
+	;;
+
+    *)
+	failure "unknown command '$CMD'."
+	;;
+esac

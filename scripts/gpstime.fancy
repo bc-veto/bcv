@@ -1,0 +1,277 @@
+#!/bin/sh
+#
+# gpstime
+#
+# Shell script to return the current GPS time or to convert between
+# Gregorian times and GPS times.
+#
+# It may be used in three different ways.
+#
+#   gpstime
+#   gpstime [-z timezone] gpstime [modifier]
+#   gpstime [-z timezone] gregoriantime [modifier]
+#
+# With no arguments, gpstime returns the current integer GPS time.
+#
+# Gregorian times may be specified in any format understood by GNU
+# date, but should be enclosed in quotes if they contain spaces.
+#
+# Gregorian tims are always returned in the following format.
+#
+#   YYYY-MM-DD HH:MM:SS Z
+#
+# The seconds field, denoted SS above, may include fractional seconds.
+# The precision is preserved in conversion.
+#
+# Leap seconds are taken into account, but the list of leap seconds in this
+# script must be manually updated when a new leap bulletin is released by
+# the International Earth Rotation and Reference Systems Service (IERS).
+#
+#   http://hpiers.obspm.fr/eop-pc/
+#
+# The most recent update is for the bulletin released on 2008-07-04 that
+# announces a leap second to be inserted at 2008-12-31 12:59:60 UTC.
+#
+# A time zone may be specified with the -z argument.  Time zones should
+# be defined using the zoneinfo format used by the TZ environment variable.
+# A list of time zones can be found on the following website.
+#
+#   http://en.wikipedia.org/wiki/List_of_zoneinfo_timezones
+#
+# In addition the following aliases are permitted.
+#
+#   G    GEO600 detector            "Europe/Rome"
+#   H    LIGO Hanford detectors     "America/Los_Angeles"
+#   L    LIGO Livingston detector   "America/Chicago"
+#   V    Virgo detector             "Europe/Rome"
+#
+#   U                               "Etc/UTC"
+#
+# By default, if no time zone is specified, it is assumed to be "Etc/UTC".
+#
+# This script uses the system time to determine the current time.
+#
+# This script requires GNU date and GNU awk.
+
+# Shourov K. Chatterji <shourov@ligo.caltech.edu>
+
+# $Id$
+
+# leap second data
+leapdata="046828800,+1 \
+          078364801,+1 \
+          109900802,+1 \
+          173059203,+1 \
+          252028804,+1 \
+          315187205,+1 \
+          346723206,+1 \
+          393984007,+1 \
+          425520008,+1 \
+          457056009,+1 \
+          504489610,+1 \
+          551750411,+1 \
+          599184012,+1 \
+          820108813,+1 \
+          914803214,+1"
+
+# limit of validity of leap second data
+leapvalid=930441614;
+
+# if no arguments are give, return current gps time
+if [ $# -eq 0 ]; then
+  set -- now
+fi
+
+# handle time zone argument if any
+if [ "$1" = "-z" ]; then
+  case "$2" in
+    G)
+      TZ="Europe/Rome"
+    ;;
+    H)
+      TZ="America/Los_Angeles"
+    ;;
+    L)
+      TZ="America/Chicago"
+    ;;
+    V)
+      TZ="Europe/Rome"
+    ;;
+    U)
+      TZ="Etc/UTC"
+    ;;
+    *)
+      TZ="$2"
+    ;;
+  esac
+  shift 2
+else
+  TZ="Etc/UTC"
+fi
+export TZ
+
+# handle request for current gps time
+if [ "$1" = "now" ]; then
+
+  # get current unix time
+  # now="$(date +"%s.%N")"
+  now="$(date +"%s")"
+
+  # extract integer second part of time
+  seconds=$(echo "$1" | awk -F . ' { print $1 } ')
+
+  # extract fractional second part of time
+  fraction=$(echo "$1" | awk -F . ' { print $2 } ')
+
+  # label as unix time
+  type="unix"
+
+# end handle request for current gps time
+fi
+
+# handle request for specific gps time
+if [ "$(echo "$1" | awk ' /^[0-9.]*$/ ')" ]; then
+
+  # extract integer second part of time
+  seconds=$(echo "$1" | awk -F . ' { print $1 } ')
+
+  # extract fractional second part of time
+  fraction=$(echo "$1" | awk -F . ' { print $2 } ')
+
+  # label as gps time
+  type="gps"
+
+# handle request for specific gegorian time
+else
+
+  # extract integer second part of time
+  seconds=$(echo "$1" | sed -e 's|\.[0-9]*||')
+
+  # test for leap second
+  if [ "$(echo "${seconds}" | awk ' /:60$/ || /:60 / ')" ]; then
+    leap=true
+  else
+    leap=false
+  fi
+
+  # convert to unix time
+  seconds="$(date -d "${seconds}" +"%s")"
+
+  # extract fractional second part of time
+  fraction=$(echo "$1" | sed -e 's|^[^.]*||' -e 's|^\.\([0-9]*\).*$|\1|')
+
+  # label as unix time
+  type="unix"
+
+# end test for specific gps or gregorian time
+fi
+
+# handle any arithmetic modifiers
+if [ $# -gt 1 ]; then
+  shift
+  modifier="$(echo "$*" | \
+                sed -e 's|\([ 0-9]\)s[^ ]*|\1 * 1|g' \
+                    -e 's|\([ 0-9]\)m[^ ]*|\1 * 60|g' \
+       		    -e 's|\([ 0-9]\)h[^ ]*|\1 * 3600|g' \
+       		    -e 's|\([ 0-9]\)d[^ ]*|\1 * 86400|g' \
+      		    -e 's|\([ 0-9]\)y[^ ]*|\1 * 31557600|g')"
+  seconds=$(echo "${seconds}" | awk ' { print $1 '"${modifier}"' } ')
+fi
+
+# unix time corresponding to gps 0
+gps0=315964800
+
+# handle request for conversion from gps to gregorian
+if [ "${type}" = "gps" ]; then
+
+  # test for time in valid range
+  if [ ${seconds} -lt 0 ]; then
+    echo "ERROR: requested time out of range." 1>&2
+    exit 1
+  fi
+  if [ ${seconds} -gt ${leapvalid} ]; then
+    echo "WARNING: leap seconds unknown" 1>&2
+  fi
+  if [ ${seconds} -gt 1829952015 ]; then
+    echo "ERROR: requested time out of range." 1>&2
+    exit 1
+  fi
+
+  # handle leap seconds
+  leap=false
+  for leapdatum in $(echo ${leapdata} | sed -e 's| |\n|g' | sort -g | tac); do
+    leapsecond=$(echo "${leapdatum}" | sed -e 's|,.*$||')
+    leapvalue=$(echo "${leapdatum}" | sed -e 's|^.*,||')
+    if [ ${seconds} -eq ${leapsecond} ]; then
+      if [ ${leapvalue} -gt 0 ]; then
+        leap=true
+      fi
+    fi
+    if [ ${seconds} -ge ${leapsecond} ]; then
+      seconds=$(echo ${seconds} | awk ' { printf "%d", $1 - '${leapvalue}' } ')
+    fi
+  done
+
+  # convert from unix time to gregorian time
+  seconds=$(echo "${seconds}" | awk ' { print strftime("%F %Tfraction %Z", $1 + '${gps0}') } ')
+
+  # handle leap second notation
+  if [ ${leap} = "true" ]; then
+    seconds=$(echo ${seconds} | sed -e 's|:59fraction|:60fraction|')
+  fi
+
+  # include fractional seconds
+  if [ ${fraction} ]; then
+    output=$(echo ${seconds} | sed -e 's|fraction|.'${fraction}'|')
+  else
+    output=$(echo ${seconds} | sed -e 's|fraction||')
+  fi
+
+# handle request for conversion from gregorian to gps
+else
+
+  # test for time in valid range
+  if [ ${seconds} -lt 0 ]; then
+    echo "ERROR: requested time out of range." 1>&2
+    exit 1
+  fi
+  if [ ${seconds} -gt $(expr ${leapvalid} + ${gps0}) ]; then
+    echo "WARNING: leap seconds unknown" 1>&2
+  fi
+  if [ ${seconds} -gt 2147483647 ]; then
+    echo "ERROR: requested time out of range." 1>&2
+    exit 1
+  fi
+
+  # convert from unix time to gps time
+  seconds=$(echo "${seconds}" | awk ' { print $1 - '${gps0}' } ')
+
+  # handle leap seconds
+  for leapdatum in $(echo ${leapdata} | sed -e 's| |\n|g' | sort -g); do
+    leapsecond=$(echo "${leapdatum}" | sed -e 's|,.*$||')
+    leapvalue=$(echo "${leapdatum}" | sed -e 's|^.*,||')
+    if [ ${seconds} -eq ${leapsecond} ]; then
+      if [ "${leap}" = "true" ]; then
+	continue;
+      fi
+    fi
+    if [ ${seconds} -ge ${leapsecond} ]; then
+      seconds=$(echo ${seconds} | awk ' { printf "%d", $1 + '${leapvalue}' } ')
+    fi
+  done
+
+  # include fractional seconds
+  if [ ${fraction} ]; then
+    output="${seconds}.${fraction}"
+  else
+    output="${seconds}"
+  fi
+
+# end test for conversion between gregorian and gps
+fi
+
+# output requested time string
+echo "${output}"
+
+# return to calling function
+exit 0

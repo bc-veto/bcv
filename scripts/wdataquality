@@ -1,0 +1,194 @@
+#!/bin/sh
+#
+# WDATAQUALITY
+#
+# Shell script to retrieve segment and data quality information
+# around the time of an interesting event.
+#
+# usage: wdataquality gpsTime windowDuration
+#
+# WDATAQUALITY returns a list of all detector science mode segments
+# and data quality segments that occur within the specified window
+# duration of the requested gps time (rounded down to the nearest
+# whole second).  A window duration of 10 seconds is assumed by
+# default.
+#
+# WDATAQUALITY requires the wget, curl, or lynx utility as well as the
+# LIGOTools segexpr utilities.  It is assumed that the location of
+# these utilities are already included in the PATH environment
+# variable as set by the calling function.
+
+# Shourov K. Chatterji <shourov@ligo.caltech.edu>
+
+# $Id: wdataquality 1712 2009-04-09 21:44:45Z jrollins $
+
+# basename of exectuable
+program=`basename $0`
+
+# directory of executable
+programDirectory=`dirname $0`
+
+# check for correct number of command line arguments
+if [ $# -lt 1 ]; then
+  echo "usage: ${program} gpsTime windowDuration" 1>&2
+  exit 1
+fi
+
+# parse command line arguments
+triggerTime=$1
+if [ $# -lt 2 ]; then
+  windowDuration=10
+else
+  windowDuration=$2
+fi
+
+# display header
+echo "# Detector state and data quality information within +/- ${windowDuration} seconds of:"
+echo "# "
+
+# round trigger time down to nearest integer
+integerTriggerTime=`echo ${triggerTime} | sed -e s'|\..*$||'`
+
+# date format string
+formatString="# %a %Y %b %d %H:%M:%S %Z"
+
+# store time domain setting
+TZold=${TZ:-unset}
+
+# write GPS time
+echo "# ${triggerTime} GPS"
+
+# write UTC time
+unset TZ
+date -u -d @$(gpstime -g ${triggerTime}) +"${formatString}"
+
+# write LHO time
+TZ="America/Los_Angeles"
+export TZ
+date -d @$(gpstime -g ${triggerTime}) +"${formatString}"
+
+# write LLO time
+TZ="America/Chicago"
+export TZ
+date -d @$(gpstime -g ${triggerTime}) +"${formatString}"
+
+# write VIRGO time
+TZ="Europe/Rome"
+export TZ
+date -d @$(gpstime -g ${triggerTime}) +"${formatString}"
+
+# reset time domain setting
+if [ ${TZold} = "unset" ]; then
+  unset TZ
+else
+  TZ=${TZold}
+  export TZ
+fi
+
+# list of interferometers to process
+interferometers="G1 H1 H2 L1 V1"
+
+# identify segments location and download utility
+if [ -d ${programDirectory}/../segments/S5 ]; then
+  get=cat
+  segmentsDirectory=${programDirectory}/../segments/S5
+elif [ -x "`which wget 2>/dev/null`" ]; then
+  get="wget -q -O -"
+  segmentsDirectory="http://ldas-cit.ligo.caltech.edu/segments/S5"
+elif [ -x "`which curl 2>/dev/null`" ]; then
+  get="curl"
+  segmentsDirectory="http://ldas-cit.ligo.caltech.edu/segments/S5"
+elif [ -x "`which lynx 2>/dev/null`" ]; then
+  get="lynx -dump"
+  segmentsDirectory="http://ldas-cit.ligo.caltech.edu/segments/S5"
+else
+  echo 'ERROR: Cannot retrieve segment information' 2>&1
+  exit 1
+fi
+
+# test for valid gps time
+if [ ${integerTriggerTime} -lt 815153408 ]; then
+  echo "ERROR: ${triggerTime} time precedes start of S5" 2>&1
+  exit 1
+fi
+
+# create temporary directory
+temporaryDirectory="/tmp/dq_${integerTriggerTime}_${USER}_$$"
+mkdir -p ${temporaryDirectory}
+
+# download and parse segment information
+rm -f ${temporaryDirectory}/science_segments.txt
+rm -f ${temporaryDirectory}/dataquality_segments.txt
+LC_ALL=C
+export LC_ALL
+for interferometer in ${interferometers}; do
+  ${get} ${segmentsDirectory}/${interferometer}/science_segments.txt \
+    2>/dev/null | \
+    awk ' !/^#/ { print $2, $3 } ' \
+    >>${temporaryDirectory}/${interferometer}_science_segments.txt
+  ${get} ${segmentsDirectory}/${interferometer}/injection_segments.txt \
+    2>/dev/null | \
+    awk ' !/^#/ { print $2, $3 } ' \
+    >>${temporaryDirectory}/${interferometer}_science_segments.txt
+  sort -g ${temporaryDirectory}/${interferometer}_science_segments.txt \
+    >${temporaryDirectory}/${interferometer}_science_segments.txt.sorted
+  mv ${temporaryDirectory}/${interferometer}_science_segments.txt.sorted \
+     ${temporaryDirectory}/${interferometer}_science_segments.txt
+  segexpr "union(${temporaryDirectory}/${interferometer}_science_segments.txt)" \
+    2>/dev/null | \
+    sed -e "s|^|${interferometer} Science_Mode |" \
+    >>${temporaryDirectory}/science_segments.txt
+  rm -f ${temporaryDirectory}/${interferometer}_science_segments.txt
+  ${get} ${segmentsDirectory}/${interferometer}/dq_segments.txt \
+    2>/dev/null | \
+    awk ' $2 == 99 && $5 == 1 \
+          { print "'${interferometer}'", $1, $3, $4 } \
+          NR == 2 \
+          { print "'${interferometer}' Not_Available", $2, "1e11" } ' \
+    >>${temporaryDirectory}/dataquality_segments.txt
+done
+grep "Not_Available" ${temporaryDirectory}/dataquality_segments.txt \
+  >>${temporaryDirectory}/science_segments.txt
+
+# determine time of last segment update
+updateTime=`awk ' /Not_Available/ { print $3 } ' \
+                ${temporaryDirectory}/science_segments.txt | \
+              sort -g | uniq | tail -n 1`
+updateTimeString=`date -u -d @$(gpstime -g ${updateTime}) +"%a %Y %b %d %H:%M:%S %Z"`
+
+# begin detector state table
+echo "#  "
+echo "# ifo detector state                 start      relative   stop       relative "
+echo "# --- ------------------------------ ---------- ---------- ---------- ----------"
+
+# insert science mode segments
+cat ${temporaryDirectory}/science_segments.txt | \
+  sed -e "s|$| ${integerTriggerTime}|" | \
+  awk ' ($5 >= $3 - '${windowDuration}') && ($5 < $4 + '${windowDuration}') \
+        { print $1, $2, $3, $3 - $5, $4, $4 - $5, $5 < $3 || $5 >= $4 } ' | \
+  sort -k 7,7 -k 1,3 | \
+  awk ' { printf "  %3s %-30s %10d %10d %10d %10d\n", $1, $2, $3, $4, $5, $6} ' | \
+  awk ' !/Not_Available/ { print } /Available/ \
+        { printf "  %3s %-30s %10s %10s %10s %10s\n", $1, $2, "-", "-", "-", "-"} '
+
+# begin data quality table
+echo "#  "
+echo "# ifo data quality flag              start      relative   stop       relative "
+echo "# --- ------------------------------ ---------- ---------- ---------- ----------"
+
+# insert data quality segments
+cat ${temporaryDirectory}/dataquality_segments.txt | \
+  grep -v 'CBC_1YR_INJ_CHALLENGE' | \
+  sed -e "s|$| ${integerTriggerTime}|" | \
+  awk ' ($5 >= $3 - '${windowDuration}') && ($5 < $4 + '${windowDuration}') \
+        { print $1, $2, $3, $3 - $5, $4, $4 - $5, $5 < $3 || $5 >= $4 } ' | \
+  sort -k 7,7 -k 1,3 | \
+  awk ' { printf "  %3s %-30s %10d %10d %10d %10d\n", $1, $2, $3, $4, $5, $6} ' | \
+  awk ' !/Not_Available/ { print } /Available/ \
+        { printf "  %3s %-30s %10s %10s %10s %10s\n", $1, $2, "-", "-", "-", "-"} '
+
+# remove temporary directory
+rm -rf ${temporaryDirectory}
+
+# return to the calling function
+exit 0

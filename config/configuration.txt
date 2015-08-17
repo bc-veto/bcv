@@ -1,0 +1,321 @@
+# Bilinear Coupling Veto Configuration File
+#
+# Channel name should be surrounded by square bracket [], should be in a form 
+# ${IFO}:${CHANNELNAME}, e.g. H1:LSC-DARM_ERR.
+# Only channels with ${IFO} given in 'ifo' in [general] section in the .ini file
+# will be used.
+#
+# Each channel needs 'channelType', 'frameType' and 'SNRcutoff'.
+#
+# channelType should be one of 'GW', 'fast', or 'slow'
+#
+# If -1 is supplied for SNRcutoff, it will be overwritten by SNRcutoff in
+# [data_conditioning] section in the .ini file.
+#
+# Other fields are automatically filled in before omegaveto runs.
+#
+# Only one channel is allowed for GW channelType.
+# All the combinations between fast and slow will be used.
+#
+# If 
+#
+# [${IFO}:Linear]
+# channelType = slow
+# frameType = None
+# SNRcutoff = -2
+#
+# is given, linear coupling model on fast channels will also be tested.
+#
+# isogait 
+# 5/26/2010
+
+# =============================================================================
+#
+#                           Gravitational Wave Channel
+# 
+# =============================================================================
+
+################################## H1 #########################################
+
+[H1:LDAS-STRAIN]
+channelType = GW
+frameType = H1_LDAS_C02_L2
+SNRcutoff = -1
+
+################################## L1 #########################################
+
+[L1:LDAS-STRAIN]
+channelType = GW
+frameType = L1_LDAS_C02_L2
+SNRcutoff = -1
+
+# =============================================================================
+#
+#                            Fast Channels
+#
+# =============================================================================
+
+################################## H1 #########################################
+
+[H1:LSC-MICH_CTRL]
+channelType = fast
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+  
+[H1:LSC-PRC_CTRL]
+channelType = fast
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-ETMX_Y]
+channelType = fast
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-ETMX_P]
+channelType = fast
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-ITMX_Y]
+channelType = fast
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-ITMX_P]
+channelType = fast
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-ETMY_Y]
+channelType = fast
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-ETMY_P]
+channelType = fast
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-ITMY_Y]
+channelType = fast
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-ITMY_P]
+channelType = fast
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+################################## L1 #########################################
+
+[L1:LSC-MICH_CTRL]
+channelType = fast
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:LSC-PRC_CTRL]
+channelType = fast
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-ETMX_Y]
+channelType = fast
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-ETMX_P]
+channelType = fast
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-ITMX_Y]
+channelType = fast
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-ITMX_P]
+channelType = fast
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-ETMY_Y]
+channelType = fast
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-ETMY_P]
+channelType = fast
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-ITMY_Y]
+channelType = fast
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-ITMY_P]
+channelType = fast
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+# =============================================================================
+#
+#                              Slow Channels
+#
+# =============================================================================
+
+################################## H1 #########################################
+
+[H1:ASC-QPDX_P]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-QPDX_Y]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-QPDY_P]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-QPDY_Y]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-WFS1_QP]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-WFS1_QY]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-WFS2_IP]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-WFS2_IY]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-WFS2_QP]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-WFS2_QY]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-WFS3_IP]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-WFS3_IY]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-WFS4_IP]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:ASC-WFS4_IY]
+channelType = slow
+frameType = H1_RDS_R_L1
+SNRcutoff = -1
+
+[H1:LINEAR]
+channelType = slow
+frameType = None
+SNRcutoff = -2
+
+################################## L1 #########################################
+
+[L1:ASC-QPDX_P]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-QPDX_Y]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-QPDY_P]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-QPDY_Y]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-WFS1_QP]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-WFS1_QY]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-WFS2_IP]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-WFS2_IY]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-WFS2_QP]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-WFS2_QY]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-WFS3_IP]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-WFS3_IY]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-WFS4_IP]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:ASC-WFS4_IY]
+channelType = slow
+frameType = L1_RDS_R_L1
+SNRcutoff = -1
+
+[L1:LINEAR]
+channelType = slow
+frameType = None
+SNRcutoff = -2
+

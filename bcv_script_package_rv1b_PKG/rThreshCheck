@@ -1,0 +1,60 @@
+#!/usr/bin/python
+###################################################
+
+# Although the best parameters may still need to be determined,
+# this script checks whether the paramaters in the .ini file,
+# together with the lengths of the segments in the segment file
+# will produce a meaningful (not defaulting to 1) r_threshold.
+
+###################################################
+
+import sys
+import  os
+import time
+import optparse
+import ConfigParser
+import re
+import glob
+from numpy import *
+from bcv import git_version
+
+
+def parse_commandline():
+	parser = optparse.OptionParser(usage=__doc__,version=git_version.verbose_msg)
+  	parser.add_option("-i", "--ini_file",
+                    help="Path to the .ini file used. Required.")
+	opts, args = parser.parse_args()
+	return opts
+
+opts = parse_commandline()
+cp = ConfigParser.ConfigParser()
+
+cp.read(opts.ini_file)
+
+duration = []
+segFile = cp.get("input","analyzed_seg_files")
+AccRate = float(cp.get("data_conditioning","reqAccVetoRate"))
+numShift = float(cp.get("data_conditioning","numTimeShifts"))
+
+segments = open(segFile,'r')
+
+for segment in segments:
+	segment = segment.split()
+	duration.append(abs(float(segment[1])-float(segment[0])))
+
+#print duration
+#print AccRate
+segments.close()
+count = 0
+flag = 1
+for item in duration:
+	reqN = item * numShift * AccRate
+	count = count + 1
+	#print reqN
+	if reqN < 1:
+		flag = 0
+		print "WARNING: reqN too small..." + str(reqN) + " Duration: " + str(item)
+		print "Suggest increase duration by:... >"  + str(round((1/(numShift*AccRate)-item))) + " seconds  " + "(Item: " + str(count) + ")"
+
+if flag:
+	print "reqN (upper bound) pass..."

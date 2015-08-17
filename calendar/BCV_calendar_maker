@@ -1,0 +1,184 @@
+#!/usr/bin/python
+#
+# Copyright (C) 2009 Tomoki Isogai
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 3 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+import os
+import sys
+import datetime
+import calendar
+import re
+import optparse
+import HTMLCalendar
+
+
+# parse the command line
+parser = optparse.OptionParser()
+
+parser.add_option("-i", "--ifo", help="IFO. Required.")
+parser.add_option("-o", "--offset", type="int", default=0, help="To go back in days and create previous result")
+
+opts, args = parser.parse_args()
+
+if opts.ifo is None:
+  print >> sys.stderr, "--ifo is required."
+  sys.exit(1)
+
+# some other variables
+if opts.ifo == "H1":
+  web_server = "https://ldas-jobs.ligo-wa.caltech.edu/~isogait/"
+elif opts.ifo == "L1":
+  web_server = "https://ldas-jobs.ligo-la.caltech.edu/~isogait/"
+elif opts.ifo == "V1":
+  web_server = "https://ldas-jobs.ligo.caltech.edu/~isogait/"
+else:
+  print >> sys.stderr, "Error: %s is not supported."%opts.ifo
+  sys.exit(1)
+
+working_day = os.popen('tconvert `tconvert now - %d week` -f "%%Y %%m %%d"'%opts.offset).readline().split()
+working_day = map(int,working_day)
+working_day = datetime.date(working_day[0],working_day[1],working_day[2])
+
+ifo = opts.ifo
+
+# find last Friday (LIGO week is defined to start Saturday 00:00 UTC)
+# takes care of end of month and even leap years
+if working_day.weekday() == calendar.FRIDAY: # case the date is already monday
+  working_day -= datetime.timedelta(days=1)
+while working_day.weekday() != calendar.FRIDAY:
+  working_day -= datetime.timedelta(days=1)
+
+
+# get time
+day = working_day.day
+month = working_day.month
+year = working_day.year
+weekday = working_day.strftime("%A")
+
+## make index page of the day
+# find GPS time (of yesterday/last week result)
+gpsNow = int(os.popen('tconvert now - %d week'%opts.offset).readline())
+
+gpsEndDay = (gpsNow - 930787200) / 86400 * 86400 + 930787200
+gpsStartDay = gpsEndDay - 86400
+
+gpsEndWeek = (gpsNow - 930700815) / 604800 * 604800 + 930700815
+gpsStartWeek = gpsEndWeek - 604800
+
+web_dir = "/archive/home/isogait/public_html/S6/BCV/calendar/"
+
+failed = False
+
+for i in range(7):
+  tmp_day = working_day - datetime.timedelta(days=i)
+  d = tmp_day.day
+  m = tmp_day.month
+  y = tmp_day.year
+  day_dir = os.path.join(web_dir,"data",ifo,str(y),str(m),str(d))
+  if not os.path.isdir(day_dir):
+    os.makedirs(day_dir)
+
+
+  indexPage = ["""
+  <html>
+  <head>
+  <meta content="text/html; charset=ISO-8859-1"
+  http-equiv="content-type">
+  <title>%d/%d/%d</title>
+  </head>
+  <body>
+  <big><big><big>%s: %d/%d/%d</big></big></big><br>
+  <br>
+  <br>
+  """%(m,d,y,ifo,m,d,y)]
+  
+  
+  # UPV summary
+  if ifo in ("H1","L1"):
+    weeklyUPVPrefix = "S6/BCV/weekly/%s_DARMERR_%d_%d_WEEKLY_webpage"%(ifo,gpsStartWeek,gpsEndWeek)
+  elif ifo == "V1":
+    weeklyUPVPrefix = "S6/BCV/weekly/V1_PR_B1_ACP_%d_%d_webpage"%(gpsStartWeek,gpsEndWeek)
+  else:
+    print >> sys.err, "Error: %s is not supported ifo."%ifo
+    sys.exit(1)
+
+  # check if the result is created successfully
+  result_path = os.path.join("/archive/home/isogait/public_html/",weeklyUPVPrefix,"index.html")
+  if not os.path.isfile(result_path):
+    failed = True
+    indexPage.append('<big><big>Weekly BCV (%d - %d) - Not Available </big></big><br><br>'%(gpsStartWeek,gpsEndWeek))
+  else:
+    UPV = os.path.join(web_server,weeklyUPVPrefix,"index.html")
+    indexPage.append('<big><big><a href="%s">Weekly BCV (%d - %d)</a></big></big><br><br>'%(UPV,gpsStartWeek,gpsEndWeek))
+    #veto_definer = os.path.join(web_server,weeklyUPVPrefix,"inserted_segs/veto_definer_file.xml")
+    #indexPage.append('<big><big><a href="%s">Inserted Channels</a></big></big><br><br>'%veto_definer)
+
+  indexPage.append("""
+  </body>
+  </html>
+  """)
+      
+  ## save the page
+  open(os.path.join(day_dir,"index.html"),'w').write("\n".join(indexPage))
+
+if failed:
+  print >> sys.stderr, "Error: Result (%s) not found!"%result_path
+  os.system('echo "Weekly BCV Failed: `date`\n%s not found." | mail -s "Weekly BCV Failed" "isogait@carleton.edu"'%result_path)
+
+## make the calendar
+calendar_contents = ['<big><center> %s Weekly BCV </center></big><br>'%opts.ifo]
+
+# loop over and find links
+# backward in time so that newest comes on top
+# this will loop through current to Sep 2009
+begin_year = 2009
+begin_month = 9
+
+def isbetween(year,month):
+  """
+  Determine if (year,month) is between begin (year,month) and 
+  working (year,month)
+  """
+  if year > begin_year and year < working_day.year:
+    return True
+  elif year == begin_year and year != working_day.year:
+    if month >= begin_month:
+      return True
+  elif year == working_day.year and year != begin_year:
+    if working_day.month >= month:
+      return True
+  elif year == working_day.year and year == begin_year:
+    return month >= begin_month and month <= working_day.month
+  else:
+    return False
+
+for y in range(year, begin_year - 1, -1):
+  for m in range(12, 0, -1):
+    if isbetween(y,m):
+      links = {}
+      for d in range(1,32):
+        day_dir = "/".join(map(str,["data",ifo,y,m,d,"index.html"]))
+        if os.path.isfile(os.path.join(web_dir,day_dir)):
+          links[d] = day_dir
+      html = HTMLCalendar.MonthCal().render(y, m, ifo, links)
+      # replace with target
+      for l in links.keys():
+        html = re.sub('index.html">%d</a>'%l,
+                      'index.html", target="main">%d</a>'%l, html)
+
+      calendar_contents.append(html)
+open(os.path.join(web_dir,"calendar.html"),"w").write("<p>\n".join(calendar_contents))
+print "%s %s done!"%(ifo,working_day.strftime('%m/%d/%Y'))

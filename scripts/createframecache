@@ -1,0 +1,212 @@
+#!/usr/bin/perl
+# CREATEFRAMECACHE Creates cache file of frame data location information
+#
+# CREATEFRAMECACHE recursively examines the contents of the specified
+# directories for frame data files of the form
+#
+# <SITES>-<FRAMETYPE>-<GPSSTARTTIME>-<DURATION>.gwf
+#
+# usage: createframecache directory1 directory2 ...
+#
+#   cachefile        READFRAMEDATA formatted frame file cache
+#   directoryN       list of directories to search in
+#
+# The directories to search should be specified by their full path name.
+#
+# The specified directory may also include the token 'node?', which will
+# be expanded into node1, node2, etc.  The list of nodes is taken from
+# /etc/hosts.  Note that is is necessary to protect the '?' from the shell
+# with single quotes.
+#
+# The resulting READFRAMEDATA cache file consists of whitespace delimited
+# ASCII text and contains one line for each contiguous data segment with a
+# common site, type, stride, and directory.  Each line consists of the
+# following six columns.
+#
+#   * site designator (e.g. 'H' or 'L')
+#   * frame file type (e.g. 'RDS_R_L3')
+#   * GPS start time of segment
+#   * GPS stop time of segment
+#   * frame file stride in seconds
+#   * full path name of directory
+#
+# The data segments are inclusive of the specified start time, but
+# exclusive of the specified stop time, such that the segment duration
+# is simply the difference between the stop and start times.
+#
+# See also READFRAMEDATA, LOADFRAMECACHE, and CONVERTLALCACHE.
+
+# Lindy Blackburn <lindy@ligo.mit.edu>
+
+# $Id: createframecache.pl,v 1.1 2006-10-06 05:32:03 shourov Exp $
+
+# store original working directory
+$originalDirectory = `pwd`;
+
+# executable name of this script
+# () puts the expression inside the parenthesis into variable $1
+# ^\/ any character that is not a forward slash
+# [^\/]+ one or more not-a-forward-slash characters
+# [^\/]+$ one or more NAFS characters followed immediately by end of line
+$0 =~ /([^\/]+)$/;
+$executable = $1;
+
+# if insufficient number of inputs
+# @ARGV is list containing program arguments (not executable name)
+# $#ARGV is the index of the last element in @ARGV (1 less than num of elements)
+if($#ARGV < 1) {
+
+  # report usage to standard error
+  print STDERR "usage: $executable directory1 directory2 ...\n";
+
+  # exit with non-zero status
+  exit 1
+
+# otherwise, continue
+}
+
+# list of top level directories to search
+$maxnode = 0;
+foreach $directory (@ARGV) {
+  if($directory =~ /^(.*)node\?(.*)$/) {
+    if(!$maxnode) {
+      open(HOSTS, "/etc/hosts");
+      while($line = <HOSTS>) {
+        if($line =~ /\snode(\d+)[\s\.]/) {
+          if($1 > $maxnode) {
+            $maxnode = $1;
+          }
+        }
+      }
+      print STDERR "assuming nodes 1 - $maxnode\n";
+    }
+    $pre = $1;
+    $suf = $2;
+    for($i = 1; $i <= $maxnode; $i++) {
+      push(@topDirectories, $pre."node$i".$suf);
+    }
+  }
+  else {
+    push(@topDirectories, $directory);
+  }
+}
+
+# loop over top level directories
+TOP: foreach $topDirectory (@topDirectories) {
+
+  # my variables are visible to current block only
+  my @subDirectories, @index, @dirs;
+
+  # remove trailing '/'
+  $topDirectory =~ s/\/$//;
+
+  # continue only if a directory,
+  if(-d $topDirectory) {
+    print STDERR"processing $topDirectory..\n";
+  }
+  else {
+    print STDERR "$executable: error: $topDirectory not a directory.\n";
+    next TOP;
+  }
+
+  # find all subdirectories
+  push(@subDirectories, $topDirectory);
+  for($i = 0; $i <= $#subDirectories; $i++) {
+
+    # get directory index
+    opendir(DIR, $subDirectories[$i]);
+    @index = readdir(DIR);
+    closedir(DIR);
+
+    # write out cache for current subDirectory
+    cache($subDirectories[$i], \@index);
+
+    # push remaining subDirectories onto scan queue
+    @dirs = grep(-d "$subDirectories[$i]/$_", grep($_ !~ /\.gwf$/, @index));
+    foreach $dir (@dirs) {
+      if($dir ne "." && $dir ne "..") {
+        push(@subDirectories, "$subDirectories[$i]/$dir");
+      }
+    }
+  }
+
+# close loop over topDirectories;
+}
+
+# cache subdirectory
+sub cache {
+
+  # set arguments
+  my ($subDirectory, $index) = @_;
+
+  # remove trailing newline
+  chomp $subDirectory;
+
+  # remove trailing '/' by substituting it with nothing (if it's found)
+  $subDirectory =~ s/\/$//;
+
+  # get list of all files in directory
+  @files = sort @{$index};
+
+  # loop to the first gwf file
+  my $i = 0;
+  my $gwffile = 0;
+  my $site, $type, $start, $duration;
+  my $last_site, $last_type, $last_start, $last_duration;
+  my $seg_start, $seg_stop;
+  until($gwffile || $i > $#files) {
+    # \w is equivalent to [A-Za-z_], that is any letter or underscore
+    # \d is any digit
+    # \w+ is one or more sequential letters (or underscore)
+    # .* is zero or more (*) anything (.)
+    $gwffile = ($files[$i] =~ /(\w+)-(\w+)-(\d+)-(\d+)\.gwf$/);
+    $last_site = $1;
+    $last_type = $2;
+    $last_start = $3;
+    $last_duration = $4;
+    $i++;
+
+    # set the segment start time
+    $seg_start = $last_start;
+  }
+  # if there is at least one gwf file,
+  if($gwffile) {
+    # loop over remaining files
+    for($i; $i <= $#files; $i++) {
+      if($files[$i] =~  /(\w+)-(\w+)-(\d+)-(\d+)\.gwf$/) {
+        $site = $1;
+        $type = $2;
+        $start = $3;
+        $duration = $4;
+
+        # check for continuity
+        if($site eq $last_site && $type eq $last_type &&
+           $start == $last_start + $last_duration &&
+           $duration == $last_duration) {
+           $last_start = $start;
+        }
+
+        # if not continuous, output previous segment
+        else {
+          $seg_stop = $last_start + $last_duration;
+          print STDOUT "$last_site $last_type $seg_start $seg_stop $last_duration $subDirectory\n";
+          $last_site = $site;
+          $last_type = $type;
+          $last_start = $start;
+          $last_duration = $duration;
+          $seg_start = $last_start;
+        }
+      }
+
+    # end loop over files in subDirectory
+    }
+
+    # output final segment
+    $seg_stop = $last_start + $last_duration;
+    print STDOUT "$last_site $last_type $seg_start $seg_stop $last_duration $subDirectory\n";
+
+  # end check for gwf file in subDirectory
+  }
+
+# end caching subroutine
+}

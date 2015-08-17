@@ -1,0 +1,168 @@
+#!/usr/bin/perl
+# CONVERTLALCACHE Converts a LAL frame cache to READFRAMEDATA format
+#
+# CONVERTLALCACHE reads the specified input cache file, which must be in
+# the standard "LSCdataFind --lal-cache" format.  The cache information is
+# then rewritten to the specified output cache file in the format required
+# by READFRAMEDATA.
+#
+# usage: convertlalcache inputfile outputfile
+#        convertlalcache inputfile > outputfile
+#        convertlalcache < inputfile > outputfile
+#
+#   inputfile     LAL formatted frame file cache or ASCII list of frame files
+#   outputfile    READFRAMEDATA formatted frame file cache
+#
+# The resulting READFRAMEDATA cache file consists of whitespace delimited
+# ASCII text and contains one line for each contiguous data segment with a
+# common site, type, stride, and directory.  Each line consists of the
+# following six columns.
+#
+#   * site designator (e.g. 'H' or 'L')
+#   * frame file type (e.g. 'RDS_R_L3')
+#   * GPS start time of segment
+#   * GPS stop time of segment
+#   * frame file stride in seconds
+#   * full path name of directory
+#
+# The data segments are inclusive of the specified start time, but
+# exclusive of the specified stop time, such that the segment duration
+# is simply the difference between the stop and start times.
+#
+# See also READFRAMEDATA, LOADFRAMECACHE, and CREATEFRAMECACHE.
+
+# Lindy L. Blackburn
+# lindy@ligo.mit.edu
+
+# $Id: convertlalcache.pl,v 1.1 2006-10-06 05:32:03 shourov Exp $
+
+if($ARGV[0] eq "-h") {
+  print STDERR "usage: convertlalcache inputfile outputfile\n";
+  print STDERR "       convertlalcache inputfile > outputfile\n";
+  print STDERR "       convertlalcache < inputfile > outputfile\n";
+  die;
+}
+elsif(@ARGV == 0) {
+  $instream = STDIN;
+  $outstream = STDOUT;
+}
+elsif(@ARGV == 1) {
+  open($instream, $ARGV[0]) || die "cannot open LAL cache file $ARGV[0]\n";
+  $outstream = STDOUT;
+}
+elsif(@ARGV == 2) {
+  open($instream, $ARGV[0]) || die "cannot open LAL cache file $ARGV[0]\n";
+  open($outstream, ">$ARGV[1]") || die "cannot open output file $ARGV[1] for writing\n";
+}
+
+$last_dir = "";
+@index = ();
+while($line = <$instream>) {
+  # remove trailing newline
+  chomp $line;
+  # delete comments
+  $line =~ s/#.*//;
+  # delete trailing whitespace
+  $line =~ s/\s+$//;
+  # skip blank lines
+  if($line eq "") {
+    next;
+  }
+  @tok = split(/ +/, $line);
+  # set filename to be the last column in input
+  $file = $tok[$#tok];
+  # remove any uri://* stuff
+  $file =~ s/^.*:\/\/[^\/]*//;
+  # grab directory and filename
+  $file =~ /(.*)\/([^\/]*)/;
+  ($dir, $filename) = ($1, $2);
+  # build list of files in a directory
+  if($dir eq $last_dir) {
+    push(@index, $filename);
+  }
+  # output one directory start the next
+  else {
+    cache($last_dir, \@index);
+    $last_dir = $dir;
+    @index = ($filename);
+  }
+}
+# cache final directory
+cache($last_dir, \@index);
+
+# subrouting to cache directory (from createframecache)
+sub cache {
+
+  # set arguments
+  my ($subDirectory, $index) = @_;
+
+  # remove trailing newline
+  chomp $subDirectory;
+
+  # remove trailing '/' by substituting it with nothing (if it's found)
+  $subDirectory =~ s/\/$//;
+
+  # get list of all files in directory
+  @files = sort @{$index};
+
+  # loop to the first gwf file
+  my $i = 0;
+  my $gwffile = 0;
+  my $site, $type, $start, $duration;
+  my $last_site, $last_type, $last_start, $last_duration;
+  my $seg_start, $seg_stop;
+  until($gwffile || $i > $#files) {
+    # \w is equivalent to [A-Za-z_], that is any letter or underscore
+    # \d is any digit
+    # \w+ is one or more sequential letters (or underscore)
+    # .* is zero or more (*) anything (.)
+    $gwffile = ($files[$i] =~ /(\w+)-(\w+)-(\d+)-(\d+)\.gwf$/);
+    $last_site = $1;
+    $last_type = $2;
+    $last_start = $3;
+    $last_duration = $4;
+    $i++;
+
+    # set the segment start time
+    $seg_start = $last_start;
+  }
+  # if there is at least one gwf file,
+  if($gwffile) {
+    # loop over remaining files
+    for($i; $i <= $#files; $i++) {
+      if($files[$i] =~  /(\w+)-(\w+)-(\d+)-(\d+)\.gwf$/) {
+        $site = $1;
+        $type = $2;
+        $start = $3;
+        $duration = $4;
+
+        # check for continuity
+        if($site eq $last_site && $type eq $last_type &&
+           $start == $last_start + $last_duration &&
+           $duration == $last_duration) {
+           $last_start = $start;
+        }
+        # if not continuous, output previous segment
+        else {
+          $seg_stop = $last_start + $last_duration;
+          print $outstream "$last_site $last_type $seg_start $seg_stop $last_duration $subDirectory\n";
+          $last_site = $site;
+          $last_type = $type;
+          $last_start = $start;
+          $last_duration = $duration;
+          $seg_start = $last_start;
+        }
+      }
+
+    # end loop over files in subDirectory
+    }
+
+    # output final segment
+    $seg_stop = $last_start + $last_duration;
+    print $outstream "$last_site $last_type $seg_start $seg_stop $last_duration $subDirectory\n";
+
+  # end check for gwf file in subDirectory
+  }
+
+# end caching subroutine
+}
