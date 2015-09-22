@@ -89,7 +89,7 @@ class bcv_sdist(sdist.sdist):
     sdist.sdist.run(self)
 
 setup(name="BCV",
-      version="1.0",
+      version="2.0",
       description="Bilinear Coupling Veto",
       author="Tomoki Isogai, A. Ajith, Bernard Hall, Nairwita Mazumder",
       author_email="isogait@mit.edu, bernard.hall@wsu.edu ",
