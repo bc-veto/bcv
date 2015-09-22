@@ -1,0 +1,176 @@
+#!/usr/bin/python
+
+import os
+import sys
+import shutil
+import re
+import optparse
+import os.path
+import re
+import sqlite3 as lite
+import sys
+
+from numpy import sqrt
+#from numpy import matrix
+
+from bcv import git_version
+
+##############################FUNCTIONS##############################
+def parse_commandline():
+        """
+        Parse the options given on the command-line.
+        """
+        parser = optparse.OptionParser(usage = __doc__,version=git_version.verbose_msg)
+
+        parser.add_option("-I", "--IFO", default='L1',
+                      help="IFO, H1 or L1 (default)")
+	parser.add_option("-F", "--frameType", default='L1_R',
+                      help="Choose frame type; default: 'L1_R'")
+	parser.add_option("-S", "--SNRcut", default=-1,
+                      help="SNR value for configuration file.  Default is -1.")
+	parser.add_option("-L", "--linearInclude", default=1,
+                      help="Whether to include linear study. (1: yes [default], 0: no)")
+	parser.add_option("-r", "--redInsert", default=1,
+                      help="Whether to automatically insert redundancy tag (1: yes [default], 0: no)")
+        parser.add_option("-P", "--fpath", default="",
+                      help="Working directory (if not current [default]). Example: '/home/{user}/'")
+	parser.add_option("-w", "--rewrite", default=1,
+                      help="Set whether to remove redundancies from fast or slow list if found. (Yes: 1 [default], no: 0")
+        opts, args = parser.parse_args()
+
+        return opts
+########################MAIN####################################
+
+opts = parse_commandline()
+
+print "Checking for redundancies in input files..."
+
+if opts.fpath == "":
+	cmd = "confRedCh -r %d -w %d"%(opts.redInsert,opts.rewrite)
+else:
+	cmd = "confRedCh -r %d -P %s -w %d"%(opts.redInsert,opts.fpath,opts.rewrite)
+
+#print cmd
+
+os.system(cmd)
+
+confString = opts.fpath + "configuration.txt"
+confFile = open(confString,'w')
+
+#frType = "H1_R"
+#SNRc = -1
+#linear = 1
+
+frType = opts.frameType
+SNRc = opts.SNRcut
+linear = opts.linearInclude
+
+header =  """# Only channels with ${IFO} given in 'ifo' in [general] section in the .ini file
+# will be used.
+#
+# Each channel needs 'channelType', 'frameType' and 'SNRcutoff'.
+#
+# channelType should be one of 'GW', 'fast', or 'slow'
+#
+# If -1 is supplied for SNRcutoff, it will be overwritten by SNRcutoff in
+# [data_conditioning] section in the .ini file.
+#
+# Other fields are automatically filled in before omegaveto runs.
+#
+# Only one channel is allowed for GW channelType.
+# All the combinations between fast and slow will be used.
+#
+# If
+#
+# [${IFO}:LINEAR]
+# channelType = slow
+# frameType = None
+# SNRcutoff = -2
+#
+# is given, linear coupling model on fast channels will also be tested.
+#
+# isogait
+# 5/26/2010
+# Nairwita
+# 12/01/2014
+# =============================================================================
+#
+#                           Gravitational Wave Channel
+#
+# =============================================================================
+
+################################## H1 #########################################
+"""
+
+ifo = opts.IFO
+
+if ifo == "H1":
+	GWChannel = ifo+":CAL-DELTAL_EXTERNAL_DQ"
+elif ifo == "L1":
+	GWChannel = ifo+":OAF-CAL_DARM_DQ"
+
+confFile.write(header)
+
+CHstring = """[%s]
+channelType = %s
+frameType = %s
+SNRcutoff = %d
+"""%(GWChannel,'GW',frType,SNRc)
+
+confFile.write(CHstring)
+
+header = """################################## L1 #########################################
+
+
+# =============================================================================
+#
+#                            Fast Channels
+#
+# =============================================================================
+
+################################## H1 #########################################
+"""
+
+confFile.write(header)
+
+# fast channels
+Fstring = opts.fpath+"FC.txt"
+FFile = open(Fstring,'r')
+
+for line in FFile:
+	FChannel = ifo+":"+line.strip()
+
+	CHstring = "[%s]\nchannelType = %s\nframeType = %s\nSNRcutoff = %d\n\n"%(FChannel,'fast',frType,SNRc)
+	confFile.write(CHstring)
+FFile.close()
+###################
+header = """################################## L1 ##########################################
+
+#=============================================================================
+#
+#                              Slow Channels
+#
+#
+#=============================================================================
+
+################################### H1 ##########################################
+"""
+confFile.write(header)
+######################
+#slow channels
+if linear:
+	CHstring = "["+ifo+":LINEAR]\nchannelType = slow\nframeType = none\nSNRcutoff = -2\n\n"
+	confFile.write(CHstring)
+
+Sstring = opts.fpath+"SC.txt"
+SFile = open(Sstring,'r')
+
+for line in SFile:
+        SChannel = ifo+":"+line.strip()
+
+        CHstring = "[%s]\nchannelType = %s\nframeType = %s\nSNRcutoff = %d\n\n"%(SChannel,'slow',frType,SNRc)
+        confFile.write(CHstring)
+SFile.close()
+
+confFile.close()
+

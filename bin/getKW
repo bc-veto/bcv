@@ -1,0 +1,452 @@
+#!/mnt/home1/detchar/opt/gwpysoft/bin/python
+#
+# Copyright (C) 2009  Tomoki Isogai
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 3 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+"""
+%prog --channel_name=channel_name [--segment_file=File | --gps_start_time=GPSTime --gps_end_time=GPSTime] [options]
+
+Tomoki Isogai (isogait@carleton.edu)
+
+This program gets all the KW triggers that fall into a specified segment list above a certain threshold for the channels specified.
+Supported ifos are H1, H2, L1, and V1.
+If you are running at the right cluster specified below, the code will use the following path as KW daily dump directory as default.
+
+For S5 LIGO triggers:
+/archive/home/lindy/public_html/triggers/s5/ at CIT
+
+For post S5, trigger locations are:
+H1, L1:
+/archive/home/lindy/public_html/triggers/s6-online/ at CIT 
+V1:
+/archive/home/mabizoua/public_html/KW/ at CIT
+
+If you want to use triggers at other location, you can specify --KW_location.
+
+For post S5 triggers, channel name must follow the notation:
+(ifo)_(channel name)_(min freq)_(max freq) in capital letters.
+For example,
+H1_LSC-DARM_ERR_64_1024
+V1_Pr_B1_ACp_40_1250
+
+For S5 LIGO triggers, channel name follows the notation:
+s5_(ifo)_(channel name) in small letters.
+For example,
+s5_l1_pobi
+
+You can omit the frequency part in the name if there is no ambiguity.
+"ls" the above directory to see channel names and max/min frequency available.
+
+If --out_name is given, file will be created in that name. Otherwise the result goes to stdout.
+Supported format is:
+  * .pickle - Python pickle file (dictionary serialized unchanged)
+  * .pickle.gz - gzipped pickle (dictionary serialized unchanged)
+  * .mat - Matlab v4 file
+  * .txt - ASCII text 
+  * .txt.gz - gzipped ASCII text
+  * .bd - sqlite database
+
+You can specify --order_by to sort the output. For example, 'centralTime asc' for ascending central time and 'significance desc' for descending significance.
+Available variables are:
+startTime, endTime, centralTime, frequency, unnormalizedEnergy, normalizedEnergy, clusteredPixelNumber, significance
+Default is 'centralTime asc'.
+"""
+
+# =============================================================================
+#
+#                               PREAMBLE
+#
+# =============================================================================
+
+
+from __future__ import division
+
+import os
+import sys
+import shutil
+import re
+import optparse
+from numpy import sqrt
+
+try:
+    import sqlite3
+except ImportError:
+   # pre 2.5.x
+   from pysqlite2 import dbapi2 as sqlite3
+
+from glue.segments import segment, segmentlist
+from glue import segmentsUtils
+
+from bcv import git_version
+from bcv import bcvUtils as utils
+
+__author__ = "Tomoki Isogai <isogait@carleton.edu>"
+__date__ = "12/25/2009"
+__version__ = "3.0"
+
+def parse_commandline():
+    """
+    Parse the options given on the command-line.
+    """
+    parser = optparse.OptionParser(usage = __doc__,version=git_version.verbose_msg)
+
+    parser.add_option("-K", "--KW_location", default=None,
+                      help="Location of KW trigger folder if you are not using the folder specified in --help.")
+    parser.add_option("-c", "--channel_name", default=None,
+                      help="Channel name you want KW triggers from. See --help for the naming format. Required.")
+    parser.add_option("-m", "--min_thresh", type="float", default=0,
+                      help="Minimum SNR threshold for KW triggers. (Default: 0)")
+    parser.add_option("-S", "--segment_file", default=None,
+                      help="Segment file on which KW triggers are retrieved. This option or --gps_start_time and --gps_end_time are required.")
+    parser.add_option("-s", "--gps_start_time", type="int",
+                      help="GPS start time on which the KW triggers are retrieved. Required unless --segment_file is specified.")
+    parser.add_option("-e", "--gps_end_time", type="int",
+                      help="GPS end time on which KW triggers are retrieved. Required unless --segment_file is specified.")
+    parser.add_option("-n", "--out_name", default=None,
+                      help="If given, file will be created in this file name. Otherwise, output goes to stdout.")
+    parser.add_option("-o","--order_by",default="centralTime asc",
+                      help="Order of the output. See -help for supported order. (Default: centralTime asc)")
+    parser.add_option("-l", "--scratch_dir", default=".",
+                      help="Scratch directory to be used for database engine. Specify local scratch directory for better performance and less fileserver load.")
+    parser.add_option("-v", "--verbose", action="store_true", default=False,
+                      help="Run verbosely")
+    
+    opts, args = parser.parse_args()
+    
+    ############################ Sanity Checks ################################
+
+    # channel name is necessary
+    if opts.channel_name is None:
+      parser.error("Error: --channel_name is required.")
+
+    # check if necessary input exists
+    if opts.segment_file is not None:    
+      if not os.path.isfile(opts.segment_file):
+        parser.error("Error: segment file %s not found"%opts.segment_file)
+    else:
+      for t in ('gps_start_time','gps_end_time'):
+        if getattr(opts,t) is None:
+          parser.error("Error: either --segment_file or --gps_start/end_time must be specified.")
+    
+    # check if scratch directory exists
+    if not os.path.exists(opts.scratch_dir):
+        parser.error("Error: %s does not exist"%opts.scratch_dir)
+    
+    # check if the file format is supported
+    if opts.out_name is not None:
+      ext = os.path.splitext(opts.out_name)[-1]    
+      if ext not in (".stdout",".pickle",".pickle.gz",".mat",".txt",".txt.gz",".db"):
+        parser.error("Error: %s is not a supported format"%ext)
+   
+    # check order_by is valid and avoid SQL injection attack
+    if len(opts.order_by.split()) != 2:
+      parser.error("Error: %s is not valid. See -help for the supported order."%opts.order_by)
+      if opts.order_by.split()[1] not in ("asc","desc"):
+        parser.error("Error: %s is not valid. See -help for the supported order."%opts.order_by)
+    if opts.order_by.split()[0] not in ("startTime", "endTime", "centralTime", "frequency", "unnormalizedEnergy", "normalizedEnergy", "clusteredPixelNumber", "significance","snr"):
+      parser.error("Error: %s is not valid. See -help for the supported order."%opts.order_by)
+ 
+    # show parameters
+    if opts.verbose:
+      print >> sys.stderr, "getKW.py..."
+      print >> sys.stderr, git_version.verbose_msg
+      print >> sys.stderr, ""
+      print >> sys.stderr, "******************* PARAMETERS ********************"
+      for o in opts.__dict__.items():
+        print >> sys.stderr, o[0]+":"
+        print >> sys.stderr, o[1]
+      print >> sys.stderr, "" 
+        
+    return opts
+
+def find_file_from_channel(channel,daily_dir,trigs_loc): #used within getKW triggers function
+    """
+    From the files in daily_dir, find the file that contains KW triggers
+    for the channel, and return the full channels name and the file path.
+    """
+    print >> sys.stderr, "BEFORE change CHANNEL name IS..." + str(channel) #added
+
+    # this function standardize the channel names
+    def norm(channel_name):
+      return channel_name.upper().replace(":","_").replace("-","_")
+    # print channel_name      
+    # I added this!!
+
+    print >> sys.stderr, "AFTER change CHANNEL name IS..." + str(channel) #added
+
+    all_files = \
+         [f for f in os.listdir(daily_dir) if os.path.splitext(f)[1] == '.trg']
+    candidates = [f for f in all_files if re.match(norm(channel), norm(f)) != None]
+
+    # if verbose: print >> sys.stderr, "NUMBER of CANDIDATES is" + str(len(candidates))
+
+    print >> sys.stderr, "NUMBER of CANDIDATES is" + str(len(candidates)) #added
+
+    if len(candidates) == 1:
+      return [os.path.join(daily_dir,candidates[0])]
+    elif len(candidates) < 1:
+      print >> sys.stderr, "Warning: no match found for %s in %s. See --help for channel name format. Attempting to ignore..."%(channel, daily_dir)
+      return [None]
+    # When there are more than two possibilities see if one of their name
+    # mathes perfectly. If so, warn user and use it, otherwise take a union of
+    # all possible hits
+    else:
+      refined_candidates = [f for f in candidates if re.match(norm(os.path.splitext(f)[0]),norm(channel)) != None]
+      if len(refined_candidates) == 1:
+        print >> sys.stderr, """
+        Warning: Multiple possible files with the channel name %s:
+                 %s
+                 Using %s and ignoring...
+        """%(channel,", ".join(candidates),refined_candidates[0])
+        return [os.path.join(daily_dir,refined_candidates[0])]
+      else:
+        # make a (somewhat arbitrary) choice
+        print >> sys.stderr, """
+        Warning: Multiple possible files with the channel name %s:
+                 %s
+                 Taking a union...
+        """%(channel, ", ".join(candidates))
+
+        return [os.path.join(daily_dir,c) for c in candidates]
+
+def get_trigs(channel, segs, min_thresh, trigs_loc=None,\
+              scratch_dir=".",verbose=True):
+    """
+    Get time and KW significance of KW triggers for a particular channel that
+    occured in the specified segments and above specified KW significance
+    threshold. 
+    ifo has to be one of H1, H2, L1, V1.
+    """
+    if verbose: print >> sys.stderr, "getting data for %s..."%channel
+  
+    ## initialize SQLite database
+    start_time = segs[0][0]
+    end_time = segs[-1][1]
+    duration = end_time - start_time
+    prefix = "%s-%d-%d-KWtrigs"%(channel, start_time, duration)
+    dbname = prefix+".db"
+    # if the name already exists, rename the old one to avoid collision
+    utils.rename(dbname)
+
+    global KW_working_filename # so that it can be erased when error occurs
+    KW_working_filename = utils.get_connection_filename(\
+                         dbname,tmp_path=scratch_dir,verbose=verbose)
+
+    KWconnection = sqlite3.connect(KW_working_filename)
+    KWcursor = KWconnection.cursor()
+
+    ## create a table for retrieved triggers
+    KWcursor.execute('create table KWtrigs (startTime double, endTime double, centralTime double, frequency int, unnormalizedEnergy double, normalizedEnergy double, clusteredPixelNumber int, significance double, snr double)')
+
+    channel_original = channel #added
+
+    ## determine the KW trigger file we need
+    channel = channel.upper().replace(":","_").replace("-","_")
+    ifo = channel.split("_")[0].upper()
+    old_flag = 0
+    # Virgo case
+    if trigs_loc is None and ifo == "V1":
+      trigs_loc = "/archive/home/mabizoua/public_html/KW/"
+      old_flag = 1
+    # LIGO case
+    elif trigs_loc is None and ifo in ("H0","H1","H2","L0","L1"):
+        trigs_loc = "/archive/home/lindy/public_html/triggers/s6-online/"
+        old_flag = 1
+        #print >> sys.stderr, "Channel name is %s."%channel
+        #print >> sys.stderr, "Original channel name is %s."%channel_original
+    # for S5, first two letters were not ifo but 's5'
+    elif trigs_loc is None and ifo == "S5":   
+      trigs_loc = "/archive/home/lindy/public_html/triggers/s5/"
+      old_flag = 1
+    elif trigs_loc is None:
+      print >> sys.stderr, "Error: channel name %s is unsupported. See --help for name format."%channel
+      sys.exit(1)
+
+    # sanity check
+    if not os.path.exists(trigs_loc):
+      print >> sys.stderr, "Error: KW daily dump %s not found."%trigs_loc
+
+    if verbose: print >> sys.stderr, "trigs_loc ISSSSSsss..." + str(trigs_loc)
+    print >> sys.stderr, "Channel name is %s."%channel
+    print >> sys.stderr, "Original channel name is %s."%channel_original
+    print >> sys.stderr, "IFO is %s."%ifo
+
+    ## select daily dump directories in the folder
+    d_test=[t for t in os.listdir(trigs_loc)]
+    print >> sys.stderr, "d_test: %s"%unicode(t[0], 'utf-8')
+    if unicode(t.split("_")[0], 'utf-8').isnumeric():
+        d_flag=0
+    else:
+        d_flag=1
+    print >> sys.stderr, "d_test: %s"%d_flag
+
+    if d_flag==1:
+         daily_dump_dirs = [d for d in os.listdir(trigs_loc)] #added
+    else:
+         daily_dump_dirs = \
+             [d for d in os.listdir(trigs_loc) if \
+              re.match(r"(?P<start>\d{9,10}?)_(?P<end>\d{9,10}?)",d) != None \
+              and len(d) < 22]
+#above commented out (added)
+    
+
+    # sort by time
+    daily_dump_dirs.sort()
+
+    # get the necessary daily dump folder
+    for d in daily_dump_dirs: # this is a loop, so not sure some other method? 
+            d0=unicode(d.split("_")[0], 'utf-8')
+            d1=unicode(d.split("_")[1], 'utf-8')
+
+    if d0.isnumeric() and d1.isnumeric():
+       analyze_dumps = [d for d in daily_dump_dirs \
+                    if int(d.split("_")[0]) < end_time and \
+                       int(d.split("_")[1]) > start_time]
+
+    #print >> sys.stderr, "Start time is %s."%start_time
+    #print >> sys.stderr, "End time is %s."%end_time
+    else:
+       print >> sys.stderr, "This file uses a newer naming convention.  Continuing..."
+       analyze_dumps = [] #added
+    # Using the new naming convention, d.split("_")[#] yields a non-numeric value.  It cannot be used.
+       for d in daily_dump_dirs: #added
+      #print >> sys.stderr, "d0 is %s."%d.split("_")[0]
+      #print >> sys.stderr, "d1 is %s."%d.split("_")[1]     
+
+         if int(d.split("-")[2]) < end_time and int(d.split("-")[2]) > start_time and (str(d.split(".")[1]) == 'trg'): #added
+           analyze_dumps.append(d) #added
+
+ # for S5, some channels are not in certain dumps: do a little trick to keep
+    # the name
+    if old_flag == 1:
+         for dump in analyze_dumps:
+            trigs_files = \
+                find_file_from_channel(channel,os.path.join(trigs_loc,dump))
+         for trigs_file in trigs_files:
+              if trigs_file != None:
+                   if verbose: print "retreiving data from %s..."%trigs_file
+    
+                   for line in  open(trigs_file): #old
+
+                      trig = line.split()
+                      start_time = float(trig[0])
+                      end_time = float(trig[1])
+                      central_time = float(trig[2])
+                      frequency = int(trig[3])
+                      unnormalized_energy = float(trig[4])
+                      normalized_energy = float(trig[5])
+                      clustered_pixels_num = int(trig[6])
+                      significance = float(trig[7])
+                      snr = sqrt(float(trig[5]) - float(trig[6]))
+
+ # check if KW trig is in the given segment and if its significance
+            # is above the minimum specified
+            # FIXME: check inf/nan just in case
+                 
+              if central_time in segs and snr > min_thresh: #commented out (added)
+                          KWcursor.execute("insert into KWtrigs values (?, ?, ?, ?, ?, ?, ?, ?, ?)", (start_time, end_time, central_time, "%d"%frequency, unnormalized_energy, normalized_energy, "%d"%clustered_pixels_num, significance, snr))
+
+    #above commented out (added)
+    # Note that having commented this out means that "find_file_from_channel" function is now not used
+    else:
+         for dump in analyze_dumps: #added
+           full_file_name = os.path.join(trigs_loc,dump) #added
+      # I.e., get full path to triger file, and save it in this variable.
+           if (1): #added
+
+#          for line in  open(trigs_file): #old
+               for line in  open(full_file_name): #added
+            # now use the above variable name to with the "open" command.  Again,
+            # note that "trigs_file" is only created in the above "correction" block.
+            # get central time and KW significance
+                 trig = line.split()
+                 start_time = float(trig[0]) 
+                 end_time = float(trig[1]) 
+                 central_time = float(trig[2]) 
+                 frequency = int(trig[3]) 
+                 unnormalized_energy = float(trig[4]) 
+                 normalized_energy = float(trig[5]) 
+                 clustered_pixels_num = int(trig[6]) 
+                 significance = float(trig[7])
+                 snr = sqrt(float(trig[5]) - float(trig[6]))
+            
+            # check if KW trig is in the given segment and if its significance 
+            # is above the minimum specified
+            # FIXME: check inf/nan just in case
+                 if d_flag == 0:
+                      if central_time in segs and snr > min_thresh: #commented out (added)
+                          KWcursor.execute("insert into KWtrigs values (?, ?, ?, ?, ?, ?, ?, ?, ?)", (start_time, end_time, central_time, "%d"%frequency, unnormalized_energy, normalized_energy, "%d"%clustered_pixels_num, significance, snr))
+                 else:
+                      if str(trig[8]) == channel_original and (central_time in segs) and snr > min_thresh: #added
+
+              # insert into the database
+              # micro second for GPS time is accurate enough
+                          KWcursor.execute("insert into KWtrigs values (?, ?, ?, ?, ?, ?, ?, ?, ?)", (start_time, end_time, central_time, "%d"%frequency, unnormalized_energy, normalized_energy, "%d"%clustered_pixels_num, significance, snr))
+  
+
+    # commit the insertions to the database
+    KWconnection.commit()
+
+    return dbname, KW_working_filename, KWconnection, KWcursor
+
+    
+# =============================================================================
+#
+#                                    Main
+#
+# =============================================================================
+
+def main():
+    ## parse the command line
+    opts = parse_commandline()
+    
+    ## get the segments on which triggers are retrieved
+    # case 1: segment file is given   
+    if opts.segment_file is not None:
+      # read segment file
+      if opts.segment_file.endswith(".txt"):
+        seg_list = utils.read_segfile(opts.segment_file)
+      elif opts.segment_file.endswith(".xml") or opts.segment_file.endswith(".xml.gz"):
+        seg_list = utils.read_segfile_xml(opts.segment_file,opts.verbose)
+    # case 2: start and end GPS time are given
+    else:
+      seg_list = segmentlist([segment(opts.gps_start_time,opts.gps_end_time)])
+   
+    # wrap in try/finally clause so that the code can erase temporary database
+    # when it encounters an error and had to stop in the middle
+    # Below we will attempt to create a loop, in the case there is more than one KWtrigs location
+    try:
+      ## get triggers
+      dbname, KW_working_filename, KWconnection, KWcursor = \
+          get_trigs(opts.channel_name,seg_list,opts.min_thresh,trigs_loc=opts.KW_location,scratch_dir=opts.scratch_dir,verbose=opts.verbose)
+  
+      # save/display the result
+      utils.save_db(KWcursor, "KWtrigs", opts.out_name, KW_working_filename,
+                    order_by=opts.order_by, verbose=opts.verbose)
+   
+      # close the connection to database
+      KWconnection.close()
+         
+    finally:
+      # erase temporal database
+      if globals().has_key('KW_working_filename'):
+        db = globals()['KW_working_filename']
+        if opts.verbose:
+          print >> sys.stderr, "removing temporary workspace '%s'..." % db
+        os.remove(db)
+
+if __name__ == "__main__":
+    main()    

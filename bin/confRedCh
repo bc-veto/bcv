@@ -1,0 +1,183 @@
+#!/usr/bin/python
+
+import os
+import sys
+import shutil
+import re
+import optparse
+import os.path
+import re
+import sqlite3 as lite
+import sys
+
+from numpy import sqrt
+#from numpy import matrix
+
+from bcv import git_version
+
+##############################FUNCTIONS##############################
+def parse_commandline():
+        """
+        Parse the options given on the command-line.
+        """
+        parser = optparse.OptionParser(usage = __doc__,version=git_version.verbose_msg)
+
+        parser.add_option("-r", "--redInsert", default=1,
+                      help="Whether to automatically insert redundancy tag (1: yes [default], 0: no)")
+        parser.add_option("-P", "--fpath", default="",
+                      help="Path of working directory (if not current [default]. Example: '/home/{user}/'")
+	parser.add_option("-w", "--rewrite", default=1,
+                      help="Set whether to remove redundancies from fast or slow list if found. (Yes: 1 [default], no: 0")
+        opts, args = parser.parse_args()
+
+        return opts
+########################MAIN####################################
+
+opts = parse_commandline()
+
+FCstring = opts.fpath + "FC.txt"
+SCstring = opts.fpath + "SC.txt"
+redr = opts.fpath + "redundancy_report.txt"
+rw = opts.rewrite
+
+fastF = open(FCstring,"r")
+slowF = open(SCstring,"r")
+output = open(redr,"w")
+
+fast = []
+slow = []
+redTag = opts.redInsert
+
+for line in fastF:
+	fast.append(line)
+for line in slowF:
+	slow.append(line)	
+
+flag = 0
+flag1 = 0
+flag2 = 0
+flaga = 0
+flag1a = 0
+
+print "\n"
+print "Checking for redundancies in fast channels...\n"
+
+output.write("Checking for redundancies in fast channels...\n")
+#cntM = 0
+for line in fast:
+	cntM = 0
+	#print line.strip()
+        cnt = 0
+        for lineCH in fast:
+		#print lineCH
+		#print "%s %s"%(line,lineCH)
+                if line.strip() == lineCH.strip():
+                        cnt = cnt + 1
+	if cnt > 1:
+        	cntM = cntM + 1
+	if cntM > 0:
+        	print "WARNING: %s is repeated %d time(s)!"%(line.strip(),cnt-1)
+		output.write("WARNING: %s is repeated %d time(s)!\n"%(line.strip(),cnt-1))		
+		flag = 1
+
+if not flag:
+	print "No redundancies found."
+	output.write("No redundancies found.\n")
+elif rw and flag:
+	fast = set(fast)
+	flag = 0
+	flaga = 1
+print "\n"
+print "###################\n"
+
+output.write("\n")
+output.write("###################\n\n")
+
+print "Checking for redundancies in slow channels...\n"
+output.write("Checking for redundancies in slow channels...\n")
+
+for line in slow:
+        cnt = 0
+	cntM = 0
+        for lineCH in slow:
+                if line.strip() == lineCH.strip():
+                        cnt = cnt + 1
+	if cnt > 1:
+                cntM = cntM + 1
+
+	if cntM > 0:
+   		print "WARNING: %s is repeated %d time(s)!"%(line.strip(),cnt-1)
+		output.write("WARNING: %s is repeated %d time(s)!\n"%(line.strip(),cnt-1))
+		flag1 = 1
+if not flag1:
+        print "No redundancies found."
+	output.write("No redundancies found.\n")
+elif rw and flag1:
+        slow = set(slow)
+	flag1 = 0
+	flag1a = 1
+	#print slow
+print "\n"
+print "###################\n"
+output.write("\n")
+output.write("###################\n\n")
+#cntM = 0
+#count = 1
+redTMade = 0
+
+print "Checking slow channels against fast channels...\n"
+output.write("Checking slow channels against fast channels...\n")
+for line in fast:
+	count = 0
+        cnt = 0
+	cntM = 0
+        for lineCH in slow:
+                if line.strip() == lineCH.strip():
+			if redTag and not(flag or flag1):
+				#print count
+				#print slow[count]
+				slow[count] = lineCH.strip() + '~\n'
+				#print fast[count]
+				redTMade = 1
+			elif (flag or flag1):
+				print "Reduncancies in fast or slow channels.  Cannot append redundancy tag."
+				output.write("Reduncancies in fast or slow channels.  Cannot append redundancy tag.\n")	
+                        cnt = cnt + 1
+		count = count + 1
+	if cnt > 0:
+                cntM = cntM + 1
+	if cntM:
+		print "WARNING: %s is repeated %d time(s)!"%(line.strip(),cnt)
+		output.write("WARNING: %s is repeated %d time(s)!\n"%(line.strip(),cnt))
+		flag2 = 1
+if not flag2:
+        print "No redundancies found."
+	output.write("No redundancies found.")
+
+fastF.close()
+slowF.close()
+
+if rw:
+	if flaga:
+		fastF = open(FCstring,"w")
+		fastF.writelines(fast)
+		fastF.close()
+	if flag1a:
+		slowF = open(SCstring,"w")
+                slowF.writelines(slow)
+		slowF.close()
+#print slow
+
+if redTMade:
+	print "\n"
+	print "###################\n"
+	print "Writing ammended slow channel file..."
+	output.write("\n")
+        output.write("###################\n\n")
+        output.write("Writing ammended slow channel file...")
+	slfile = open("SC.txt","w")
+	slfile.writelines(slow)
+	slfile.close()
+
+print "\n"
+output.close()

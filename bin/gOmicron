@@ -1,0 +1,199 @@
+#!/usr/bin/python
+
+import os
+import sys
+import shutil
+import re
+import optparse
+import os.path
+import re
+
+from numpy import sqrt
+#from numpy import matrix
+
+from bcv import git_version
+
+
+#tag = "L1_1102809616_1102896016"
+#ifo = "L1"
+#channel = "PSL-FSS_FAST_MON_OUT_DQ_1024_4096"
+#channel = "PSL-ISS_PDA_OUT_DQ_1024_4096"
+#Omicron_loc = "/home/detchar/triggers/ER6/L1"
+#KW_location = /home/detchar/triggers/ER5/H1/SUS-MC2_M1_DAMP_L_IN1_DQ_omicron/10772
+
+##############################FUNCTIONS##############################
+def parse_commandline():
+    	"""
+    	Parse the options given on the command-line.
+    	"""
+    	parser = optparse.OptionParser(usage = __doc__,version=git_version.verbose_msg)
+
+    	parser.add_option("-O", "--Omicron_location", default=None,
+                      help="Location of trigger folder if you are not using the folder specified in --help.")
+	parser.add_option("-k", "--KW_tag", default=None,
+                      help="Tag for KW compatibility")
+	parser.add_option("-o", "--omicron_tag", default=None,
+                      help="Custom omicron tag to channel name")
+    	parser.add_option("-c", "--channel_name", default=None,
+                      help="Channel name you want Omicron triggers from. See --help for the naming format. Required.")
+    	parser.add_option("-m", "--min_thresh", type="float", default=0,
+                      help="Minimum SNR threshold for Omicron triggers. (Default: 0)")
+    	parser.add_option("-s", "--separator", default="_",
+                      help="IFO/channel string separator (default '_'.")
+	parser.add_option("-I", "--ch_ifo", default="L1",
+                      help="IFO entry.")
+	parser.add_option("-S", "--segFile", default=None,
+                      help="User's segment file.")
+
+	opts, args = parser.parse_args()
+
+	return opts
+
+########################MAIN####################################
+#trig_file_list = os.listdir(basedir)
+opts = parse_commandline()
+
+Omicron_loc = opts.Omicron_location
+ifo = opts.ch_ifo
+tag = opts.KW_tag
+
+channel_o = opts.channel_name + '_' + opts.omicron_tag
+
+#channel = opts.channel_name + '_' + opts.KW_tag
+channel = opts.channel_name
+
+#channel_o = 'PSL-FSS_FAST_MON_OUT_DQ_omicron'
+#channel_o = 'PSL-ISS_PDA_OUT_DQ_omicron'
+
+segments = []
+#seg = open('test_seg.txt', 'r')
+seg = open(opts.segFile, 'r')
+
+i = 0
+
+for line in seg: #obtain segemnts from user's segment file
+	segments.insert(i,line)	
+	i = i + 1	
+
+seg.close()
+
+time_prefix = []
+#first loop to find appropriate time directories
+#time_prefix = os.listdir(Omicron_loc + '/' + channel_o) #get available time directories
+time_prefix = os.listdir(Omicron_loc + channel_o) #get available time directories
+
+z = 0
+j = 0
+loc_flag = 0
+
+for line in segments:
+	segment_breakup = segments[z].split()
+	sb_truncated = str(segment_breakup[0])
+	sb_truncated_1 = sb_truncated[0:5]
+
+        #print >> sys.stderr, "%s"%sb_truncated_1
+        #print >> sys.stderr, "%s"%time_prefix
+
+	j = 0	
+	loc_flag = 0	
+
+	while (loc_flag == 0):  # need to make handler for case that the correct folder does not exist!!!
+		if int(time_prefix[j]) == int(sb_truncated_1):
+			loc_flag = 1
+			j = j - 1 # make sure j has the correct value
+		j = j + 1
+	z = z + 1
+
+        #print >> sys.stderr, "j: %s"%j
+	#print >> sys.stderr, "Time prefix: %s"%time_prefix[j]
+
+	o_trigger_files = []
+        #o_trigger_files = os.listdir(Omicron_loc + '/' + channel_o + '/' + time_prefix[j])
+	o_trigger_files = os.listdir(Omicron_loc + channel_o + '/' + time_prefix[j])
+	
+	o_trigger_files_1 = []
+	m = 0
+
+	#print >> sys.stderr, "o_trigger_files: %s"%o_trigger_files
+
+	for line in o_trigger_files:  #extract only those trigger files that fit within the segment
+		otf = re.findall('\d+', line)
+		cmpr_index = 0
+		cmpr = 0		
+
+		for index in otf:
+			if float(otf[cmpr_index]) > 1000000000:
+				cmpr = cmpr_index
+			cmpr_index = cmpr_index + 1		
+
+		#print >> sys.stderr, "%s"%otf
+		#print >> sys.stderr, "%s"%cmpr
+		#print >> sys.stderr, "otf[cmpr]: %s"%otf[cmpr] # normally otf[1], but sometimes otf[2]
+		#print >> sys.stderr, "sb0: %s"%segment_breakup[0]
+		#print >> sys.stderr, "sb1: %s"%segment_breakup[1]	
+
+		if (float(otf[cmpr])>float(segment_breakup[0])) and (float(otf[cmpr])<float(segment_breakup[1])):# changed from otf[1] to otf[2]
+			o_trigger_files_1.insert(m,line)		
+		m = m + 1
+	
+	k = 0
+
+	for line in o_trigger_files_1:
+		if os.path.isfile('temp_local_data.txt'):
+			os.remove('temp_local_data.txt')
+		#string = 'ligolw_print -t sngl_burst -c start_time -c duration -d " " -c peak_time -c peak_frequency -c snr ' + Omicron_loc + '/' + channel_o + '/' + time_prefix[j] + '/' + line + ' > temp_local_data.txt'
+
+		string = 'ligolw_print -t sngl_burst -c start_time -c duration -d " " -c peak_time -c peak_frequency -c snr ' + Omicron_loc + channel_o + '/' + time_prefix[j] + '/' + line + ' > temp_local_data.txt'
+
+		#print >> sys.stderr, "querry string: %s"%string
+
+		os.system(string)
+		printresult = []
+
+		f = open('temp_local_data.txt', 'r')
+		i = 0
+		for line in f:
+			printresult.insert(i,line)
+			i = i + 1
+
+		f.close()	
+
+		i = 0
+
+		for line in printresult:
+			printresult_temp = printresult[i].split()
+			#print >> sys.stderr, "printresult_temp length: %s"%(len(printresult_temp))
+                        #print >> sys.stderr, "printresult_temp: %s"%printresult_temp
+			#SNR_dup = printresult_temp[4]
+			printresult_temp.insert(4,'0.0')
+			printresult_temp.insert(5,'0.0')
+			printresult_temp.insert(6,'0.0')
+			printresult_temp.insert(7,'0.0')
+			#print >> sys.stderr, "printresult_temp length: %s"%(len(printresult_temp))
+			#print >> sys.stderr, "printresult_temp: %s"%printresult_temp
+			printresult_temp[5] = str((float(printresult_temp[8])*float(printresult_temp[8])))
+		        printresult_temp[1] = str(float(printresult_temp[0]) +float(printresult_temp[1]))
+			printresult[i] = printresult_temp  # need to check this loop is working right
+			i = i + 1
+		if os.path.isfile('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt'):
+			g = open('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt', 'a')  #append
+		else:	
+			g = open('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt', 'w')  #create new file is it doesn't exist
+
+		#l = 0
+
+                                 
+		for l in range(0, (len(printresult)-1)):
+		#for line in printresult:
+	#print >> sys.stderr, "SNR threshold: %s"%opts.min_thresh
+			if (float(printresult[l][8]) >= float(opts.min_thresh)):  #write lines to final trigger file if SNR is above threshold
+				if (float(printresult[l][1]) <= float(segment_breakup[1])):
+					os.system('clear')
+					print >> sys.stderr, "Writing line...SNR: %s > %s"%(printresult[l][8],opts.min_thresh)
+					print >> sys.stderr, "end time: %s"%printresult[l][1]
+					g.write('  '.join(printresult[l]) + '\n')
+			#l = l + 1
+			#print >> sys.stderr, "printresult length: %s"%(len(printresult))
+			#print >> sys.stderr, "Counter : %s"%l
+
+		g.close()

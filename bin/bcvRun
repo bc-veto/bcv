@@ -1,0 +1,200 @@
+#!/usr/bin/python
+
+import os
+import sys
+import time
+import glob
+import optparse
+import datetime
+
+from bcv import bcvUtils
+
+from glue.segments import segment, segmentlist
+
+parser = optparse.OptionParser(usage=__doc__)
+parser.add_option("-i", "--ifo", help="IFO to be analyze. Required.")
+parser.add_option("-s", "--gpsStart", type="int", default=0,
+                  help="GPS start time. Required")
+parser.add_option("-e", "--gpsEnd", type="int", default=0,
+                  help="GPS end time. Required")
+parser.add_option("-a", "--account", type="str", default="isogait",
+                  help="Account from which this code is run. For example, 'detchar', or 'isogait'")
+parser.add_option("-f", "--iniFile", type="str", default="/archive/home/detchar/BCV/config/weekly.ini",
+                  help=".ini file containing the run parameters")
+parser.add_option("-t", "--triggerDir", type="str", default="/archive/home/lindy/public_html/triggers/s6-online",
+                  help="Root directory of triggers.")
+parser.add_option("-T", "--trigType", type="str", default="OMICRON",
+                  help="Trigger type, OMICRON (default) or KW")
+opts, args = parser.parse_args()
+
+if opts.ifo not in ("H1","L1"):
+  print >> sys.stderr, "--ifo %s is not supported."%opts.ifo
+  sys.exit(1)
+if opts.trigType not in ("OMICRON","KW"):
+  print >> sys.stderr, "Trigger type %s is not supported."%opts.trigType
+  sys.exit(1)
+
+curTime = time.strftime('%m-%d-%Y %H:%M:%S',time.localtime())
+user = os.environ['USER']
+ifo = opts.ifo
+gpsEnd = opts.gpsEnd;
+gpsStart = opts.gpsStart;
+iniFile = opts.iniFile;
+triggerDir = opts.triggerDir;
+tt = opts.trigType
+
+if ifo=="H1":
+	GWchannel = "CAL_DELTAL_EXTERNAL_DQ"
+else:
+	GWchannel = "OAF-CAL_DARM_DQ"
+print "running veto code on %s:%s"%(ifo, GWchannel)
+print "date: %s"%curTime
+print "user: %s"%user
+
+print "triggerDir = %s gpsStart = %d gpsEnd = %d" %(triggerDir, gpsStart, gpsEnd);
+
+#tag = "%s_DARMERR_%d_%d_WEEKLY"%(ifo,gpsStart,gpsEnd)
+tag = "%s_%d_%d"%(ifo,gpsStart,gpsEnd)
+
+if os.path.isdir("/home/%s/public_html/BCV/results/%s_webpage"%(opts.account,tag) ):
+	print "Results directory exists. Incrementing tag to prevent overwrite..."
+	count = 1
+	tag = tag + "_" + str(count) + "N"
+	while os.path.isdir("/home/%s/public_html/BCV/results/%s_webpage"%(opts.account,tag)):
+        	count = count + 1
+		tag = tag + "_" + str(count) + "N"
+
+uString = str(datetime.datetime.now())
+print uString
+uString = uString.replace(" ","")+".txt"
+
+if not os.path.isdir("/home/%s/public_html/BCV/results/%s_webpage"%(opts.account,tag)):
+  print "Creating tag directory"
+  os.makedirs("/home/%s/public_html/BCV/results/%s_webpage"%(opts.account,tag))
+USfile = open("/home/%s/public_html/BCV/results/%s_webpage"%(opts.account,tag)+"/"+uString,'w')
+USfile.close()
+
+if not os.path.isdir("/archive/home/%s/BCV/"%opts.account):
+  print "Creating directory BCV/"
+  os.makedirs("/archive/home/%s/BCV/"%opts.account)
+
+newDir = os.path.join("/archive/home/%s/BCV/"%opts.account,tag)
+if not os.path.isdir(newDir):
+  print "Creating directory %s"%newDir
+  os.makedirs(newDir)
+else:
+  print "Directory exists.  Renaming existing directory..."
+  count = 1
+  Rnewdir = newDir + "_" + str(count) + "_"
+  while os.path.isdir(Rnewdir):
+	count = count + 1
+	Rnewdir = newDir + "_" + str(count) + "_"
+  os.rename(newDir, Rnewdir)
+  print "Creating directory %s"%newDir
+  os.makedirs(newDir)
+
+USfile = open(newDir+"/"+uString,'w')
+USfile.close()
+
+print "Getting segment file..."
+
+xmlSegFile = os.path.join(newDir,tag+"_segs.xml")
+#if not os.path.isfile(xmlSegFile):
+#https://dqsegdb5.phy.syr.edu
+#os.system('export S6_SEGMENT_SERVER="https://segdb.ligo.caltech.edu"')
+os.system('export S6_SEGMENT_SERVER="https://dqsegdb5.phy.syr.edu"')
+#cmd = "ligolw_segment_query --segment-url https://segdb.ligo.caltech.edu --query-segments --include-segments '%s:DMT-SCIENCE' --gps-start-time %d --gps-end-time %d --output-file %s"%(ifo,gpsStart,gpsEnd,xmlSegFile)
+
+cmd = "ligolw_segment_query_dqsegdb --segment-url=https://dqsegdb5.phy.syr.edu --query-segments --gps-start-time %d --gps-end-time %d --include-segments='%s:DMT-ANALYSIS_READY:1' -o %s"%(gpsStart,gpsEnd,ifo,xmlSegFile)
+
+print cmd
+exit = os.system(cmd)
+if exit > 0:
+  print "failed: %s"%cmd
+  os.system("rm -f %s"%xmlSegFile)
+  sys.exit(1)
+
+#KWSegFile = os.path.join(newDir,tag+"_KWsegs.txt")
+#print "intersecting with KW segments... KWSegFile = %s" %(KWSegFile);
+#os.system("cat %s/*/%s-KW_TRIGGERS.seg | sort > %s"%(triggerDir, ifo[0].upper(),KWSegFile))
+
+#SM_segs = bcvUtils.read_segfile_xml(xmlSegFile,verbose=True)
+#KW_segs = bcvUtils.read_segfile(KWSegFile)
+#analyze_segs = SM_segs & KW_segs
+segFile = os.path.join(newDir,tag+"_segs.txt")
+#bcvUtils.write_segs(analyze_segs,segFile)
+cmd = "lwtprint %s -c start_time -c end_time -t segment -d ' ' > %s"%(xmlSegFile,segFile)
+print cmd
+exit = os.system(cmd)
+if exit > 0:
+  print "failed: %s"%cmd
+  os.system("rm -f %s"%segFile)
+  sys.exit(1)
+
+print "getting veto definer file and excluding burst injection..."
+tmpVetoDefFile = os.path.join(newDir,"tmp_H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml")
+vetoDefFile = os.path.join(newDir,"H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml")
+cmd = "wget -O %s https://www.lsc-group.phys.uwm.edu/ligovirgo/cbc/public/segments/S6/H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml --no-check-certificate"%tmpVetoDefFile
+exit = os.system(cmd)
+if exit > 0:
+  print >> sys.stderr, "Error: Failed to retrieve veto definer file."
+  print >> sys.stderr, cmd
+  system.exit(1)
+
+os.system("grep -v INJECTION_BURST %s > %s"%(tmpVetoDefFile,vetoDefFile))
+
+print "getting configuration file..."
+#configFile = os.path.join(newDir,tag+".conf")
+configFile = os.path.join(newDir,tag+"_conf.txt")
+os.system("cp /archive/home/%s/configuration.txt %s"%(opts.account, configFile))
+
+print "editing parameter file..."
+paramFile = os.path.join(newDir,tag+".ini")
+
+
+ini = []
+for line in open(iniFile).readlines():
+  if line.startswith("; id:"):
+    line = "; id: %s: %s\n"%(curTime,user)
+  if line.startswith("tag"):
+    line = "tag = %s\n"%tag
+  if line.startswith("ifo"):
+    line = "ifo = %s\n"%ifo
+  if line.startswith("configuration_file"):
+    line = "configuration_file = %s\n"%configFile
+  if line.startswith("analyzed_seg_files"):
+    line = "analyzed_seg_files = %s\n"%segFile
+  if line.startswith("veto_definer_file"):
+    line = "veto_definer_file = %s\n"%vetoDefFile
+  if line.startswith("outdir"):
+    line = "outdir = /home/%s/public_html/BCV/results/"%opts.account
+  if line.startswith("trigger_type"):
+    #line = "trigger_type = OMICRON"
+    line = "trigger_type = %s"%tt
+  if line.startswith("web_address"):
+    if opts.ifo == "H1":
+      web = "wa"
+    if opts.ifo == "L1":
+      web = "la"
+    #line = "web_address = https://ldas-jobs.ligo-%s.caltech.edu/~%s/S6/BCV/weekly/%s_webpage/index.html"%(web,opts.account,tag) # run at sites 
+    #line = "web_address = https://ldas-jobs.ligo.caltech.edu/~%s/S6/BCV/weekly/%s_webpage/index.html"%(opts.account,tag)
+    line = "web_address = https://ldas-jobs.ligo-%s.caltech.edu/~%s/BCV/results/%s_webpage/index.html"%(web,opts.account,tag)
+
+  ini.append(line)
+open(paramFile,'w').write("".join(ini))
+
+os.chdir(newDir)
+#cmd = "bcvSetup -i %s -k %s -sv"%(paramFile, triggerDir)
+cmd = "bcvSetup_unv -svi %s"%paramFile
+
+exit = os.system(cmd)
+if exit > 0:
+  print sys.stderr, "failed: %s"%cmd
+  sys.exit(1)
+
+dagFile = os.path.join("dags",tag+".dag")
+print "running %s..."%dagFile
+cmd = "condor_submit_dag -maxjobs 500 %s"%dagFile
+exit = os.system(cmd)
+if exit > 0:
+  print "failed: %s"%cmd
