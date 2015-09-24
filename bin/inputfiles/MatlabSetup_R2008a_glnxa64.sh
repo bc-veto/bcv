@@ -34,11 +34,13 @@ if [ ! "$LD_LIBRARY_PATH" ]
         export LD_LIBRARY_PATH=${MATLAB_ROOT}/sys/os/glnxa64:${LD_LIBRARY_PATH}
     fi
 fi
-export XAPPLRESDIR=${MATLAB_ROOT}/X11/app-defaults
+#export XAPPLRESDIR=${MATLAB_ROOT}/X11/app-defaults
 export MCR_CACHE_ROOT=/usr1/${USER}
 # export MCR_CACHE_ROOT=/usr/local/MCR/matlab_r2013a/v81
 
-MCRROOT=/usr/local/MCR/matlab_r2013a/v81;
+#MCRROOT=/usr/local/MCR/matlab_r2013a/v81;
+
+MCRROOT=/ldcg/matlab_r2013a/;
 
 export LD_LIBRARY_PATH=.:${MCRROOT}/runtime/glnxa64;
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRROOT}/bin/glnxa64 ;
@@ -48,6 +50,8 @@ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRJRE}/native_threads ;
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRJRE}/server ;
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRJRE}/client ;
 export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${MCRJRE} ;
+
+export XAPPLRESDIR=${MCRROOT}/X11/app-defaults
 
 # clear any setting of MATLAB, which is set when MATLAB is started
 export -n MATLAB
