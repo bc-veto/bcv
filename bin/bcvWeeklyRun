@@ -1,4 +1,4 @@
-#!/mnt/home1/detchar/opt/gwpysoft/bin/python
+#!/home/detchar/opt/gwpysoft/bin/python
 
 import os
 import sys
