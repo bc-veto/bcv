@@ -102,7 +102,7 @@ class omegavetoJob(pipeline.CondorDAGJob):
     self.set_stdout_file('logs/$(logname)-$(cluster).out')
     self.set_stderr_file('logs/$(logname)-$(cluster).err')
     self.add_condor_cmd('getenv','True')
-    self.add_condor_cmd('requirements','Memory >= %s'%cp.get("condor","omegavetoRequiredMemory"))
+    #self.add_condor_cmd('requirements','Memory >= %s'%cp.get("condor","omegavetoRequiredMemory"))
 
     self.add_opt("omegaveto_bin",cp.get("condor","compiled_omegaveto"))
     self.add_opt("highPassCutoff",cp.get("data_conditioning","highPassCutoff"))
@@ -132,7 +132,7 @@ class reportJob(pipeline.CondorDAGJob):
     self.set_stdout_file('logs/$(logname)-$(cluster).out')
     self.set_stderr_file('logs/$(logname)-$(cluster).err')
     self.add_condor_cmd('getenv','True')
-    self.add_condor_cmd('requirements','Memory >= %s'%cp.get("condor","reportRequiredMemory"))
+    #self.add_condor_cmd('requirements','Memory >= %s'%cp.get("condor","reportRequiredMemory"))
 
     self.add_opt("ini_file", opts.ini_file)
     self.add_opt("HTriggerFile",GWtrigFile)
