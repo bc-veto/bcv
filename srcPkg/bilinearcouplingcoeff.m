@@ -17,7 +17,7 @@ function [rXH, rMaxXH, dataHClean] = bilinearcouplingcoeff(chanHName, ...
 % $Id: linearcouplingcoeff.m 242 2009-09-23 02:00:20Z ajith $
     
 % Set the frequency range for the veto analysis.
-MIN_FREQ = 40;
+MIN_FREQ = 10;
 MAX_FREQ = 4000;
 
 % Convert cell arrays to double vectors.

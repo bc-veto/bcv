@@ -17,7 +17,7 @@ function [rXH, rMaxXH] = linearcouplingcoeff(chanHName, chanXName, ...
 % $Id: linearcouplingcoeff.m 277 2009-10-31 00:02:03Z ajith $
 
 % Set the frequency range for the veto analysis.
-MIN_FREQ = 40;      % min freq of the analysis band (Hz)
+MIN_FREQ = 10;      % min freq of the analysis band (Hz)
 MAX_FREQ = 4000;    % max freq of the analysis band (Hz)
 IFO_LENGTH = 4000;  % length of the interferometr (meters)
 
