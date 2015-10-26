@@ -1,0 +1,189 @@
+#!/usr/bin/python
+#
+# Copyright (C) 2009  Tomoki Isogai
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 3 of the License, or (at your
+# option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+# Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+
+"""
+%prog --omegaveto_bin=Path --segmentFile=File --configurationFile=Path --frameCacheFileH=Path --frameCacheFileX=Path [--frameCacheFileY=Path] --couplingModel=[linear | bilinear] -highPassCutoff=Float -outDir=Path --logFile=Path --generateReport=Boolean --debugLevel=Int
+
+Tomoki Isogai (isogait@carleton.edu)
+
+This is a simple wrapper for compiled omegaveto.m (much easier to handle in condor this way).
+This code does two things:
+1) input arguments handling for omegaveto.m
+2) combine frame cache files in a way omegaveto.m likes
+
+"""
+
+# =============================================================================
+#
+#                               PREAMBLE
+#
+# =============================================================================
+
+
+from __future__ import division
+
+import os
+import sys
+import optparse
+
+from bcv import git_version
+
+__author__ = "Tomoki Isogai <isogait@carleton.edu>"
+__date__ = "12/26/2009"
+__version__ = "1.0"
+
+def parse_commandline():
+    """
+    Parse the options given on the command-line.
+    """
+    parser = optparse.OptionParser(usage = __doc__,version=git_version.verbose_msg)
+
+    parser.add_option("-O", "--omegaveto_bin", default=None,
+                      help="Path to compilied omegaveto.m.")
+    parser.add_option("-s", "--segmentFile",
+                      help="Segment file that contains segments to be analyzed.")
+    parser.add_option("-c", "--configurationFile", default=None,
+                      help="Path name of channel configuration file.")
+    parser.add_option("-H", "--frameCacheFileH", default=None,
+                      help="Path name of framecache file for channel H.")
+    parser.add_option("-X", "--frameCacheFileX", default=None,
+                      help="Path name of framecache file for channel X.")
+    parser.add_option("-Y", "--frameCacheFileY", default='',
+                      help="Path name of framecache file for channel Y.")
+    parser.add_option("-a", "--couplingModel", default=None,
+                      help="'linear' or 'bilinear'")
+    parser.add_option("-K", "--SNRcutoffH", type="float", default=8,
+                      help="KW significance threshold used for channel H (default: 8).")
+    parser.add_option("-k", "--SNRcutoffX", type="float", default=8,
+                      help="KW significance threhsold used for channel X (default: 8).")
+    parser.add_option("-C", "--highPassCutoff", type="float", default=40,
+                      help="Highpass cutoff (default: 40).")
+    parser.add_option("-o", "--outDir", default='results',
+                      help="Directory to write results.")
+    parser.add_option("-l","--logFile", default="logs",
+                      help="String specifying the name of the log file.")
+    parser.add_option("-r", "--generateReport", action="store_true",
+                      default=False, help="Generate plots and html report.")
+    parser.add_option("-m", "--timeShiftMin", type="int", default=-50,
+                      help="Minimum negative offset for the time shifts.")
+    parser.add_option("-M", "--timeShiftMax", type="int", default=50,
+                      help="Maximum positive offset for the time shifts.")
+    parser.add_option("-n", "--numTimeShifts", type="int", default=11,
+                      help="Number of time slides.")
+    parser.add_option("-d", "--debugLevel", type="int", default=0,
+                      help="Verboseness of debug level output.")
+    
+    opts, args = parser.parse_args()
+    
+    ############################ Sanity Checks ################################
+
+    # we need ALL input arguments (except for possibly frameCacheFileY)
+    for o in opts.__dict__.items():
+      if o[1] is None:
+        parser.error("Error: %s is necessary argument."%o[0])
+
+
+    # see if necessary files exist
+    for f in ("segmentFile","configurationFile","frameCacheFileH","frameCacheFileX"):
+      if not os.path.isfile(getattr(opts,f)):
+        parser.error("Error: %s not found."%f)
+    # hack because parser can't pass the empty string
+    if opts.frameCacheFileY == "None":
+      opts.frameCacheFileY = ''
+    if opts.frameCacheFileY != '':
+      if not os.path.isfile(opts.frameCacheFileY):
+        parser.error("Error: frameCacheFileY not found.")
+        setattr(opts,"frameCacheFileY",os.path.abspath(opts.frameCacheFileY))
+
+    # check couplingModel
+    if opts.couplingModel not in ("linear", "bilinear"):
+      parser.error("Error: couplingModel must be 'linear' or 'bilinear'.")
+
+    # convert everything to absolute path
+    for f in ("segmentFile","configurationFile","frameCacheFileH","frameCacheFileX","outDir","logFile"):
+      setattr(opts,f,os.path.abspath(getattr(opts,f)))
+
+
+
+    # show parameters
+    print >> sys.stderr, "running omegaveto.py..."
+    print >> sys.stderr, git_version.verbose_msg
+    print >> sys.stderr, ""
+    print >> sys.stderr, "***************** PARAMETERS ********************"
+    for o in opts.__dict__.items():
+      print >> sys.stderr, o[0]+":"
+      print >> sys.stderr, o[1]
+    print >> sys.stderr, "" 
+        
+    return opts
+
+    
+# =============================================================================
+#
+#                                    Main
+#
+# =============================================================================
+
+def main():
+    ## parse the command line
+    opts = parse_commandline()
+    
+    ## combine framecache
+    frameCacheDir = os.path.dirname(opts.frameCacheFileH)
+    # combine file names to get a unique name
+    frameCacheFile =\
+        os.path.splitext(os.path.basename(opts.frameCacheFileH))[0] + "-" +\
+        os.path.splitext(os.path.basename(opts.frameCacheFileX))[0]
+    if opts.frameCacheFileY != "":
+      frameCacheFile = frameCacheFile + "-" + os.path.splitext(os.path.basename(opts.frameCacheFileX))[0]
+    frameCacheFile += ".cache"
+    # retrieve the absolute path
+    frameCacheFile = os.path.join(frameCacheDir,frameCacheFile)
+
+    # combine files
+    if not os.path.isfile(frameCacheFile):
+      os.system("cat %s %s %s > %s"%(opts.frameCacheFileH,opts.frameCacheFileX,opts.frameCacheFileY,frameCacheFile))
+
+
+    # run omegaveto
+   
+    cmd = "source inputfiles/MatlabSetup_R2008a_glnxa64.sh; %s %s %s %s %s %f %d %d %s %s %d %d %d %d"%(opts.omegaveto_bin,
+            opts.segmentFile, 
+            opts.configurationFile, frameCacheFile, opts.couplingModel,
+            opts.highPassCutoff, opts.SNRcutoffX, opts.SNRcutoffH,
+            opts.outDir, os.path.basename(opts.logFile), 
+            opts.timeShiftMin, opts.timeShiftMax, opts.numTimeShifts,
+            opts.debugLevel)
+
+#    cmd = "source inputfiles/run_omegaveto.sh /usr/local/MCR/matlab_r2013a/v81; %s %s %s %s %s %f %d %d %s %s %d %d %d %d"%(opts.omegaveto_bin,
+#           opts.segmentFile,
+#           opts.configurationFile, frameCacheFile, opts.couplingModel,
+#           opts.highPassCutoff, opts.SNRcutoffX, opts.SNRcutoffH,
+#           opts.outDir, os.path.basename(opts.logFile),
+#           opts.timeShiftMin, opts.timeShiftMax, opts.numTimeShifts,
+#           opts.debugLevel)
+
+    print >> sys.stderr, "running omegaveto..."
+    print >> sys.stderr, cmd
+    exit = os.system(cmd)
+    if exit > 0:
+      print >> sys.stderr, "Error omegaveto failed"
+      sys.exit(1)
+
+if __name__ == "__main__":
+    main()    

@@ -162,13 +162,21 @@ def main():
 
     # run omegaveto
    
-    cmd = "source inputfiles/MatlabSetup_R2008a_glnxa64.sh; %s %s %s %s %s %f %d %d %s %s %d %d %d %d"%(opts.omegaveto_bin,
+    cmd = "%s %s %s %s %s %f %d %d %s %s %d %d %d %d"%(opts.omegaveto_bin,
             opts.segmentFile, 
             opts.configurationFile, frameCacheFile, opts.couplingModel,
             opts.highPassCutoff, opts.SNRcutoffX, opts.SNRcutoffH,
             opts.outDir, os.path.basename(opts.logFile), 
             opts.timeShiftMin, opts.timeShiftMax, opts.numTimeShifts,
             opts.debugLevel)
+            
+#    cmd = "source inputfiles/MatlabSetup_R2008a_glnxa64.sh; %s %s %s %s %s %f %d %d %s %s %d %d %d %d"%(opts.omegaveto_bin,
+#            opts.segmentFile, 
+#            opts.configurationFile, frameCacheFile, opts.couplingModel,
+#            opts.highPassCutoff, opts.SNRcutoffX, opts.SNRcutoffH,
+#            opts.outDir, os.path.basename(opts.logFile), 
+#            opts.timeShiftMin, opts.timeShiftMax, opts.numTimeShifts,
+#            opts.debugLevel)            
 
 #    cmd = "source inputfiles/run_omegaveto.sh /usr/local/MCR/matlab_r2013a/v81; %s %s %s %s %s %f %d %d %s %s %d %d %d %d"%(opts.omegaveto_bin,
 #           opts.segmentFile,
