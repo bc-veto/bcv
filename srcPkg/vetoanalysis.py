@@ -256,7 +256,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 	      
 	      # Plot time series data for Channel X
-	      plt.figure()
+	      plt.figure(figsize=(30, 10))
 	      if(len(dataX)>1):
 		plt.subplot(3, 1, 1)
 	      else:
@@ -266,7 +266,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      bot, top = ax.get_ylim()	      
 	      ax.axvline(trigXCentTime, color='r', linestyle='--')
 	      ax.text(trigXCentTime-min(timeX),top/10.0, '%f'%(trigXCentTime-min(timeX)) )
-	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigXDuration,trigXSignific ), transform=ax.transAxes, fontsize=14,
+	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigXDuration,trigXSignific ),  ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
 	       verticalalignment='top', bbox=props)
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Time series data: ' + chanXName[0])
@@ -282,7 +282,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      bot, top = ax.get_ylim()	      
 	      ax.axvline(trigHCentTime, color='r', linestyle='--')
 	      ax.text(trigHCentTime-min(timeH),top/10.0, '%f'%(trigHCentTime-min(timeH)) )
-	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigHDuration,trigHSignific ), transform=ax.transAxes, fontsize=14,
+	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigHDuration,trigHSignific ), ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
 	       verticalalignment='top', bbox=props)	      
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Time series data: ' + chanHName[0])
@@ -299,7 +299,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      plt.close()
 	      
 	      # Plot spectrogram of X data and Y data
-	      plt.figure()
+	      plt.figure(figsize=(30, 10))
 	      
 	      plt.subplot(2,1,1)
 	      plt.specgram(dataX[0], noverlap=0, Fs=samplFreq)
