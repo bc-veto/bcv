@@ -131,7 +131,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
     if(debugLevel>=2):
       import os
       debugPlotsFolder =  'debug_plots/' + 'timeshift%d'%(timeShift)
-      debugPlotsDir = outDir[0] + '/' debugPlotsFolder
+      debugPlotsDir = outDir[0] + '/' +  debugPlotsFolder
       os.system('mkdir -p %s'%(debugPlotsDir))
       
     for coincIndex in range(len(coincTrigH)):
