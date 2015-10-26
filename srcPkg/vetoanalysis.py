@@ -291,7 +291,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      # Plot time series data for channel Y
 	      if(len(dataX)>1):
 		plt.subplot(3, 1, 3)
-		plt.plot(timeX[1] - min(timeX[1]), dataX[1], label='y(t)')
+		plt.plot(timeX - min(timeX), dataX[1], label='y(t)')
 		plt.xlabel('t[sec] since')
 		plt.ylabel('Time series data: ' + chanXName[1])
 		plt.legend()
