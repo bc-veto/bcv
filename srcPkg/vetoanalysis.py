@@ -257,37 +257,33 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      
 	      # Plot time series data for Channel X
 	      plt.figure(figsize=(30, 10))
-	      #if(len(dataX)>1):
-		#plt.subplot(3, 1, 1)
-	      #else:
-		#plt.subplot(2, 1, 1)
-	      plt.subplot(3,1,1)
-	      print 'dataX[0]', dataX[0]
+	      if(len(dataX)>1):
+		plt.subplot(3, 1, 1)
+	      else:
+		plt.subplot(2, 1, 1)
 	      plt.plot(timeX - min(timeX), dataX[0], label='x(t)')
 	      ax = plt.gca()
 	      bot, top = ax.get_ylim()	      
 	      ax.axvline(trigXCentTime-min(timeX), color='r', linestyle='--')
-	      #ax.text(trigXCentTime-min(timeX),top/10.0, '%f'%(trigXCentTime-min(timeX)) )
-	      #ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigXDuration,trigXSignific ),  ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
-	       #verticalalignment='top', bbox=props)
+	      ax.text(trigXCentTime-min(timeX),top/10.0, '%f'%(trigXCentTime-min(timeX)) )
+	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigXDuration,trigXSignific ),  ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
+	      verticalalignment='top', bbox=props)
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Time series data: ' + chanXName[0])
 	      plt.legend()
 	      
 	      #Plot time series data for channel H
-	      #if(len(dataX)>1):
-		#plt.subplot(3, 1, 2)
-	      #else:
-		#plt.subplot(2, 1, 2)	      
-	      plt.subplot(3,1,2)
-	      print 'dataH[0]', dataH[0]
+	      if(len(dataX)>1):
+		plt.subplot(3, 1, 2)
+	      else:
+		plt.subplot(2, 1, 2)	      
 	      plt.plot(timeH - min(timeH), dataH[0], label='h(t)')
 	      ax = plt.gca()
 	      bot, top = ax.get_ylim()	      
 	      ax.axvline(trigHCentTime-min(timeH), color='r', linestyle='--')
-	      #ax.text(trigHCentTime-min(timeH),top/10.0, '%f'%(trigHCentTime-min(timeH)) )
-	      #ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigHDuration,trigHSignific ), ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
-	       #verticalalignment='top', bbox=props)	      
+	      ax.text(trigHCentTime-min(timeH),top/10.0, '%f'%(trigHCentTime-min(timeH)) )
+	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigHDuration,trigHSignific ), ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
+	       verticalalignment='top', bbox=props)	      
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Time series data: ' + chanHName[0])
 	      plt.legend()
