@@ -261,7 +261,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 		#plt.subplot(3, 1, 1)
 	      #else:
 		#plt.subplot(2, 1, 1)
-	      plt.subplot(3,1,1)	
+	      plt.subplot(3,1,1)
+	      print 'dataX[0]', dataX[0]
 	      plt.plot(timeX - min(timeX), dataX[0], label='x(t)')
 	      ax = plt.gca()
 	      bot, top = ax.get_ylim()	      
@@ -279,6 +280,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      #else:
 		#plt.subplot(2, 1, 2)	      
 	      plt.subplot(3,1,2)
+	      print 'dataH[0]', dataH[0]
 	      plt.plot(timeH - min(timeH), dataH[0], label='h(t)')
 	      ax = plt.gca()
 	      bot, top = ax.get_ylim()	      
