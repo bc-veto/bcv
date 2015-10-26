@@ -265,6 +265,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax = plt.gca()
 	      bot, top = ax.get_ylim()	      
 	      ax.axvline(trigXCentTime-min(timeX), color='r', linestyle='--')
+	      ax.axvline(segStartTime-min(timeX), color='g', linestyle='-')
+	      ax.axvline(segEndTime-min(timeX), color='g', linestyle='-')
 	      ax.text(trigXCentTime-min(timeX),top/10.0, '%f'%(trigXCentTime-min(timeX)) )
 	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigXDuration,trigXSignific ),  ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
 	      verticalalignment='top', bbox=props)
@@ -281,6 +283,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax = plt.gca()
 	      bot, top = ax.get_ylim()	      
 	      ax.axvline(trigHCentTime-min(timeH), color='r', linestyle='--')
+	      ax.axvline(segStartTime-min(timeH), color='g', linestyle='-')
+	      ax.axvline(segEndTime-min(timeH), color='g', linestyle='-')	      
 	      ax.text(trigHCentTime-min(timeH),top/10.0, '%f'%(trigHCentTime-min(timeH)) )
 	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigHDuration,trigHSignific ), ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
 	       verticalalignment='top', bbox=props)	      
