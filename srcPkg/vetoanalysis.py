@@ -249,8 +249,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      dataX[iDs] = bcv.resample2(dataX[iDs], samplFreqX[iDs], samplFreq)
 	    
 	  del timeH, timeX
-	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime - 1.0/samplFreq, 1.0/samplFreq)
-	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift -1.0/samplFreq, 1.0/samplFreq)
+	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
+	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
           if (debugLevel>=2):
 	    if((trigHSignific>=15.0) & (trigXSignific>=15.0)):
 	      props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
