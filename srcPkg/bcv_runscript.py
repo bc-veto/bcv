@@ -328,7 +328,7 @@ for iDir in xrange(len(outDirList)):
   os.system('cp %s %s/configuration.txt'%(configurationFile, outDirList[iDir]))
   
 if(debugLevel>=2):
-  os.system('mkdir - p %'%(outDirList[0]+'/debug_plots'))
+  os.system('mkdir - p %'%(outDirList[0])+'/debug_plots'))
 
 logFile = outDirList[0] + '/' + logFileName
 logFid = open(logFile, 'w+')
