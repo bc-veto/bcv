@@ -1,3 +1,4 @@
+#!/home/detchar/opt/gwpysoft/bin/python
 import sys
 import string
 import numpy as np
