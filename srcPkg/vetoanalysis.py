@@ -299,11 +299,11 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 		plt.subplot(3, 1, 1)
 	      else:
 		plt.subplot(2, 1, 1)
-	      plt.plot(timeX[0] - min(timeX[0]), dataX[0], label='x(t)')
+	      plt.plot(timeX - min(timeX), dataX[0], label='x(t)')
 	      ax = plt.gca()
 	      bot, top = ax.get_ylim()	      
 	      ax.axvline(trigXCentTime, color='r', linestyle='--')
-	      ax.text(trigXCentTime-min(timeX[0]),top/10.0, '%f'%(trigXCentTime-min(timeX[0])) )
+	      ax.text(trigXCentTime-min(timeX),top/10.0, '%f'%(trigXCentTime-min(timeX)) )
 	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigXDuration,trigXSignific ), ransform=ax.transAxes, fontsize=14,
 	       verticalalignment='top', bbox=props)
 	      plt.xlabel('t[sec] since')
@@ -315,11 +315,11 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 		plt.subplot(3, 1, 2)
 	      else:
 		plt.subplot(2, 1, 2)	      
-	      plt.plot(timeH[0] - min(timeH[0]), dataH[0], label='h(t)')
+	      plt.plot(timeH - min(timeH), dataH[0], label='h(t)')
 	      ax = plt.gca()
 	      bot, top = ax.get_ylim()	      
 	      ax.axvline(trigHCentTime, color='r', linestyle='--')
-	      ax.text(trigHCentTime-min(timeH[0]),top/10.0, '%f'%(trigHCentTime-min(timeH[0])) )
+	      ax.text(trigHCentTime-min(timeH),top/10.0, '%f'%(trigHCentTime-min(timeH)) )
 	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigHDuration,trigHSignific ), ransform=ax.transAxes, fontsize=14,
 	       verticalalignment='top', bbox=props)	      
 	      plt.xlabel('t[sec] since')
