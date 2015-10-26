@@ -311,7 +311,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      left, right = ax.get_xlim()
 	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=3 )
 	      ax.text(right/20.0, trigXCentFreq, '%f'%(trigXCentFreq))
-	      plt.colormap()
+	      plt.colorbar()
 	      
 	      plt.subplot(2,1,2)
 	      plt.specgram(dataH[0], noverlap=0, Fs=samplFreq)
@@ -323,7 +323,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      left, right = ax.get_xlim()
 	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=3 )
 	      ax.text(right/20.0, trigHCentFreq, '%f'%(trigHCentFreq))
-	      plt.colormap()
+	      plt.colorbar()
 	      plt.savefig(debugPlotsDir + '/CentXTime_%f_CentHTime_%f_Specgram.png'%(trigXCentTime, trigHCentTime))
 	      plt.close()	  
 	  
