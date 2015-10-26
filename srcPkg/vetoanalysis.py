@@ -251,44 +251,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	  del timeH, timeX
 	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime - 1.0/samplFreq, 1.0/samplFreq)
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift -1.0/samplFreq, 1.0/samplFreq)
-	  
-	  
-	  # In case of bilinear coupling multiply the X and Y channels
-	  # to form a pseudo channel (which a combination of X and Y)
-	  # Also compute some parameters descrining the slow channels(s)
-	  # and store them in vectors.
-	  if(couplingModel=='bilinear'):
-	    segIdx = np.intersect1d(np.where(timeX + timeShift>=segStartTime)[0], np.where(timeX+timeShift<segEndTime)[0])
-	    
-	    meanY = np.mean(dataX[1][segIdx])
-	    varY  = np.var(dataX[1][segIdx])
-	    maxY  = np.max(dataX[1][segIdx])
-	    minY  = np.min(dataX[1][segIdx])
-	    maxYMat.append(maxY)
-	    meanYMat.append(meanY)
-	    varYMat.append(varY)
-	    minYMat.append(minY)
-	    #mindY = np.min(np.diff(dataX[iChan][segIdx]))
-	    #maxdY = np.max(np.diff(dataX[iChan][segIdx]))
-	    #meandY= np.mean(np.diff(dataX[iChan][segIdx]))
-	    
-	    dataP = np.asarray([dataX[0]*dataX[1]])
-	    
-	    del dataX
-	    dataX = dataP
-	    del dataP
-	  else:
-	    meanY = 0
-	    varY = 0
-	    maxY = 0
-	    minY = 0
-	    #mindY = 0
-	    #maxdY = 0
-	    #meandY = 0
-	  if(highPassCutoff>0):
-	    dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
-	    dataX = bcv.highpass(dataX, samplFreq, highPassCutoff)
-          
           if (debugLevel>=2):
 	    if((trigHSignific>=15.0) & (trigXSignific>=15.0)):
 	      props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
@@ -363,7 +325,45 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax.text(right/20.0, trigHCentFreq, '%f'%(trigHCentFreq))
 	      plt.colormap()
 	      plt.savefig(debugPlotsDir + '/CentXTime_%f_CentHTime_%f_Specgram.png'%(trigXCentTime, trigHCentTime))
-	      plt.close()
+	      plt.close()	  
+	  
+	  # In case of bilinear coupling multiply the X and Y channels
+	  # to form a pseudo channel (which a combination of X and Y)
+	  # Also compute some parameters descrining the slow channels(s)
+	  # and store them in vectors.
+	  if(couplingModel=='bilinear'):
+	    segIdx = np.intersect1d(np.where(timeX + timeShift>=segStartTime)[0], np.where(timeX+timeShift<segEndTime)[0])
+	    
+	    meanY = np.mean(dataX[1][segIdx])
+	    varY  = np.var(dataX[1][segIdx])
+	    maxY  = np.max(dataX[1][segIdx])
+	    minY  = np.min(dataX[1][segIdx])
+	    maxYMat.append(maxY)
+	    meanYMat.append(meanY)
+	    varYMat.append(varY)
+	    minYMat.append(minY)
+	    #mindY = np.min(np.diff(dataX[iChan][segIdx]))
+	    #maxdY = np.max(np.diff(dataX[iChan][segIdx]))
+	    #meandY= np.mean(np.diff(dataX[iChan][segIdx]))
+	    
+	    dataP = np.asarray([dataX[0]*dataX[1]])
+	    
+	    del dataX
+	    dataX = dataP
+	    del dataP
+	  else:
+	    meanY = 0
+	    varY = 0
+	    maxY = 0
+	    minY = 0
+	    #mindY = 0
+	    #maxdY = 0
+	    #meandY = 0
+	  if(highPassCutoff>0):
+	    dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
+	    dataX = bcv.highpass(dataX, samplFreq, highPassCutoff)
+          
+
 	      
   
 	  
