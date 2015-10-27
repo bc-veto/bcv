@@ -267,8 +267,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax.axvline(trigXCentTime-min(timeX), color='r', linestyle='--')
 	      ax.axvline(segStartTime- timeShift-min(timeX), color='g', linestyle='-')
 	      ax.axvline(segEndTime- timeShift -min(timeX), color='g', linestyle='-')
-	      ax.axvline(trigXStartTime  - min(timeX), color='m', linestyle='--')
-	      ax.axvline(trigXEndTime  - min(timeX), color='m', linestyle = '--')
+	      ax.axvline(trigXStartTime  - min(timeX) - timeShift, color='m', linestyle='--')
+	      ax.axvline(trigXEndTime  - min(timeX) - timeShift, color='m', linestyle = '--')
 	      ax.text(trigXCentTime-min(timeX),top/10.0, '%f'%(trigXCentTime-min(timeX)) )
 	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigXDuration,trigXSignific ),  ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
 	      verticalalignment='top', bbox=props)
