@@ -128,11 +128,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
     #outFileName = outDir[iP] + '/' + outFileString
     #outFid = open(outFileName, 'w+')
     
-    if(debugLevel>=2):
-      import os
-      debugPlotsFolder =  'debug_plots/' + 'timeshift%d'%(timeShift)
-      debugPlotsDir = outDir[0] + '/' +  debugPlotsFolder
-      os.system('mkdir -p %s'%(debugPlotsDir))
       
     for coincIndex in range(len(coincTrigH)):
       trigHCentTime = trigHCentralTimeVec[coincIndex]
@@ -253,6 +248,11 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
           if (debugLevel>=2):
 	    if((trigHSignific>=15.0) & (trigXSignific>=15.0)):
+	      import os
+	      debugPlotsFolder =  'debug_plots/' + 'timeshift%d'%(timeShift)
+	      debugPlotsDir = outDir[0] + '/' +  debugPlotsFolder
+	      if(not os.path.exists(debugPlotsDir)):
+		os.system('mkdir -p %s'%(debugPlotsDir))
 	      props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 	      
 	      # Plot time series data for Channel X
@@ -267,6 +267,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax.axvline(trigXCentTime-min(timeX), color='r', linestyle='--')
 	      ax.axvline(segStartTime- timeShift-min(timeX), color='g', linestyle='-')
 	      ax.axvline(segEndTime- timeShift -min(timeX), color='g', linestyle='-')
+	      ax.axvline(trigXCentTime - trigXDuration/2.0 -timeShift, color='m', linestyle='--')
+	      ax.axvline(trigXCentTime +  trigXDuration/2.0 - timeShift, color='m', linestyle = '--')
 	      ax.text(trigXCentTime-min(timeX),top/10.0, '%f'%(trigXCentTime-min(timeX)) )
 	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigXDuration,trigXSignific ),  ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
 	      verticalalignment='top', bbox=props)
@@ -284,7 +286,9 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      bot, top = ax.get_ylim()	      
 	      ax.axvline(trigHCentTime-min(timeH), color='r', linestyle='--')
 	      ax.axvline(segStartTime -min(timeH), color='g', linestyle='-')
-	      ax.axvline(segEndTime -min(timeH), color='g', linestyle='-')	      
+	      ax.axvline(segEndTime -min(timeH), color='g', linestyle='-')
+	      ax.axvline(trigHCentTime - trigHDuration/2.0, color='m', linestyle='--')
+	      ax.axvline(trigHCentTime +  trigHDuration/2.0, color='m', linestyle = '--')	      
 	      ax.text(trigHCentTime-min(timeH),top/10.0, '%f'%(trigHCentTime-min(timeH)) )
 	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigHDuration,trigHSignific ), ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
 	       verticalalignment='top', bbox=props)	      
