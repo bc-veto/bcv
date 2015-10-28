@@ -253,6 +253,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      debugPlotsDir = outDir[0] + '/' +  debugPlotsFolder
 	      if(not os.path.exists(debugPlotsDir)):
 		os.system('mkdir -p %s'%(debugPlotsDir))
+	      plot_folder = debugPlotsDir + '/CentXTime_%f_CentHTime_%f'%(trigXCentTime, trigHCentTime)
+	      os.system('mkdir -p %s'%(plot_folder))
 	      props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 	      
 	      # Plot time series data for Channel X
@@ -303,7 +305,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 		plt.xlabel('t[sec] since')
 		plt.ylabel('Time series data: ' + chanXName[1])
 		plt.legend()
-	      plt.savefig(debugPlotsDir + '/CentXTime_%f_CentHTime_%f_TimeSeries.png'%(trigXCentTime, trigHCentTime))
+	      plt.savefig(plot_folder + '/TimeSeries.png')
 	      plt.close()
 	      
 	      # Plot spectrogram of X data and Y data
@@ -332,8 +334,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=3 )
 	      ax.text(right/20.0, trigHCentFreq, '%f'%(trigHCentFreq))
 	      plt.colorbar()
-	      plt.savefig(debugPlotsDir + '/CentXTime_%f_CentHTime_%f_Specgram.png'%(trigXCentTime, trigHCentTime))
-	      plt.close()	  
+	      plt.savefig(plot_folder + )
+	      plt.close(plot_folder + '/Specgram.png')	  
 	  
 	  # In case of bilinear coupling multiply the X and Y channels
 	  # to form a pseudo channel (which a combination of X and Y)
