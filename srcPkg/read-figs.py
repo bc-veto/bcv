@@ -18,6 +18,14 @@ paths = glob.glob(resultsDir + '/*/*/debug_plots')
 # Generate document title using the destination: The destination is usually the location of the webpage
 doc_title=webpageDir.split('/')[-1] + ' debug_plots'
 
+for ipath in paths:
+  subpath = path.split('results')[1]
+  local_path = webpageDir + '/results' + subpath
+  os.system('mkdir -p %s'%(local_path))
+  os.system('cp -r %s/* %s/', %(ipath, locap_path))
+
+paths = glob.glob(webpageDir + '/*/*/debug_plots')
+
 # Iterate through all pseudo channel
 with dominate.document(title=doc_title) as doc:
   h1(doc_title)
@@ -37,6 +45,7 @@ with dominate.document(title=doc_title) as doc:
       # Iterate through each of the plots
       for iplot in plots:
 	plotname = iplot.split('/')[-1]
+	local_path = './results' + iplot.split('results')[1]
 	h4(plotname)
 	h5('TimeSeries')
 	div(img(src=iplot + '/TimeSeries.png'), _class='photo')
