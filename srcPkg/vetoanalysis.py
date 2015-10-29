@@ -246,8 +246,13 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	  del timeH, timeX
 	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
+	  if(highPassCutoff>0):
+	    dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
           if (debugLevel>=2):
-	    if((trigHSignific>=15.0) & (trigXSignific>=15.0)):
+	    if((trigHSignific>=31.0) & (trigXSignific>=31.0)):
+	      if(highPassCutoff>0):
+		tdataX = bcv.highpass(np.asarray[dataX[0]])
+	      
 	      import os
 	      debugPlotsFolder =  'debug_plots/' + 'timeshift%d'%(timeShift)
 	      debugPlotsDir = outDir[0] + '/' +  debugPlotsFolder
@@ -263,7 +268,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 		plt.subplot(3, 1, 1)
 	      else:
 		plt.subplot(2, 1, 1)
-	      plt.plot(timeX - min(timeX), dataX[0], label='x(t)')
+	      plt.plot(timeX - min(timeX), tdataX[0], label='x(t)')
 	      ax = plt.gca()
 	      bot, top = ax.get_ylim()	      
 	      ax.axvline(trigXCentTime-min(timeX), color='r', linestyle='-')
@@ -312,7 +317,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      plt.figure(figsize=(30, 10))
 	      
 	      plt.subplot(2,1,1)
-	      plt.specgram(dataX[0], noverlap=0, Fs=samplFreq)
+	      plt.specgram(tdataX[0], noverlap=0, Fs=samplFreq)
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Fourier Frequencies')
 	      plt.title('channel X specgram')
@@ -370,7 +375,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    #maxdY = 0
 	    #meandY = 0
 	  if(highPassCutoff>0):
-	    dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
 	    dataX = bcv.highpass(dataX, samplFreq, highPassCutoff)
           
 

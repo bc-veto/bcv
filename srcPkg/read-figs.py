@@ -19,12 +19,14 @@ paths = glob.glob(resultsDir + '/*/*/debug_plots')
 # Generate document title using the destination: The destination is usually the location of the webpage
 doc_title=webpageDir.split('/')[-1] + ' debug_plots'
 
+# Copy all the plots inside a directory created in the "public_html" folder
 for ipath in paths:
   subpath = ipath.split('results')[1]
   local_path = webpageDir + '/results' + subpath
   os.system('mkdir -p %s'%(local_path))
   os.system('cp -r %s/* %s/' %(ipath, local_path))
 
+# Look for the directories in the newly copied results directory (this results directory contains only the debug plots)
 paths = glob.glob(webpageDir +  '/results/*/*/debug_plots')
 
 # Iterate through all pseudo channel
