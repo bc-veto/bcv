@@ -22,7 +22,7 @@ for ipath in paths:
   subpath = path.split('results')[1]
   local_path = webpageDir + '/results' + subpath
   os.system('mkdir -p %s'%(local_path))
-  os.system('cp -r %s/* %s/', %(ipath, locap_path))
+  os.system('cp -r %s/* %s/' %(ipath, local_path))
 
 paths = glob.glob(webpageDir + '/*/*/debug_plots')
 
