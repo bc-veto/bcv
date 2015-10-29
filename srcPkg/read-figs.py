@@ -11,6 +11,7 @@ webpageDir = args.webpage_directory
 import glob
 import dominate
 from dominate.tags import *
+import os
 
 # Store all debug plot folder paths for each pseudo channel
 paths = glob.glob(resultsDir + '/*/*/debug_plots')
