@@ -19,7 +19,7 @@ paths = glob.glob(resultsDir + '/*/*/debug_plots')
 doc_title=webpageDir.split('/')[-1] + ' debug_plots'
 
 for ipath in paths:
-  subpath = path.split('results')[1]
+  subpath = ipath.split('results')[1]
   local_path = webpageDir + '/results' + subpath
   os.system('mkdir -p %s'%(local_path))
   os.system('cp -r %s/* %s/' %(ipath, local_path))
