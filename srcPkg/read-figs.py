@@ -49,9 +49,9 @@ with dominate.document(title=doc_title) as doc:
 	local_path = './results' + iplot.split('results')[1]
 	h4(plotname)
 	h5('TimeSeries')
-	div(img(src=iplot + '/TimeSeries.png'), _class='photo')
+	div(img(src=local_path + '/TimeSeries.png'), _class='photo')
 	h5('Specgram')
-	div(img(src=iplot + '/Specgram.png'), _class='photo')
+	div(img(src=local_path + '/Specgram.png'), _class='photo')
 	
 
 with open(webpageDir+ '/debug_plots.html', 'w') as f:
