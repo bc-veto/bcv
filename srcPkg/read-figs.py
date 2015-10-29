@@ -25,7 +25,7 @@ for ipath in paths:
   os.system('mkdir -p %s'%(local_path))
   os.system('cp -r %s/* %s/' %(ipath, local_path))
 
-paths = glob.glob(webpageDir + '/*/*/debug_plots')
+paths = glob.glob(webpageDir +  '/results/*/*/debug_plots')
 
 # Iterate through all pseudo channel
 with dominate.document(title=doc_title) as doc:
