@@ -249,7 +249,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	  if(highPassCutoff>0):
 	    dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
           if (debugLevel>=2):
-	    if((trigHSignific>=31.0) & (trigXSignific>=31.0)):
+	    if(trigHSignific>=31.0):
 	      if(highPassCutoff>0):
 		tdataX = bcv.highpass(np.asarray([dataX[0]]), samplFreq, highPassCutoff)
 	      
