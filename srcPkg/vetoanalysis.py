@@ -351,6 +351,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      #ax.text(centTime, trigHCentFreq, '(%f,%f)'%(centTime, trigHCentFreq))
 	      plt.colorbar(imshow)
 	      plt.savefig(plot_folder +'/Specgram.png')
+	      print 'hello'
 	  
 	  # In case of bilinear coupling multiply the X and Y channels
 	  # to form a pseudo channel (which a combination of X and Y)
