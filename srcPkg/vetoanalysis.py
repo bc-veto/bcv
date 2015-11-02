@@ -261,13 +261,17 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 		plt.subplot(2, 1, 1)
 	      plt.plot(timeX - min(timeX), tdataX[0], label='x(t)')
 	      ax = plt.gca()
-	      bot, top = ax.get_ylim()	      
+	      xmin = segStartTime
+	      xmax = segEndTime
 	      ax.axvline(trigXCentTime-min(timeX), color='r', linestyle='-')
-	      ax.axvline(segStartTime- timeShift-min(timeX), color='g', linestyle='-')
-	      ax.axvline(segEndTime- timeShift -min(timeX), color='g', linestyle='-')
+	      idx = np.intersect1d(np.where(timeX>=segStartTime -  timeShift)[0], np.where(timeX<=segEndTime - timeShift))
+	      ymin = np.min(tdataX[0][idx])
+	      ymax = np.max(tdataX[0][idx])
+	      plt.xlim((xmin - timeShift-min(timeX), xmax - timeShift-min(timeX)))
+	      plt.ylim((ymin, ymax))
 	      ax.axvline(trigXStartTime  - min(timeX), color='m', linestyle='--')
 	      ax.axvline(trigXEndTime  - min(timeX), color='m', linestyle = '--')
-	      ax.text(trigXCentTime-min(timeX),top/10.0, '%f'%(trigXCentTime-min(timeX)) )
+	      ax.text(trigXCentTime-min(timeX),ymax/10.0, '%f'%(trigXCentTime-min(timeX)) )
 	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigXDuration,trigXSignific ),  ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
 	      verticalalignment='top', bbox=props)
 	      plt.xlabel('t[sec] since')
@@ -280,14 +284,18 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      else:
 		plt.subplot(2, 1, 2)	      
 	      plt.plot(timeH - min(timeH), dataH[0], label='h(t)')
-	      ax = plt.gca()
-	      bot, top = ax.get_ylim()	      
+	      ax = plt.gca()	      
+	      xmin = segStartTime
+	      xmax = segEndTime
+	      idx = np.intersect1d(np.where(timeH>=segStartTime)[0], np.where(timeH<=segEndTime)[0])
+	      ymin = np.min(dataH[0][idx])
+	      ymax = np.max(dataH[0][idx])
+	      plt.xlim((xmin - min(timeH), xmax - min(timeH)))
+	      plt.ylim((ymin, ymax))
 	      ax.axvline(trigHCentTime-min(timeH), color='r', linestyle='-')
-	      ax.axvline(segStartTime -min(timeH), color='g', linestyle='-')
-	      ax.axvline(segEndTime -min(timeH), color='g', linestyle='-')
 	      ax.axvline(trigHStartTime	-min(timeH), color='m', linestyle='--')
 	      ax.axvline(trigHEndTime-min(timeH), color='m', linestyle = '--')	      
-	      ax.text(trigHCentTime-min(timeH),top/10.0, '%f'%(trigHCentTime-min(timeH)) )
+	      ax.text(trigHCentTime-min(timeH),ymax/10.0, '%f'%(trigHCentTime-min(timeH)) )
 	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigHDuration,trigHSignific ), ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
 	       verticalalignment='top', bbox=props)	      
 	      plt.xlabel('t[sec] since')
@@ -298,6 +306,9 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      if(len(dataX)>1):
 		plt.subplot(3, 1, 3)
 		plt.plot(timeX - min(timeX), dataX[1], label='y(t)')
+		xmin = segStartTime
+		xmax = segEndTime
+		plt.xlim((xmin - timeShift-min(timeX), xmax - timeShift-min(timeX)))
 		plt.xlabel('t[sec] since')
 		plt.ylabel('Time series data: ' + chanXName[1])
 		plt.legend()
@@ -319,7 +330,9 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      bot, top = ax.get_ylim()
 	      left, right = ax.get_xlim()
 	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=1 )
-	      ax.text(right/20.0, trigXCentFreq, '%f'%(trigXCentFreq))
+	      centTime = trigXCentTime - min(timeX)
+	      ax.axvline(centTime, color='w', linestyle = '--', linewidth = 1)
+	      ax.text(centTime, trigXCentFreq, '(%f, %f)'%(centTime, trigXCentFreq))
 	      plt.colorbar(imshow)
 	      
 	      plt.subplot(2,1,2)
@@ -335,7 +348,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=1 )
 	      ax.text(right/20.0, trigHCentFreq, '%f'%(trigHCentFreq))
 	      plt.colorbar(imshow)
-	      plt.savefig(plot_folder +'/Specgram.png' )
+	      plt.savefig(plot_folder +'/Specgram.png' , dpi=200)
 	      plt.close( )	  
 	  
 	  # In case of bilinear coupling multiply the X and Y channels
