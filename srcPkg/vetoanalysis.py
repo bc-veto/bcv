@@ -251,7 +251,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
           if (debugLevel>=2):
 	    if((trigHSignific>=31.0) & (trigXSignific>=31.0)):
 	      if(highPassCutoff>0):
-		tdataX = bcv.highpass(np.asarray([dataX[0]]))
+		tdataX = bcv.highpass(np.asarray([dataX[0]]), samplFreq, highPassCutoff)
 	      
 	      import os
 	      debugPlotsFolder =  'debug_plots/' + 'timeshift%d'%(timeShift)
