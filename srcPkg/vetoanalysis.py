@@ -263,7 +263,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 	      
 	      # Plot time series data for Channel X
-	      plt.figure(figsize=(30, 10))
+	      plt.figure(figsize=(24, 8))
 	      if(len(dataX)>1):
 		plt.subplot(3, 1, 1)
 	      else:
@@ -314,29 +314,34 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      plt.close()
 	      
 	      # Plot spectrogram of X data and Y data
-	      plt.figure(figsize=(30, 10))
-	      
+	      plt.figure(figsize=(24, 8))
+	      import matplotlib.mlab as mlab
 	      plt.subplot(2,1,1)
-	      plt.specgram(tdataX[0], noverlap=0, Fs=samplFreq)
+	      
+	      Pxx, freq, t = mlab.specgram(tdataX[0], noverlap=0, Fs=samplFreq)
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Fourier Frequencies')
 	      plt.title('channel X specgram')
 	      ax = plt.gca()
+	      ax.set_yscale('log')
+	      imshow = ax.pcolor(t, freq, Pxx)
 	      bot, top = ax.get_ylim()
 	      left, right = ax.get_xlim()
-	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=3 )
+	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=1 )
 	      ax.text(right/20.0, trigXCentFreq, '%f'%(trigXCentFreq))
-	      plt.colorbar()
+	      plt.colorbar(imshow)
 	      
 	      plt.subplot(2,1,2)
-	      plt.specgram(dataH[0], noverlap=0, Fs=samplFreq)
+	      Pxx, freq, t = mlab.specgram(dataH[0], noverlap=0, Fs=samplFreq)
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Fourier Frequencies')
 	      plt.title('channel H specgram')	      
 	      ax = plt.gca()
+	      ax.set_yscale('log')
+	      imshow = ax.pcolor(t, freq, Pxx)
 	      bot, top = ax.get_ylim()
 	      left, right = ax.get_xlim()
-	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=3 )
+	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=1 )
 	      ax.text(right/20.0, trigHCentFreq, '%f'%(trigHCentFreq))
 	      plt.colorbar()
 	      plt.savefig(plot_folder +'/Specgram.png' )
