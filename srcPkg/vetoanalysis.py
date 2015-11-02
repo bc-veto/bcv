@@ -343,7 +343,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      left, right = ax.get_xlim()
 	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=1 )
 	      ax.text(right/20.0, trigHCentFreq, '%f'%(trigHCentFreq))
-	      plt.colorbar()
+	      plt.colorbar(imshow)
 	      plt.savefig(plot_folder +'/Specgram.png' )
 	      plt.close( )	  
 	  
