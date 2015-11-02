@@ -222,17 +222,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	  logFid.write('ERROR: Channel X -  bcvreadStartTime: %f bcvreadEndTime: %f..\n'%(bcvreadEndTime, bcvreadEndTime ))
 	  
 	else:
-	  #del timeH, timeX
-	  
-	  timeH = np.arange(bcvreadEndTime, bcvreadEndTime - 1.0/samplFreqH, 1.0/samplFreqH)
-	  
-	  timeX = []
-	  for iX in range(0, len(samplFreqX)):
-	    timeX.append(np.arange(bcvreadEndTime - timeShift, bcvreadEndTime -timeShift - 1.0/samplFreqX[iX], 1.0/samplFreqX[iX]))
-	  
-	  timeX = np.asarray(timeX)
-	  
-	    
 	    
 	  # If sampling frequency is different from the one specified,
 	  # resample the data
@@ -242,14 +231,16 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    index = np.where(samplFreqX!=samplFreq)[0]
 	    for iDs in index:
 	      dataX[iDs] = bcv.resample2(dataX[iDs], samplFreqX[iDs], samplFreq)
-	    
-	  del timeH, timeX
+          
+          SIGNIFICANCE_THRESH_H = 50.0
+          SIGNIFICANCE_THRESH_X = 17.0
+
 	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
 	  if(highPassCutoff>0):
 	    dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
           if (debugLevel>=2):
-	    if((trigHSignific>=31.0) & (trigXSignific>=15.0)):
+	    if((trigHSignific>=SIGNIFICANCE_THRESH_H) & (trigXSignific>=SIGNIFICANCE_THRESH_X)):
 	      if(highPassCutoff>0):
 		tdataX = bcv.highpass(np.asarray([dataX[0]]), samplFreq, highPassCutoff)
 	      
@@ -263,7 +254,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 	      
 	      # Plot time series data for Channel X
-	      plt.figure(figsize=(24, 8))
+	      plt.figure(figsize=(12, 8))
 	      if(len(dataX)>1):
 		plt.subplot(3, 1, 1)
 	      else:
@@ -310,11 +301,11 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 		plt.xlabel('t[sec] since')
 		plt.ylabel('Time series data: ' + chanXName[1])
 		plt.legend()
-	      plt.savefig(plot_folder + '/TimeSeries.png')
+	      plt.savefig(plot_folder + '/TimeSeries.png', dpi=200)
 	      plt.close()
 	      
 	      # Plot spectrogram of X data and Y data
-	      plt.figure(figsize=(24, 8))
+	      plt.figure(figsize=(12, 8))
 	      import matplotlib.mlab as mlab
 	      plt.subplot(2,1,1)
 	      
@@ -324,7 +315,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      plt.title('channel X specgram')
 	      ax = plt.gca()
 	      ax.set_yscale('log')
-	      imshow = ax.pcolor(t, freq, Pxx)
+	      imshow = ax.pcolor(t, freq, np.log10(Pxx))
 	      bot, top = ax.get_ylim()
 	      left, right = ax.get_xlim()
 	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=1 )
@@ -338,7 +329,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      plt.title('channel H specgram')	      
 	      ax = plt.gca()
 	      ax.set_yscale('log')
-	      imshow = ax.pcolor(t, freq, Pxx)
+	      imshow = ax.pcolor(t, freq, np.log10(Pxx))
 	      bot, top = ax.get_ylim()
 	      left, right = ax.get_xlim()
 	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=1 )
