@@ -327,13 +327,13 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax = plt.gca()
 	      ax.set_yscale('log')
 	      imshow = ax.pcolor(t, freq, np.log10(Pxx))
-	      #ymin = np.min(freq)
-	      #ymax = np.max(freq)
-	      #ax.set_ylim((ymin, ymax))
 	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=1 )
 	      centTime = trigXCentTime - min(timeX)
 	      ax.axvline(centTime, color='w', linestyle = '--', linewidth = 1)
 	      ax.text(centTime, trigXCentFreq, '(%f, %f)'%(centTime, trigXCentFreq))
+	      ymin = np.min(freq)
+	      ymax = np.max(freq)
+	      ax.set_ylim((ymin, ymax))
 	      plt.colorbar(imshow)
 	      
 	      plt.subplot(2,1,2)
@@ -344,14 +344,13 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax = plt.gca()
 	      ax.set_yscale('log')
 	      imshow = ax.pcolor(t, freq, np.log10(Pxx))
-	      #ax.set_ylim((ymin, ymax))
 	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=1 )
 	      centTime = trigHCentTime - min(timeH)
 	      ax.axvline(centTime, color='w', linestyle='--', linewidth=1)
 	      ax.text(centTime, trigHCentFreq, '(%f,%f)'%(centTime, trigHCentFreq))
 	      plt.colorbar(imshow)
+	      ax.set_ylim((ymin, ymax))
 	      plt.savefig(plot_folder +'/Specgram.png')
-	      print 'hello'
 	  
 	  # In case of bilinear coupling multiply the X and Y channels
 	  # to form a pseudo channel (which a combination of X and Y)
