@@ -1,4 +1,5 @@
 import numpy as np
+# Structure which holds the information about the triggers
 
 class TrigStruct:
   def __init__(self, trigStartTime, trigEndTime , trigCentralTime, trigCentFreq,
