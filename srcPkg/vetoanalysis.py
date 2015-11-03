@@ -232,8 +232,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    for iDs in index:
 	      dataX[iDs] = bcv.resample2(dataX[iDs], samplFreqX[iDs], samplFreq)
           
-          SIGNIFICANCE_THRESH_H = 50.0
-          SIGNIFICANCE_THRESH_X = 17.0
+          SIGNIFICANCE_THRESH_H = 500.0
+          SIGNIFICANCE_THRESH_X = 20.0
 
 	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
@@ -254,7 +254,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 	      
 	      # Plot time series data for Channel X
-	      plt.figure(figsize=(12, 8))
+	      plt.figure(figsize=(12, 6))
 	      if(len(dataX)>1):
 		plt.subplot(3, 1, 1)
 	      else:
