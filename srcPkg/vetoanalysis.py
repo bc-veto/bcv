@@ -344,7 +344,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax = plt.gca()
 	      ax.set_yscale('log')
 	      imshow = ax.pcolor(t, freq, np.log10(Pxx))
-	      ax.axhline(trigXCentFreq, color='w',linestyle='--', linewidth=1 )
+	      ax.axhline(trigHCentFreq, color='w',linestyle='--', linewidth=1 )
 	      centTime = trigHCentTime - min(timeH)
 	      ax.axvline(centTime, color='w', linestyle='--', linewidth=1)
 	      ax.text(centTime, trigHCentFreq, '(%f,%f)'%(centTime, trigHCentFreq))
