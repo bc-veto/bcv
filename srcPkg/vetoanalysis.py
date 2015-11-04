@@ -455,7 +455,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
       
       np.savetxt(outFileName, resultsMatrix, delimiter = ' ', fmt = '%f')
       
-      del resultsMatrix, timeShiftVec, rHPMat, rMaxHPMat, rHPCombVec, rMaxHPCombVec
+      del resultsMatrix, timeShiftVec, rHPMat, rMaxHPMat
       del trigHAnalysdCentTimeVec, trigXAnalysdCentTimeVec, trigHAnalysdCentFreqVec
       del trigXAnalysdCentFreqVec, trigHAnalysdSignificVec, trigXAnalysdSignificVec
       del trigHAnalysdDurationVec, trigXAnalysdDurationVec
