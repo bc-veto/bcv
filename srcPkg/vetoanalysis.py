@@ -334,7 +334,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ymin = np.min(freq)
 	      ymax = np.max(freq)
 	      ax.set_ylim((1.0, ymax))
-	      ax.set_xlim((0.0, bcvreadEndTime - bcvSeadStartTime))
+	      #ax.set_xlim((0.0, bcvreadEndTime - bcvSeadStartTime))
 	      plt.colorbar(imshow)
 	      
 	      plt.subplot(2,1,2)
@@ -351,7 +351,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax.text(centTime, trigHCentFreq, '(%f,%f)'%(centTime, trigHCentFreq))
 	      plt.colorbar(imshow)
 	      ax.set_ylim((1.0, ymax))
-	      ax.set_xlim((0.0, bcvreadEndTime - bcvSeadStartTime))
+	      #ax.set_xlim((0.0, bcvreadEndTime - bcvSeadStartTime))
 	      plt.savefig(plot_folder +'/Specgram.png')
 	  
 	  # In case of bilinear coupling multiply the X and Y channels
