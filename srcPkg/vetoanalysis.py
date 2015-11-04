@@ -128,7 +128,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
     #outFileName = outDir[iP] + '/' + outFileString
     #outFid = open(outFileName, 'w+')
     
-      
+    analysedTrigIdx = 0  
     for coincIndex in range(len(coincTrigH)):
       trigHCentTime = trigHCentralTimeVec[coincIndex]
       trigXCentTime = trigXCentralTimeVec[coincIndex]
@@ -398,6 +398,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 					     dataX, timeH, timeX, segStartTime,
 					     segEndTime,timeShift, samplFreq, logFid,
 					    debugLevel)
+	  analysedTrigIdx+=1
 	  
 	  timeShiftVec.append(timeShift)
           rHPMat.append(rHP)
@@ -448,7 +449,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
     for iP in range(0, len(outDir)):
       outFileName = outDir[iP] + '/' + outFileString
       
-      print 'rHPMat: ', rHPMat
       resultsMatrix = np.asarray([timeShiftVec, rHPMat[:, iP], rMaxHPMat[:, iP],
 				  trigHAnalysdCentTimeVec, trigXAnalysdCentTimeVec, trigHAnalysdCentFreqVec, trigXAnalysdCentFreqVec, trigHAnalysdSignificVec,  trigXAnalysdSignificVec, trigHAnalysdDurationVec,  trigXAnalysdDurationVec, meanYMat, varYMat, 
 				  maxYMat, minYMat], dtype=np.float64).transpose()
