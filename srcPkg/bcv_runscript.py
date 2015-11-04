@@ -376,6 +376,7 @@ triggerListChHFID = open(triggerListChH, 'r')
 
 if(triggerListChHFID>=0):
   # Selct only triggers passing the SNR threshold
+  # Force as 2-d array
   trigDataMatrixH = np.loadtxt(triggerListChH, dtype=np.float64).reshape(-1, 9)
   triggerSignificanceH = np.sqrt(trigDataMatrixH[:, 5] - trigDataMatrixH[:, 6])
   
@@ -406,6 +407,7 @@ triggerListChXFID = open(triggerListChX, 'r')
 numTriggerXLines = 0
 
 if(triggerListChXFID >=0):
+  # Force as 2-d array
   trigDataMatrixX = np.loadtxt(triggerListChX, dtype=np.float64).reshape(-1, 9)
   
   # select only triggers passing the SNR threshold
