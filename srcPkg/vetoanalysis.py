@@ -449,9 +449,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
     if(analysedTrigIdx>0):      
       for iP in range(0, len(outDir)):
 	outFileName = outDir[iP] + '/' + outFileString
-	print 'rHPMat ', rHPMat
-	print 'rMaxHPMat', rMaxHPMat
-	print 'analysedTrigIdx: ', analysedTrigIdx
 	
 	resultsMatrix = np.asarray([timeShiftVec, rHPMat[:, iP], rMaxHPMat[:, iP],
 			     trigHAnalysdCentTimeVec, trigXAnalysdCentTimeVec, trigHAnalysdCentFreqVec, trigXAnalysdCentFreqVec, trigHAnalysdSignificVec,  trigXAnalysdSignificVec, trigHAnalysdDurationVec,  trigXAnalysdDurationVec, meanYMat, varYMat, 
