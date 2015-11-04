@@ -446,21 +446,25 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
     outFileString = '/corrstat_timeshift%d_seg%d-%d.dat'%(timeShift, analysisStartTime, analysisEndTime)
     
     #save the analysis results from each pseudochannel in a separate file
-    for iP in range(0, len(outDir)):
-      outFileName = outDir[iP] + '/' + outFileString
-      
-      resultsMatrix = np.asarray([timeShiftVec, rHPMat[:, iP], rMaxHPMat[:, iP],
-				  trigHAnalysdCentTimeVec, trigXAnalysdCentTimeVec, trigHAnalysdCentFreqVec, trigXAnalysdCentFreqVec, trigHAnalysdSignificVec,  trigXAnalysdSignificVec, trigHAnalysdDurationVec,  trigXAnalysdDurationVec, meanYMat, varYMat, 
-				  maxYMat, minYMat], dtype=np.float64).transpose()
-      resultsMatrix = resultsMatrix[resultsMatrix[:,5 ].argsort()]
-      
-      np.savetxt(outFileName, resultsMatrix, delimiter = ' ', fmt = '%f')
-      
-      del resultsMatrix, timeShiftVec, rHPMat, rMaxHPMat
-      del trigHAnalysdCentTimeVec, trigXAnalysdCentTimeVec, trigHAnalysdCentFreqVec
-      del trigXAnalysdCentFreqVec, trigHAnalysdSignificVec, trigXAnalysdSignificVec
-      del trigHAnalysdDurationVec, trigXAnalysdDurationVec
-      del meanYMat, varYMat, maxYMat, minYMat, mindYMat, maxdYMat, meandYMat
+    if(analysedTrigIdx>0):      
+      for iP in range(0, len(outDir)):
+	outFileName = outDir[iP] + '/' + outFileString
+	print 'rHPMat ', rHPMat
+	print 'rMaxHPMat', rMaxHPMat
+	print 'analysedTrigIdx: ', analysedTrigIdx
+	
+	resultsMatrix = np.asarray([timeShiftVec, rHPMat[:, iP], rMaxHPMat[:, iP],
+			     trigHAnalysdCentTimeVec, trigXAnalysdCentTimeVec, trigHAnalysdCentFreqVec, trigXAnalysdCentFreqVec, trigHAnalysdSignificVec,  trigXAnalysdSignificVec, trigHAnalysdDurationVec,  trigXAnalysdDurationVec, meanYMat, varYMat, 
+			     maxYMat, minYMat], dtype=np.float64).transpose()
+	resultsMatrix = resultsMatrix[resultsMatrix[:,5 ].argsort()]
+	
+	np.savetxt(outFileName, resultsMatrix, delimiter = ' ', fmt = '%f')
+	
+	del resultsMatrix, timeShiftVec, rHPMat, rMaxHPMat
+	del trigHAnalysdCentTimeVec, trigXAnalysdCentTimeVec, trigHAnalysdCentFreqVec
+	del trigXAnalysdCentFreqVec, trigHAnalysdSignificVec, trigXAnalysdSignificVec
+	del trigHAnalysdDurationVec, trigXAnalysdDurationVec
+	del meanYMat, varYMat, maxYMat, minYMat, mindYMat, maxdYMat, meandYMat
   
   else:
     logFid.write('WARNING: No coincident triggers found for timeshift = %d..\n' %(timeShift))
