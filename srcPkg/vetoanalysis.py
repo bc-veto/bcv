@@ -440,8 +440,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
     # combine the correlation from multiple pseudochannels
     # assmuing that all pseudochannels are orthogonal
     # (not strictly true)
-    rHPCombVec = np.sqrt(np.sum(rHPMat**2.0, axis=1)) 
-    rMaxHPCombVec = np.sqrt(np.sum(rMaxHPMat**2.0, axis=1))
+    #rHPCombVec = np.sqrt(np.sum(rHPMat**2.0, axis=1)) 
+    #rMaxHPCombVec = np.sqrt(np.sum(rMaxHPMat**2.0, axis=1))
     outFileString = '/corrstat_timeshift%d_seg%d-%d.dat'%(timeShift, analysisStartTime, analysisEndTime)
     
     #save the analysis results from each pseudochannel in a separate file
