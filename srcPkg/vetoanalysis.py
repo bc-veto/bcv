@@ -336,7 +336,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax.axvline(centTime, color='w', linestyle = '--', linewidth = 1)
 	      ax.text(centTime, trigXCentFreq, '(%f, %f)'%(centTime, trigXCentFreq))
 	      
-	      ax.set_ylim((1.0, ymax))
+	      #ax.set_ylim((1.0, ymax))
 	      #ax.set_xlim((0.0, bcvreadEndTime - bcvSeadStartTime))
 	      plt.colorbar(imshow)
 	      
@@ -356,7 +356,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax.axvline(centTime, color='w', linestyle='--', linewidth=1)
 	      ax.text(centTime, trigHCentFreq, '(%f,%f)'%(centTime, trigHCentFreq))
 	      plt.colorbar(imshow)
-	      ax.set_ylim((, ymax))
+	      #ax.set_ylim((, ymax))
 	      #ax.set_xlim((0.0, bcvreadEndTime - bcvSeadStartTime))
 	      plt.savefig(plot_folder +'/Specgram.png')
 	  
