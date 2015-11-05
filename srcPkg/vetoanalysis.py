@@ -320,7 +320,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      import matplotlib.mlab as mlab
 	      plt.subplot(2,1,1)
 	      idx = np.intersect1d(np.where(timeX>=segStartTime -  timeShift)[0], np.where(timeX<=segEndTime - timeShift))
-	      ymax = np.max(freq)
 	      
 	      Pxx, freq, t = mlab.specgram(tdataX[0][idx], noverlap=0, Fs=samplFreq)
 	      freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigXCentFreq))))[0], np.where(freq>10**(np.ceil(np.log10(trigXCentFreq))))[0])
