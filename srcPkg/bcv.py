@@ -403,6 +403,8 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     
     frameTypeMatches = []
     frameTypesScanned=0
+    print 'frameCache.frameTypes[segments]: ', frameCache.frameTypes[segments]
+    print 'frameType: ', frameType
     for iType in frameCache.frameTypes[segments]:
       if frameType in iType:
 	frameTypeMatches.append(frameTypesScanned)
