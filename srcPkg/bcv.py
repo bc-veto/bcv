@@ -410,6 +410,7 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     
     frameTypeMatches = np.asarray(frameTypeMatches)
     
+    print 'siteMatches, frameTypeMatches: ', siteMatches, frameTypeMatches
     segIdx = np.intersect1d(siteMatches, frameTypeMatches)
     print 'segments ', segments
     segments = segments[segIdx]
