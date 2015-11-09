@@ -410,10 +410,11 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     
     frameTypeMatches = np.asarray(frameTypeMatches)
     
-    print 'siteMatches, frameTypeMatches: ', siteMatches, frameTypeMatches
     segIdx = np.intersect1d(siteMatches, frameTypeMatches)
-    print 'segments ', segments
-    segments = segments[segIdx]
+    if(len(segIdx)==0):
+      segments = []
+    else:
+      segments = segments[segIdx]
   
   # Identify available frame files
   
