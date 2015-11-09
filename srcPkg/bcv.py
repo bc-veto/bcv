@@ -15,6 +15,7 @@ import sys
 import scipy.signal as sig
 import numpy as np
 import scipy.linalg as linalg
+import scipy.interp as sinterp
 
 def readData(frameCache, channelNames,frameTypes, startTime, stopTime, timeShifts, debugLevel):
   numberOfChannels = len(channelNames)
@@ -84,6 +85,70 @@ def resample2(data, samplFreqD, samplFreq):
   dataInter = sig.resample(data, new_num)
   return dataInter
 
+def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
+			segEndTime, timeShift, samplFreq, logFid, debugLevel):
+  # LINEARCOUPLINGCOEFF - calculate the cross correlation coeff b/w the gravitational
+  # ave channel H and the "projected" instrumental channel X. The noise in the
+  # instrumental channel X is projected to the domain of the H using a linear coupling
+  # function Txh
+
+  MIN_FREQ = 10.0
+  MAX_FREQ = 4000.0  
+  IFO_LENGTH = 4000
+  
+  if((len(dataH)==0) | (len(dataX)==0)):
+    logFid.print('Error: One or more data vectors are empty..\n')
+    logFid.print('Error: len(dataH) = %d len(dataX) = %d..\n' %(len(dataH), len(dataX[0])))
+  
+  elif(len(dataH)!=len(dataX[0])):
+    logFid.write('Error: Different lengths. len(dataH) = %d len(dataX) = %d..\n'%(len(dataH), len(dataX[0])))
+  else:
+    dataH = dataH - np.mean(dataH)
+    dataX = dataX[0] - np.mean(dataX[0])
+    
+    segIdxH = np.intersect1d(np.where(timeH>=segStartTime)[0], np.where(timeH<segEndTime)[0])
+    dataH = dataH[segIdxH]
+    
+    segIdxX = np.intersect1d(np.where(timeX + timeShift >= segStartTime)[0], np.where(timeX + timeShift < segEndTime)[0])
+    dataX = dataX[segIdxX]
+    
+    nfft = len(dataH)
+    
+    freqVecH = np.fft.rfftfreq(nfft, 1.0/samplFreq)
+    fftChanH = np.fft.rfft(dataH)
+    
+    nfft = len(dataX)
+    freqVecX = np.fft.rfftfreq(nfft, 1.0/samplFreq)
+    fftChanX = np.fft.rfft(dataX)
+    
+    freqBandIdx = np.intersect1d(np.where(freqVecH>=MIN_FREQ)[0], np.where(freqVecP <= MAX_FREQ)[0])
+    
+    if(len(freqBandIdx)!=0):
+      transFnXtoH.frequency = transFnXtoH.frequency[freqBandIdx]
+      transFnXtoH.Txh = transFnXtoH.Txh[freqBandIdx]
+    if(len(freqVecH)!=len(freqVecX)):
+      logFid.write('ERROR: Unequal size for freq. vectors.\n')
+      logFid.write('ERROR: len(freqVecH) = %d len(freqVecX) = %d.\n' %(length(freqVecH), length(freqVecX)))
+    else:
+      freqResolTxh = samplFreq/len(dataX)
+      
+      [tFreqIntp, tfMagIntp,tfPhaseIntp] = interpolatetransfn(transFnXtoH.frequency,
+							     np.abs(transFnXtoH.Txh),
+							     np.unwrap(np.angle(transFnXtoH)), freqResolTxh)
+      TxhInterp = tfMagIntp* np.exp(1j*tPhaseIntp)
+      
+      if(len(fftChanX)==size(TxhInterp)):
+	xPrime = fftChanX*TxhInterp/IFO_LENGTH
+      else:
+	logFid.write('ERROR: size(fftChanX) = %d size(TxhInterp) = %d\n', %(len(fftChanX), len(TxhInterp)))
+	logFid.write('ERROR: fftChanX and TxhInterp have different sizes.\n')
+	sys.exit('Inconsistent dimensions of data and transfer function')
+      
+      [rXH, rMaxXH] = calcrossCorr(xPrime, fftChan)
+      return [rH, rMaxXH]
+    
+    
+  
   
 def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
 			  segStartTime,segEndTime, timeShift, samplFreq, logFid, debugLevel):
@@ -154,18 +219,48 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
   
   return [rPH, rPHAbs]
 
+def interpolatetransfn(tfFreq, tfPhase, reqFreqRes):
+  
+  # Compute the required frequency resolution.
+  tfFRes = tfFreq[1] - tfFreq[1]
+  
+  # Create a new frequency vector for interpolating the transfer function.
+  newFreqVec = np.arange(np.min(tfFreq), np.max(tfFreq)+ reqFreqRes, reqFreqRes)
+  #Use the resample command for interpolating the transfer function.
+  #tfFreqIntp  = newFreqVec
+  #tfMagIntp   = resample(tfMag,tfFRes,reqFreqRes)
+  #tfPhaseIntp = resample(tfPhase,tfFRes,reqFreqRes)
+  tck = sinterp.splprep(tfFreq, tfFreq, s=0)
+  tfFreqIntp = sinterp.splev(newFreqVec, tck, der=0)
+  
+  tck = sinterp.splprep(tfFreq, tfMag, s=0)
+  tfMagIntp = sinterp.splev(newFreqVec, tck, der=0)
+  
+  tck = sinterp.splprep(tfFreq, tfPhase, s=0)
+  tfPhaseIntp = sinterp.splev(newFreqVec, tck, der=0)
+  
+  return [tfFreqIntp, tfMagIntp,tfPhaseIntp]
+  
+
 def calCrossCorr(u,v):
   # Auxlilary function which calculates the cros correlation between two signals
   # The inputs are the spectrograms of the two signals
   if(u.shape!=v.shape):
     sys.exit('Size of u and v mist be the same\n')
-    
+      
   uDotu = np.sum(u*np.conj(u))
   vDotv = np.sum(v*np.conj(v))
   uConjv = u*np.conj(v)/(np.sqrt(uDotu)*np.sqrt(vDotv))
   #print 'uDotu :', uDotu, 'vDotv: ', vDotv, 'u*u/v*v :', uDotu/vDotv
   r = np.real(np.sum(uConjv))
-  rAbs = np.abs(np.sum(uConjv))
+  
+  xCorr = np.fft.irfft(uConjv)/len(u)
+  rMax = np.max(np.real(xCorr))
+  rMin = np.min(np.real(xCorr))
+  
+  rAbs = rMax
+  if(np.abs(rMin)>np.abs(rMin)):
+    rAbs = np.abs(rMin)
   return [r, rAbs]
 
 def highpass(rawData, samplFreq, highpassCutOff):
