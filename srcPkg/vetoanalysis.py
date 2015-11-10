@@ -231,6 +231,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    index = np.where(samplFreqX!=samplFreq)[0]
 	    for iDs in index:
 	      print 'dataX[0].shape ', dataX[0].shape
+	      print 'samplFreqX[0] ', samplFreqX[0]
+	      print 'sampleFreq ', samplFreq
 	      dataX[iDs] = bcv.resample2(dataX[iDs], samplFreqX[iDs], samplFreq)
           
           SIGNIFICANCE_THRESH_H = 500.0
