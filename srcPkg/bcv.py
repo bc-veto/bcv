@@ -97,8 +97,8 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
   IFO_LENGTH = 4000
   
   if((len(dataH)==0) | (len(dataX)==0)):
-    logFid.print('Error: One or more data vectors are empty..\n')
-    logFid.print('Error: len(dataH) = %d len(dataX) = %d..\n' %(len(dataH), len(dataX[0])))
+    logFid.write('Error: One or more data vectors are empty..\n')
+    logFid.write('Error: len(dataH) = %d len(dataX) = %d..\n' %(len(dataH), len(dataX[0])))
   
   elif(len(dataH)!=len(dataX[0])):
     logFid.write('Error: Different lengths. len(dataH) = %d len(dataX) = %d..\n'%(len(dataH), len(dataX[0])))
