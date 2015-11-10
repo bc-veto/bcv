@@ -84,7 +84,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
   # channels (X and Y); thus a vector of length 2 or more
   
   if(couplingModel=='linear'):
-    timeShiftX = timeShift
+    timeShiftX = np.array([timeShift])
   elif(couplingModel=='bilinear'):
     timeShiftX = np.zeros(len(chanXName))
     for iX in range(len(chanXName)):
