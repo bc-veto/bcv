@@ -15,7 +15,7 @@ import sys
 import scipy.signal as sig
 import numpy as np
 import scipy.linalg as linalg
-import scipy.interp as sinterp
+import scipy.interpolate as sinterp
 
 def readData(frameCache, channelNames,frameTypes, startTime, stopTime, timeShifts, debugLevel):
   numberOfChannels = len(channelNames)
