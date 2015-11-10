@@ -443,13 +443,13 @@ def get_analyze_segment(ifo):
       start = int(analyzed_segs[0][0])
       end = int(analyzed_segs[-1][1]+1)
       duration = end - start
-      # FIXME: write my own function - ligolw_segments_from_cats gets segments 
+      # FIXME: write my own function - ligolw_segments_from_cats_dqsegdb gets segments 
       # for all ifos and wasteful
       def get_cats():
         if opts.verbose:
           print "getting cat veto files..."
           print "this might take a while..."
-        cmd = "ligolw_segments_from_cats --veto-file %s --output-dir %s --segment-url %s --separate-categories --gps-start-time %d --gps-end-time %d"%(cp.get("input","veto_definer_file"),"segfiles",cp.get("input","server"),start,end)
+        cmd = "ligolw_segments_from_cats_dqsegdb --veto-file %s --output-dir %s --segment-url %s --separate-categories --gps-start-time %d --gps-end-time %d"%(cp.get("input","veto_definer_file"),"segfiles",cp.get("input","server"),start,end)
         print cmd
         exit = os.system(cmd)
         if exit > 0:
@@ -1318,7 +1318,7 @@ if any(cats.values()) == True:
   if cp.get("input","server") == "":
     cp.set("input","server","https://segdb.ligo.caltech.edu")
   if cp.get("input","server").startswith("https://"):
-    cmd_ping = "ligolw_segment_query --ping --segment-url %s"%cp.get("input","server")
+    cmd_ping = "ligolw_segment_query_dqsegdb --ping --segment-url %s"%cp.get("input","server")
     if os.system(cmd_ping) > 0:
       print >> sys.stderr, "Error: problem with segment server. Please check %s works."%cmd_ping
       sys.exit(1)

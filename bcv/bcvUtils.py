@@ -325,23 +325,20 @@ def read_segfile_xml(segfile,verbose):
   Read segment file in ligolw xml type and return in glue.segments.segmentlist
   format.
   """
-  from glue.ligolw import ligolw
-  from glue.ligolw import table
-  from glue.ligolw import utils
-
+  from glue.ligolw import ligolw,utils, lsctables, table
+  lsctables.use_in(ligolw.LIGOLWContentHandler)
   def ContentHandler(xmldoc):
-    return ligolw.PartialLIGOLWContentHandler(xmldoc, lambda name, attrs:\
+    return ligolw.LIGOLWContentHandler(xmldoc, lambda name, attrs:\
                (name == ligolw.Table.tagName) and\
                (table.StripTableName(attrs["Name"]) in ["segment"]))
 
   utils.ContentHandler = ContentHandler
 
-  xmldoc = utils.load_url(segfile, verbose = verbose,gz = segfile.endswith(".gz"))
+  xmldoc = utils.load_url(segfile, verbose = verbose,gz = segfile.endswith(".gz"),contenthandler=ligolw.LIGOLWContentHandler)
   seg_list = segmentlist()
-  for table_elem in xmldoc.getElements(lambda e:\
-                                       (e.tagName == ligolw.Table.tagName)):
-    for row in table_elem:
-      seg_list.append(segment(row.start_time, row.end_time))
+  rows = table.get_table(xmldoc, lsctables.VetoDefTable.tableName)
+  for row in rows:
+    seg_list.append(segment(row.start_time, row.end_time))
   xmldoc.unlink()
   return seg_list
 
@@ -349,18 +346,15 @@ def find_version_xml(segfile,seg,verbose):
   """
   Find out the version of the flag for the given seg.
   """
-  from glue.ligolw import ligolw
-  from glue.ligolw import table
-  from glue.ligolw import utils
-
+  from glue.ligolw import ligolw,utils, lsctables, table
+  lsctables.use_in(ligolw.LIGOLWContentHandler)
   def ContentHandler(xmldoc):
-    return ligolw.PartialLIGOLWContentHandler(xmldoc, lambda name, attrs:\
+    return ligolw.LIGOLWContentHandler(xmldoc, lambda name, attrs:\
                (name == ligolw.Table.tagName) and\
                (table.StripTableName(attrs["Name"]) in ["segment_definer","segment_summary"]))
 
   utils.ContentHandler = ContentHandler
-
-  xmldoc = utils.load_url(segfile, verbose = verbose,gz = segfile.endswith(".gz"))
+  xmldoc = utils.load_url(segfile, verbose = verbose,gz = segfile.endswith(".gz"),contenthandler=ligolw.LIGOLWContentHandler)
   for n, table_elem in enumerate(xmldoc.getElements(lambda e:\
                                        (e.tagName == ligolw.Table.tagName))):
     if n == 0:
