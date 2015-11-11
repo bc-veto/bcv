@@ -162,7 +162,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
 	sys.exit('Inconsistent dimensions of data and transfer function')
       
       
-      [rXH, rMaxXH] = calcrossCorr(xPrime, fftChan)
+      [rXH, rMaxXH] = calCrossCorr(xPrime, fftChan)
       return [rH, rMaxXH]
     
     
