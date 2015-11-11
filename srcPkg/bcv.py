@@ -150,7 +150,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
       
       [tFreqIntp, tfMagIntp,tfPhaseIntp] = interpolatetransfn(transFnXtoH.frequency,
 							     np.abs(transFnXtoH.Txh),
-							     np.unwrap(np.angle(transFnXtoH)), freqResolTxh)
+							     np.unwrap(np.angle(transFnXtoH.Txh)), freqResolTxh)
       TxhInterp = tfMagIntp* np.exp(1j*tPhaseIntp)
       
       if(len(fftChanX)==size(TxhInterp)):
