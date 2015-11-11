@@ -121,7 +121,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
     freqVecX = np.fft.rfftfreq(nfft, 1.0/samplFreq)
     fftChanX = np.fft.rfft(dataX)
     
-    freqBandIdx = np.intersect1d(np.where(freqVecH>=MIN_FREQ)[0], np.where(freqVecH <= MAX_FREQ)[0])
+    freqBandIdx = np.intersect1d(np.where(freqVecH>=MIN_FREQ)[0], np.where(freqVecH < MAX_FREQ)[0])
     
     if(len(freqBandIdx)!=0):
       transFnXtoH.frequency = transFnXtoH.frequency[freqBandIdx]
