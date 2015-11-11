@@ -249,10 +249,10 @@ def interpolatetransfn(tfFreq, tfMag, tfPhase, reqFreqRes):
   #tfFreqIntp  = newFreqVec
   #tfMagIntp   = resample(tfMag,tfFRes,reqFreqRes)
   #tfPhaseIntp = resample(tfPhase,tfFRes,reqFreqRes)
-  tck = sinterp.splprep(tfFreq, tfFreq, s=0)
+  tck = sinterp.splrep(tfFreq, tfFreq, s=0)
   tfFreqIntp = sinterp.splev(newFreqVec, tck, der=0)
   
-  tck = sinterp.splprep(tfFreq, tfMag, s=0)
+  tck = sinterp.splrep(tfFreq, tfMag, s=0)
   tfMagIntp = sinterp.splev(newFreqVec, tck, der=0)
   
   tck = sinterp.splrep(tfFreq, tfPhase, s=0)
