@@ -147,6 +147,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
       
       
       freqResolTxh = samplFreq/len(dataX)
+      print 'freqResolTxh ', freqResolTxh
       
       [tFreqIntp, tfMagIntp,tfPhaseIntp] = interpolatetransfn(transFnXtoH.frequency,
 							     np.abs(transFnXtoH.Txh),
