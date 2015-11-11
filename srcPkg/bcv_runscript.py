@@ -359,7 +359,7 @@ if (couplingModel == 'linear'):
     transFnXtoH = TransferFunctionXtoH(transFnXtoHRead[:, 0], transFnXtoHRead[:, 1])
   else:
     freq = np.linspace(0.1, 1000.0, num=1001, endpoint=True)
-    transFnXtoH = TransferFunctionXtoH(freq, np.ones(len(freq)))
+    transFnXtoH = TransferFunctionXtoH(freq, np.ones(len(freq), dtype=float))
     
     
     

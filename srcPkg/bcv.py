@@ -239,6 +239,7 @@ def interpolatetransfn(tfFreq, tfMag, tfPhase, reqFreqRes):
   
   # Compute the required frequency resolution.
   tfFRes = tfFreq[1] - tfFreq[0]
+  print 'tfRes ', tfRes
   
   # Create a new frequency vector for interpolating the transfer function.
   newFreqVec = np.arange(np.min(tfFreq), np.max(tfFreq)+ reqFreqRes, reqFreqRes)
