@@ -163,7 +163,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
       
       
       [rXH, rMaxXH] = calCrossCorr(xPrime, fftChanH)
-      return [rH, rMaxXH]
+      return [rXH, rMaxXH]
     
     
   
