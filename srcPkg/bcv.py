@@ -153,7 +153,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
 							     np.abs(transFnXtoH.Txh),
 							     np.unwrap(np.angle(transFnXtoH.Txh)), freqResolTxh)
       TxhInterp = tfMagIntp* np.exp(1j*tfPhaseIntp)
-      
+      TxhInterp = TxhInterp[0:len(fftChanX)]
       if(len(fftChanX)==len(TxhInterp)):
 	xPrime = fftChanX*TxhInterp/IFO_LENGTH
       else:
