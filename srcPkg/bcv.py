@@ -235,7 +235,7 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
   
   return [rPH, rPHAbs]
 
-def interpolatetransfn(tfFreq, tfPhase, reqFreqRes):
+def interpolatetransfn(tfFreq, tfMag, tfPhase, reqFreqRes):
   
   # Compute the required frequency resolution.
   tfFRes = tfFreq[1] - tfFreq[1]
