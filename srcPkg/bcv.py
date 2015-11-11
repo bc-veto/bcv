@@ -95,7 +95,8 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
   MIN_FREQ = 10.0
   MAX_FREQ = 4000.0  
   IFO_LENGTH = 4000
-  
+  rXH = np.array([])
+  rMaxXH = np.array([])
   if((len(dataH)==0) | (len(dataX)==0)):
     logFid.write('Error: One or more data vectors are empty..\n')
     logFid.write('Error: len(dataH) = %d len(dataX) = %d..\n' %(len(dataH), len(dataX[0])))
@@ -146,8 +147,6 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
       
       
       freqResolTxh = np.float(samplFreq)/len(dataX)
-      print 'freqResolTxh ', freqResolTxh
-      print 'transFnXtoH.frequency ', transFnXtoH.frequency
       
       [tFreqIntp, tfMagIntp,tfPhaseIntp] = interpolatetransfn(transFnXtoH.frequency,
 							     np.abs(transFnXtoH.Txh),
@@ -157,12 +156,14 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
       if(len(fftChanX)==len(TxhInterp)):
 	xPrime = fftChanX*TxhInterp/IFO_LENGTH
       else:
-	print 'ERROR: size(fftChanX) = %d size(TxhInterp) = %d\n' %(len(fftChanX), len(TxhInterp))
+	logFid.write( 'ERROR: size(fftChanX) = %d size(TxhInterp) = %d\n' %(len(fftChanX), len(TxhInterp)))
 	logFid.write('ERROR: fftChanX and TxhInterp have different sizes.\n')
 	sys.exit('Inconsistent dimensions of data and transfer function')
       
       
-      [rXH, rMaxXH] = calCrossCorr(xPrime, fftChanH)
+      [a, b] = calCrossCorr(xPrime, fftChanH)
+      rXH = np.append(rXH, a)
+      rMaxXH = np.append(rMaxXH, b)
       return [rXH, rMaxXH]
     
     
@@ -241,7 +242,6 @@ def interpolatetransfn(tfFreq, tfMag, tfPhase, reqFreqRes):
   
   # Compute the required frequency resolution.
   tfFRes = tfFreq[1] - tfFreq[0]
-  print 'tfFRes ', tfFRes
   
   # Create a new frequency vector for interpolating the transfer function.
   newFreqVec = np.arange(np.min(tfFreq), np.max(tfFreq)+ reqFreqRes, reqFreqRes)
