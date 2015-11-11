@@ -232,7 +232,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      tempArray.append(dataX[iChan])
 	    else:
 	      tempArray.append(bcv.resample2(dataX[iChan], samplFreqX[iChan], samplFreq))
-	  dataX = np.asrray(tempArray)
+	  dataX = np.asarray(tempArray)
 	  #if(not all(samplFreqX==samplFreq)):
 	    #index = np.where(samplFreqX!=samplFreq)[0]
 	    #for iDs in index:
