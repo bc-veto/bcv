@@ -222,18 +222,21 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	  logFid.write('ERROR: Channel X -  bcvreadStartTime: %f bcvreadEndTime: %f..\n'%(bcvreadEndTime, bcvreadEndTime ))
 	  
 	else:
-	    
+	  tempArray = []  
 	  # If sampling frequency is different from the one specified,
 	  # resample the data
 	  if(samplFreqH != samplFreq):
 	    dataH = np.asarray([bcv.resample2(dataH[0], samplFreqH[0], samplFreq)])
-	  if(not all(samplFreqX==samplFreq)):
-	    index = np.where(samplFreqX!=samplFreq)[0]
-	    for iDs in index:
-	      print 'dataX[0].shape ', dataX[0].shape
-	      print 'samplFreqX[0] ', samplFreqX[0]
-	      print 'sampleFreq ', samplFreq
-	      dataX[iDs] = bcv.resample2(dataX[iDs], samplFreqX[iDs], samplFreq)
+	  for iChan in xrange(len(dataX)):
+	    if(samplFreqX[iChan]==samplFreq):
+	      tempArray.append(dataX[iChan])
+	    else:
+	      tempArray.append(bcv.resample2(dataX[iChan], samplFreqX[iChan], samplFreq))
+	  dataX = np.asrray(tempArray)
+	  #if(not all(samplFreqX==samplFreq)):
+	    #index = np.where(samplFreqX!=samplFreq)[0]
+	    #for iDs in index:
+	      #tempArray = bcv.resample2(dataX[iDs], samplFreqX[iDs], samplFreq)
           
           SIGNIFICANCE_THRESH_H = 500.0
           SIGNIFICANCE_THRESH_X = 20.0
