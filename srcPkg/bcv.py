@@ -121,7 +121,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
     freqVecX = np.fft.rfftfreq(nfft, 1.0/samplFreq)
     fftChanX = np.fft.rfft(dataX)
     
-    freqBandIdx = np.intersect1d(np.where(transFnXtoH.frequency>=MIN_FREQ)[0], np.where(transFnXtoH.frequency < MAX_FREQ)[0])
+    freqBandIdx = np.intersect1d(np.where(transFnXtoH.frequency>=MIN_FREQ)[0], np.where(transFnXtoH.frequency <=MAX_FREQ)[0])
     if(len(freqBandIdx)!=0):
       transFnXtoH.frequency = transFnXtoH.frequency[freqBandIdx]
       transFnXtoH.Txh = transFnXtoH.Txh[freqBandIdx]
@@ -137,8 +137,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
       logFid.write('ERROR: Unequal size for freq. vectors.\n')
       logFid.write('ERROR: len(freqVecH) = %d len(freqVecX) = %d.\n' %(length(freqVecH), length(freqVecX)))
     else:
-      freqBandIdx = np.intersect1d(np.where(freqVecH>=TxhFreqMin)[0], np.where(freqVecH < TxhFreqMax)[0])
-      
+      freqBandIdx = np.intersect1d(np.where(freqVecH>=TxhFreqMin)[0], np.where(freqVecH <= TxhFreqMax)[0])
       if(len(freqBandIdx)!=0):
 	fftChanH = fftChanH[freqBandIdx]
 	fftChanX = fftChanX[freqBandIdx]
