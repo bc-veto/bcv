@@ -394,6 +394,10 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    varY = 0
 	    maxY = 0
 	    minY = 0
+	    maxYMat.append(maxY)
+	    meanYMat.append(meanY)
+	    varYMat.append(varY)
+	    minYMat.append(minY)	    
 	    #mindY = 0
 	    #maxdY = 0
 	    #meandY = 0
