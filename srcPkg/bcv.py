@@ -158,7 +158,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
       if(len(fftChanX)==len(TxhInterp)):
 	xPrime = fftChanX*TxhInterp/IFO_LENGTH
       else:
-	logFid.write('ERROR: size(fftChanX) = %d size(TxhInterp) = %d\n' %(len(fftChanX), len(TxhInterp)))
+	print 'ERROR: size(fftChanX) = %d size(TxhInterp) = %d\n' %(len(fftChanX), len(TxhInterp))
 	logFid.write('ERROR: fftChanX and TxhInterp have different sizes.\n')
 	sys.exit('Inconsistent dimensions of data and transfer function')
       
