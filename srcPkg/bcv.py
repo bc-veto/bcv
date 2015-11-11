@@ -161,6 +161,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
 	logFid.write('ERROR: fftChanX and TxhInterp have different sizes.\n')
 	sys.exit('Inconsistent dimensions of data and transfer function')
       
+      
       [rXH, rMaxXH] = calcrossCorr(xPrime, fftChan)
       return [rH, rMaxXH]
     
