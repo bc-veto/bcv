@@ -95,8 +95,8 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
   MIN_FREQ = 10.0
   MAX_FREQ = 4000.0  
   IFO_LENGTH = 4000
-  rXH = np.asrray([])
-  rMaxXH = np.asrray([])
+  rXH = np.asarray([])
+  rMaxXH = np.asarray([])
   if((len(dataH)==0) | (len(dataX)==0)):
     logFid.write('Error: One or more data vectors are empty..\n')
     logFid.write('Error: len(dataH) = %d len(dataX) = %d..\n' %(len(dataH), len(dataX[0])))
