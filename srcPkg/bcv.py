@@ -238,7 +238,7 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
 def interpolatetransfn(tfFreq, tfMag, tfPhase, reqFreqRes):
   
   # Compute the required frequency resolution.
-  tfFRes = tfFreq[1] - tfFreq[1]
+  tfFRes = tfFreq[1] - tfFreq[0]
   
   # Create a new frequency vector for interpolating the transfer function.
   newFreqVec = np.arange(np.min(tfFreq), np.max(tfFreq)+ reqFreqRes, reqFreqRes)
