@@ -28,6 +28,7 @@ It lists veto candidate channels with the relevant values.
 
 import sys
 import  os
+import shutil
 import time
 import optparse
 import ConfigParser
@@ -43,8 +44,9 @@ except ImportError:
 
 import matplotlib
 matplotlib.use('Agg')
+from matplotlib.ticker import FormatStrFormatter,MultipleLocator,FixedLocator
 import pylab
-
+import matplotlib.pyplot as plt
 from glue.segments import segment, segmentlist
 from glue import segmentsUtils
 
@@ -129,8 +131,9 @@ def summary_page(channel_info,veto_segs):
   <title>%s</title>
   </head>
   <body>
-  <big><big><big><b>%s (%s-%s)</b></big></big></big><br><br>
-  <big><big>(%s - %s)</big></big>
+  <div style="background-color:#C34A2C; color:black; padding:20px;">
+  <big><big><big><big><b>%s (%s-%s)</b></big></big></big></big><br><br>
+  <big><big>(%s - %s)</big></big></div>
   <br><br><br>
   """%(title,title,start_gps,end_gps,start_utc,end_utc)]
 
@@ -143,28 +146,52 @@ def summary_page(channel_info,veto_segs):
   else:
     deadTime_segs = reduce(lambda x, y: x | y, veto_segs.values())
     totalDeadTime = abs(deadTime_segs)
-
-  # read in H triggers  
+  # Writing the total vetoed segments
+  file = open("%s/vetoed_segment.html"%(baseDir),"w")
+  file.write('Total Vetoed Segment = '+ repr(deadTime_segs) + '\n' )
+  file.close()
+   
+# read in H triggers  
   Htrigs =  bcvUtils.textRead(opts.HTriggerFile)
   # significance cut
   Hgps = array(Htrigs[2])
   Hsig = sqrt(array(Htrigs[5])-array(Htrigs[6]))
-
-  survived_H = []
+  Hfreq= array(Htrigs[3])
+  survived_H_snr = []
+# vetoed trigger's SNR 
   for i in range(len(Hgps)):
     if not Hgps[i] in deadTime_segs: # i.e. if not vetoed
-      survived_H.append(Hsig[i])
-
+      survived_H_snr.append(Hsig[i])
+ 
+ # print survived_H_snr
+# vetoed triggers frequency
+  survived_H_freq=[]
+  for i in range(len(Hgps)):
+    if not Hgps[i] in deadTime_segs: # i.e. if not vetoed
+      survived_H_freq.append(Hfreq[i])
+  #print survived_H_freq
+# vetoed triggers time
+  survived_H_peaktime=[]
+  for i in range(len(Hgps)):
+    if not Hgps[i] in deadTime_segs: # i.e. if not vetoed
+      survived_H_peaktime.append(Hgps[i])
+  
+  survived_H_peaktime_hour = [(a-int(start_gps))/3600. for a in survived_H_peaktime]
+  Hgps_hour = [(a-int(start_gps))/3600. for a in Hgps]
+  #print survived_H_peaktime_hour
+  #print Hgps_hour
+ 
+# Plot SNR HIST 
   n, bins, patches = pylab.hist([math.log(t,10) for t in Hsig], bins = 100, bottom=0.001, facecolor='b',log=True)
-  n2, bins2, patches2 = pylab.hist([math.log(t,10) for t in survived_H], bins = bins, bottom=0.001, facecolor='r',log=True)
+  n2, bins2, patches2 = pylab.hist([math.log(t,10) for t in survived_H_snr], bins = bins, bottom=0.001, facecolor='r',log=True)
   pylab.xlabel('SNR')
-  pylab.ylabel('Number of H Triggers')
-  pylab.title("H Triggers")
+  pylab.ylabel('Number of GW Triggers')
+  pylab.title("Vetoed GW Triggers SNR Histogram")
   pylab.ylim(ymin=0.8)
   if len(patches)>0 and len(patches2)>0:
     pylab.legend((patches[0], patches2[0]), ("Before Veto","After Veto"),loc='upper right')
+  plt.grid()
   # format x axis tick label
-  from matplotlib.ticker import FormatStrFormatter,MultipleLocator,FixedLocator
   hmin, hmax = pylab.gca().xaxis.get_view_interval()
   hmin = int(math.floor(hmin))
   if hmin == 0:
@@ -176,13 +203,59 @@ def summary_page(channel_info,veto_segs):
   pylab.gca().xaxis.set_major_locator(MultipleLocator(1))
   pylab.gca().xaxis.set_major_formatter(FormatStrFormatter(r'$\mathdefault{10^{%d}}$'))
   pylab.gca().xaxis.set_minor_locator(FixedLocator(tickLoc))
-
   pylab.savefig("%s/Htriggers_hist.png"%baseDir,dpi=100)
+
+# Plot Frequency Time SNR
+  fig = plt.figure()
+  ax = fig.add_subplot(1,1,1)
+  ax.set_yscale('log')
+  ax.grid(b=True, which='major', color='k', linestyle='-')
+  ax.grid(b=True, which='minor', color='#ACACAA')
+  ax.scatter(Hgps_hour,Hsig,c='b',label='Before Veto')
+  ax.scatter(survived_H_peaktime_hour, survived_H_snr,edgecolors='none',c='r',label='After Veto')
+  ax.set_xlim([0,24])
+  ax.set_xlabel('Time in Hours starting from %s'%start_gps)
+  ax.set_ylabel('SNR')
+  ax.set_title("Vetoed GW Triggers Time SNR Plot")
+  pylab.legend(loc='upper right')
+  pylab.savefig("%s/Htriggers_time_snr.png"%baseDir,dpi=100)
+
+  fig = plt.figure()
+  ax = fig.add_subplot(1,1,1) 
+  ax.set_yscale('log')
+  ax.grid(b=True, which='major', color='k', linestyle='-')
+  ax.grid(b=True, which='minor', color='#ACACAA')
+  ax.scatter(Hgps_hour,Hfreq,c='b',label='Before Veto')
+  ax.scatter(survived_H_peaktime_hour, survived_H_freq,edgecolors='none',c='r',label='After Veto') 
+  ax.set_xlim([0,24])
+  ax.set_xlabel('Time in Hours starting from %s'%start_gps)
+  ax.set_ylabel('Central Frequency')
+  ax.set_title("Vetoed GW Triggers Time Frequency Plot")
+  pylab.legend(loc='upper right')
+  pylab.savefig("%s/Htriggers_time_freq.png"%baseDir,dpi=100)
+
+  fig = plt.figure()
+  ax = fig.add_subplot(1,1,1)
+  ax.set_xscale('log')
+  ax.set_yscale('log')
+  ax.grid(b=True, which='major', color='k', linestyle='-')
+  ax.grid(b=True, which='minor', color='#ACACAA')
+  ax.scatter(Hfreq,Hsig,c='b',label='Before Veto')
+  ax.scatter(survived_H_freq,survived_H_snr,edgecolors='none',c='r',label='After Veto')
+  ax.legend(loc='upper center')
+  ax.set_ylabel('SNR')
+  ax.set_xlabel('Central Frequency')
+  ax.set_title("Vetoed GW Triggers Frequency SNR Plot")
+  pylab.legend(loc='upper right')
+  pylab.savefig("%s/Htriggers_freq_snr.png"%baseDir,dpi=100)
   pylab.close('all')
 
   # add the plot to the page
-  contents.append("<big><big><b>- Vetoed H Triggers</b></big></big><br>")
-  contents.append('<img id="H_hist" src="./Htriggers_hist.png"><br>')
+  contents.append("<big><big><b>- Vetoed GW Triggers </b></big></big><br>")
+  contents.append('<img id="H_hist" src="./Htriggers_hist.png" style="float: left; width: 50%;">')
+  contents.append('<img id="H_time_snr" src="./Htriggers_time_snr.png" style="float: left; width: 50%;">')
+  contents.append('<img id="H_time_freq" src="./Htriggers_time_freq.png" style="float: left; width: 50%;">')
+  contents.append('<img id="H_freq_snr" src="./Htriggers_freq_snr.png" style="float: left; width: 50%;"><br>')
 
   ############################## Summary Info #################################
 
@@ -192,15 +265,16 @@ def summary_page(channel_info,veto_segs):
 
   ## figure out the efficiency
   totalHNum = len(Hsig)
-  vetoedHNum = totalHNum - len(survived_H)
+  vetoedHNum = totalHNum - len(survived_H_snr)
   combinedEff = vetoedHNum * 100.0 / (totalHNum or 1)
 
   # add summary
   contents.append("<big><big><b>- Summary</b></big></big><br><br>")
   contents.append("<b>Total Veto Efficiency: %.3f %% (%d / %d) </b><br>"%(combinedEff,vetoedHNum,totalHNum))
   contents.append("<b>Total Dead Time: %d s (%.2f %%)</b><br>"%(totalDeadTime,deadTimePer))  
-  contents.append("<b>Required Accidental Veto Rate: %s Hz </b><br><br><br>"%(reqAccVetoRate))  
-
+  contents.append("<b>Required Accidental Veto Rate: %s Hz </b><br>"%(reqAccVetoRate))  
+  contents.append('<b><a href="vetoed_segment.html">Total Vetoed Segments</a></b><br><br><br>')
+ 
   ############################# FOM Table ############################    
   ## make a table to the performance of each channel pair
  
