@@ -1,22 +1,22 @@
-id = "47f28bcaae8ab01c98333a7a6087925c3a1c729e"
-date = "2015-09-28 20:19:40 +0000"
+id = "a480a4fac24e9faf6718285271fbec3fa151e6f0"
+date = "2011-06-23 18:44:49 +0000"
 branch = "master"
 tag = None
-author = "Nairwita Mazumder <nairwita.mazumder@ligo.org>"
-author_name = "Nairwita Mazumder"
-author_email = "nairwita.mazumder@ligo.org"
-builder = "Sudarshan <sudu.ghonge@gmail.com>"
-builder_name = "Sudarshan"
-builder_email = "sudu.ghonge@gmail.com"
-committer = "Nairwita Mazumder <nairwita.mazumder@ligo.org>"
-committer_name = "Nairwita Mazumder"
-committer_email = "nairwita.mazumder@ligo.org"
+author = "Ben Ze Yuan <byuan@ldas-grid.ligo.caltech.edu>"
+author_name = "Ben Ze Yuan"
+author_email = "byuan@ldas-grid.ligo.caltech.edu"
+builder = " <>"
+builder_name = ""
+builder_email = ""
+committer = "Ben Ze Yuan <byuan@ldas-grid.ligo.caltech.edu>"
+committer_name = "Ben Ze Yuan"
+committer_email = "byuan@ldas-grid.ligo.caltech.edu"
 status = "CLEAN: All modifications committed"
 version = id
 verbose_msg = """Branch: master
 Tag: None
-Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+Id: a480a4fac24e9faf6718285271fbec3fa151e6f0
 
-Builder: Sudarshan <sudu.ghonge@gmail.com>
-Build date: 2015-10-26 12:27:10 +0000
+Builder:  <>
+Build date: 2014-10-29 22:04:42 +0000
 Repository status: CLEAN: All modifications committed"""
