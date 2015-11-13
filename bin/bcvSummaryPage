@@ -178,6 +178,7 @@ def summary_page(channel_info,veto_segs):
   
   survived_H_peaktime_hour = [(a-int(start_gps))/3600. for a in survived_H_peaktime]
   Hgps_hour = [(a-int(start_gps))/3600. for a in Hgps]
+  hour_max_lim = max(Hgps_hour)
   #print survived_H_peaktime_hour
   #print Hgps_hour
  
@@ -213,8 +214,8 @@ def summary_page(channel_info,veto_segs):
   ax.grid(b=True, which='minor', color='#ACACAA')
   ax.scatter(Hgps_hour,Hsig,c='b',label='Before Veto')
   ax.scatter(survived_H_peaktime_hour, survived_H_snr,edgecolors='none',c='r',label='After Veto')
-  ax.set_xlim([0,24])
-  ax.set_xlabel('Time in Hours starting from %s'%start_gps)
+  ax.set_xlim([0,hour_max_lim])
+  ax.set_xlabel('Time in Hours starting from %s'%start_utc)
   ax.set_ylabel('SNR')
   ax.set_title("Vetoed GW Triggers Time SNR Plot")
   pylab.legend(loc='upper right')
@@ -227,8 +228,8 @@ def summary_page(channel_info,veto_segs):
   ax.grid(b=True, which='minor', color='#ACACAA')
   ax.scatter(Hgps_hour,Hfreq,c='b',label='Before Veto')
   ax.scatter(survived_H_peaktime_hour, survived_H_freq,edgecolors='none',c='r',label='After Veto') 
-  ax.set_xlim([0,24])
-  ax.set_xlabel('Time in Hours starting from %s'%start_gps)
+  ax.set_xlim([0,hour_max_lim])
+  ax.set_xlabel('Time in Hours starting from %s'%start_utc)
   ax.set_ylabel('Central Frequency')
   ax.set_title("Vetoed GW Triggers Time Frequency Plot")
   pylab.legend(loc='upper right')
