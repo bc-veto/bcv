@@ -330,6 +330,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      Pxx, freq, t = mlab.specgram(tdataX[0][idx], noverlap=0, Fs=samplFreq)
 	      freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigXCentFreq))))[0], np.where(freq<10**(np.ceil(np.log10(trigXCentFreq))))[0])
 	      t = t + xmin - timeShift-min(timeX)
+	      print 'freqidx ', freqidx
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Fourier Frequencies')
 	      plt.title('channel X specgram')
@@ -350,7 +351,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      Pxx, freq, t = mlab.specgram(dataH[0][idx], noverlap=0, Fs=samplFreq)
 	      freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigXCentFreq))))[0], np.where(freq<10**(np.ceil(np.log10(trigXCentFreq))))[0])
 	      t = t+ xmin - min(timeH)
-	      print 'freqidx ', freqidx
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Fourier Frequencies')
 	      plt.title('channel H specgram')	      
