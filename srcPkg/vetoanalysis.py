@@ -329,6 +329,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      
 	      Pxx, freq, t = mlab.specgram(tdataX[0][idx], noverlap=0, Fs=samplFreq)
 	      print 'freq: ', freq
+	      print 'trigXCentFreq: ', trigXCentFreq
 	      freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigXCentFreq))))[0], np.where(freq<10**(np.ceil(np.log10(trigXCentFreq))))[0])
 	      t = t + xmin - timeShift-min(timeX)
 	      print 'freqidx ', freqidx
@@ -350,7 +351,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      plt.subplot(2,1,2)
 	      idx = np.intersect1d(np.where(timeH>=segStartTime)[0], np.where(timeH<=segEndTime)[0])
 	      Pxx, freq, t = mlab.specgram(dataH[0][idx], noverlap=0, Fs=samplFreq)
-	      freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigXCentFreq))))[0], np.where(freq<10**(np.ceil(np.log10(trigXCentFreq))))[0])
+	      freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigHCentFreq))))[0], np.where(freq<10**(np.ceil(np.log10(trigHCentFreq))))[0])
 	      t = t+ xmin - min(timeH)
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Fourier Frequencies')
