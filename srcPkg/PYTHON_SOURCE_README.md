@@ -1,10 +1,10 @@
 Python Source for the Bilinear Coupling Veto
 ============================================
 Readme file for code rewritten by Sudarshan Ghonge (<sudu.ghonge@gmail.com>) in Python based on code written by 
-P Ajith
-Bernard Hall
-Nairwita Majumdar
-Ben Yuan
+* P Ajith,
+* Bernard Hall,
+* Nairwita Majumdar,
+* Ben Yuan
 and a few others.
 
 To make things simple, the naming of variables, data flow and structure of functions has been kept the same.
