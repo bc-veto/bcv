@@ -17,6 +17,17 @@ import numpy as np
 import scipy.linalg as linalg
 import scipy.interpolate as sinterp
 
+class FrameCacheStruct:
+  def __init__(self, sites, frameTypes, startTimes, stopTimes, durations, directories ):
+    self.sites = sites
+    self.frameTypes = frameTypes
+    self.startTimes = startTimes
+    self.stopTimes  = stopTimes
+    self.durations  = durations
+    self.directories = directories
+
+
+
 def readData(frameCache, channelNames,frameTypes, startTime, stopTime, timeShifts, debugLevel):
   numberOfChannels = len(channelNames)
   if(len(frameTypes)!=numberOfChannels):
@@ -46,7 +57,6 @@ def readData(frameCache, channelNames,frameTypes, startTime, stopTime, timeShift
     # frame[0] is an array containing the strains
     # frame[1] is the end time of the data
     # frame[3] is the inverse of the Sampling Frequency
-    #print "Reading data of channel %s\n" %(channelNames[channelNumber])
     mData, mSamplFreq = readframedata(frameCache, channelNames[channelNumber],
 				       frameTypes[channelNumber], startTime - timeShifts[channelNumber], stopTime - timeShifts[channelNumber],
 				       allowRedundantFlag, debugLevel)
@@ -58,26 +68,6 @@ def readData(frameCache, channelNames,frameTypes, startTime, stopTime, timeShift
 
 
 
-#def resample2(data, samplFreqD, samplFreq):
-  #dataDuration = len(data)/samplFreqD
-  #from fractions import Fraction
-  #import sp_multirate as sp
-  ## (http://mubeta06.github.io/python/sp/_modules/sp/multirate.html)
-  
-  #frac = Fraction(samplFreq/samplFreqD).limit_denominator(1000)
-  #upSampleFactor = frac.numerator
-  #downSampleFactor = frac.denominator
-  #filterOrder = 2*256*max(upSampleFactor, downSampleFactor)
-  #filterCutOff = 0.99/max(upSampleFactor, downSampleFactor)
-  #filterFrequencies = np.asarray([0, filterCutOff, filterCutOff, 1])
-  ##print 'filterFrequencies: ', filterFrequencies
-  #filterMagnitudes = np.asarray([1, 1, 0, 0])
-  #filterCoefficients = upSampleFactor*firls(filterOrder, filterFrequencies, filterMagnitudes)*sig.hanning(filterOrder+1)
-  ##print 'filterCoefficients: ', filterCoefficients
-  
-  #dataInter = sp.resample(data, upSampleFactor, downSampleFactor, filterCoefficients)
-  ##print 'dataInter: ', dataInter
-  #return dataInter
 
 def resample2(data, samplFreqD, samplFreq):
   totalTime = len(data)/samplFreqD
@@ -191,16 +181,11 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
   
   # Set parameters for calculating spectrogram
   nfft = len(dataH)
-  #print "nfft = %d" %(nfft)
   wind = np.ones(nfft)
   
   # Calculate spectrogram
-  #print 'dataH: ', dataH
-  #print 'len(dataH): ', len(dataH)
   freqVecH = np.fft.rfftfreq(nfft, 1.0/samplFreq)
   fftChanH = np.fft.rfft(dataH)
-  #print 'fftChanH: ', fftChanH
-  #print 'len(fftChanH): ', len(fftChanH)
 
 
   [numChanP, lengthP] = np.shape(dataP)
@@ -208,7 +193,6 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
   rPH = np.asarray([])
   rPHAbs = np.asarray([])
   
-  #print 'numChanP: ', numChanP
   for iChan in xrange(numChanP):
     dataVecP = dataP[iChan]
     dataVecP = dataVecP[segIdxP]
@@ -216,7 +200,6 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
     
     freqVecP = np.fft.rfftfreq(nfft, 1.0/samplFreq)
     fftChanP = np.fft.rfft(dataVecP)
-    #print 'fftChanP.shape: ', fftChanP.shape, 'fftChanH.shape', fftChanH.shape
     
     # Make sure the fft vectors are of the same size
     if(len(freqVecP)!=len(freqVecH)):
@@ -229,10 +212,7 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
       
       # Calculate the cross-correlation statistic for the segment of data in channels h
       # and "projected" P
-      #print "freqVecP = ", freqVecP
-      #print "fftChanP.shape", fftChanP.shape
       [a, b] = calCrossCorr(fftChanP[freqBandIdx], fftChanH[freqBandIdx])
-      #print 'a: ', a, 'b: ', b
       rPH = np.append(rPH, a)
       rPHAbs = np.append(rPHAbs, b)
   
@@ -270,7 +250,6 @@ def calCrossCorr(u,v):
   uDotu = np.sum(u*np.conj(u))
   vDotv = np.sum(v*np.conj(v))
   uConjv = u*np.conj(v)/(np.sqrt(uDotu)*np.sqrt(vDotv))
-  #print 'uDotu :', uDotu, 'vDotv: ', vDotv, 'u*u/v*v :', uDotu/vDotv
   r = np.real(np.sum(uConjv))
   
   xCorr = np.fft.irfft(uConjv)/len(u)
@@ -339,14 +318,7 @@ def highpass(rawData, samplFreq, highpassCutOff):
   
   return highPassedData
   
-class FrameCacheStruct:
-  def __init__(self, sites, frameTypes, startTimes, stopTimes, durations, directories ):
-    self.sites = sites
-    self.frameTypes = frameTypes
-    self.startTimes = startTimes
-    self.stopTimes  = stopTimes
-    self.durations  = durations
-    self.directories = directories
+
 
 def loadframecache(cachePath):
   #loadframecache loads frame file cache information
@@ -834,38 +806,6 @@ def mfindcoinc(maxCoinc, A, B, P):
   C1 = np.asarray(C1)
   C2 = np.asarray(C2)
   return [C1, C2]
-
-#def mfindcoinc(maxCoinc, A, B, P):
-  ## Auxilary function used by mcoinc() to find co-incidences between time vectors
-  ## A and B which are usually segments of the larger H and X channel trigger time
-  ## co-ordniates
-  ##
-  ## Inputs: 
-  ## maxCoinc - the maximum number of co-incidences
-  ## A  - segment of the vector containing the time coordinates (seconds) triggers from a channel
-  ## B  - same as above
-  ## P - size of the coincidence window
-  
-  #n=0
-  #cont=True
-  #C1 = np.array([], dtype=int)
-  #C2 = np.array([], dtype =int)
-  ## Iterate through triggers in vector A
-  #for j in xrange(len(B)):
-    ## Iterate through triggers in vector B
-      ## Check if the difference is less than the time window
-    #idx = np.where((np.abs(A - B[j]) <=P))[0]
-	## If number of triggers is more than maxCoinc, exit.
-    #if(n<maxCoinc):
-      ## Add those indexes to the list
-      #C1 = np.append(C1, idx)
-      #C2 = np.append(C2, j)
-      #n+=1
-    #else:
-      #print "! Max num coincidences exceeded. Not recording further.\n"
-      #cont=False
-      #break
-  #return [C1, C2]
         
 
 def roundtopowertwo(segments, roundPower):

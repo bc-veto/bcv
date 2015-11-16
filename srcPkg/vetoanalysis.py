@@ -50,7 +50,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
   
   [coincTrigH, coincTrigX] = bcv.mcoinc(maxNumCoinc, TriggerHList.centralTime, TriggerXList.centralTime + timeShift, COINC_TIME_WINDOW, segLength, uniqueArgument)
   
-  #print 'coincTrigH', coincTrigH
   trigHCentralTimeVec = TriggerHList.centralTime[coincTrigH]
   trigXCentralTimeVec = TriggerXList.centralTime[coincTrigX]
   
@@ -328,11 +327,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      idx = np.intersect1d(np.where(timeX>=segStartTime -  timeShift)[0], np.where(timeX<=segEndTime - timeShift))
 	      
 	      Pxx, freq, t = mlab.specgram(tdataX[0][idx], noverlap=0, Fs=samplFreq)
-	      print 'freq: ', freq
-	      print 'trigXCentFreq: ', trigXCentFreq
 	      freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigXCentFreq))))[0], np.where(freq<10**(np.ceil(np.log10(trigXCentFreq))))[0])
 	      t = t + xmin - timeShift-min(timeX)
-	      print 'freqidx ', freqidx
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Fourier Frequencies')
 	      plt.title('channel X specgram')

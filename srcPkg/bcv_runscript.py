@@ -10,6 +10,7 @@ import bcv
 import gwpy.time as gtime
 import re
 
+# Class to store the configuration information of a particular channel
 class ConfigurationClass:
   def __init__(self):
     self.channelName = []
@@ -18,7 +19,7 @@ class ConfigurationClass:
     self.triggerListChH = []
     self.triggerListChX = []
     self.transferFunctionXtoH = []
-
+# Class to store the transfer function of a particular fast channel
 class TransferFunctionXtoH:
   def __init__(self, Freq, txh):
     self.frequency = Freq
@@ -455,11 +456,6 @@ for iSeg in xrange(nSeg):
   
   triggerIndexChX = np.intersect1d(np.where(triggerListX.centralTime >= segStartTime)[0], 
 				   np.where(triggerListX.centralTime <= segEndTime)[0])
-  #print triggerListX.centralTime
-  #print np.where(triggerListX.centralTime >= segStartTime)[0]
-  #print np.where(triggerListX.centralTime <= segEndTime)[0]
-  #print segStartTime
-  #print segEndTime
   
   triggerListXSeg = trigstruct.TrigStruct(triggerListX.startTime[triggerIndexChX],
 					  triggerListX.endTime[triggerIndexChX],
