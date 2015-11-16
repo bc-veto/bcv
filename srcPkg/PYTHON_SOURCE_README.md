@@ -1,6 +1,6 @@
 Python Source for the Bilinear Coupling Veto
 ============================================
-Readme file for code rewritten by Sudarshan Ghonge <sudu.ghonge@gmail.com> in Python based on code written by 
+Readme file for code rewritten by Sudarshan Ghonge (<sudu.ghonge@gmail.com>) in Python based on code written by 
 P Ajith
 Bernard Hall
 Nairwita Majumdar
