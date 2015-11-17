@@ -548,6 +548,7 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
   
   
   keepFrameFileNumbers = []
+  print 'frameFilePaths: ', frameFilePaths
   
   for frameFileNumber in range(numberOfFrameFiles):
     keepFrameFileFlag = True
@@ -561,7 +562,7 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
       
       if (overlapStartTime < overlapStoptime):
 	if(allowRedundantFlag):
-	  if( (frameFileStartTimes[frameFileNumber]==frameFileStartTimes[previousFrameFileNumber])      & (frameFileStopTimes[frameFileNumber] == frameFileStopTimes[previousFrameFileNumber])
+	  if((frameFileStartTimes[frameFileNumber]==frameFileStartTimes[previousFrameFileNumber])      & (frameFileStopTimes[frameFileNumber] == frameFileStopTimes[previousFrameFileNumber])
           & (frameFileTypes[frameFileNumber]==frameFileTypes[previousFrameFileNumber])):
 	    keepFrameFileFlag = False
 	    continue
