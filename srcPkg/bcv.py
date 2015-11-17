@@ -548,6 +548,7 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
   
   
   keepFrameFileNumbers = []
+  print 'channel name: ', channelName
   print 'frameFilePaths: ', frameFilePaths
   
   for frameFileNumber in range(numberOfFrameFiles):
