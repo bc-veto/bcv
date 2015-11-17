@@ -217,8 +217,14 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	  logFid.write('ERROR: Cannot load frame data for channel H...\n')
 	  logFid.write('ERROR: Channel H - bcvreadStartTime: %f bcvreadEndTime: %f\n'%( bcvreadStartTime, bcvreadEndTime))
 	elif(not all(samplFreqX)):
-	  logFid.write('ERROR: Cannot load frame data for channel X\n')
-	  logFid.write('ERROR: Channel X -  bcvreadStartTime: %f bcvreadEndTime: %f..\n'%(bcvreadEndTime, bcvreadEndTime ))
+	  if(len(samplFreqX)==1):
+	    logFid.write('ERROR: Cannot load frame data for channel X\n')
+	    logFid.write('ERROR: Channel X -  bcvreadStartTime: %f bcvreadEndTime: %f..\n'%(bcvreadEndTime, bcvreadEndTime ))
+	  elif(len(samplFreqX)==2):
+	    if(samplFreqX[1]==0):
+	      logFid.write('ERROR: Cannot load frame data for channel Y\n')
+	      logFid.write('ERROR: Channel Y -  bcvreadStartTime: %f bcvreadEndTime: %f..\n'%(bcvreadEndTime, bcvreadEndTime ))	      
+	      
 	  
 	else:
 	  tempArray = []  
