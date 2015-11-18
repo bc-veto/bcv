@@ -334,6 +334,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      
 	      Pxx, freq, t = mlab.specgram(tdataX[0][idx], noverlap=0, Fs=samplFreq)
 	      freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigXCentFreq))))[0], np.where(freq<10**(np.ceil(np.log10(trigXCentFreq))))[0])
+	      if(len(freqidx)==0):
+		freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigXCentFreq))-1))[0], np.where(freq<10**(np.ceil(np.log10(trigXCentFreq))+1))[0])
 	      t = t + xmin - timeShift-min(timeX)
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Fourier Frequencies')
@@ -354,13 +356,15 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      idx = np.intersect1d(np.where(timeH>=segStartTime)[0], np.where(timeH<=segEndTime)[0])
 	      Pxx, freq, t = mlab.specgram(dataH[0][idx], noverlap=0, Fs=samplFreq)
 	      freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigHCentFreq))))[0], np.where(freq<10**(np.ceil(np.log10(trigHCentFreq))))[0])
+	      if(len(freqidx)==0):
+		freqidx = np.intersect1d( np.where(freq>10**(np.floor(np.log10(trigXCentFreq))-1))[0], np.where(freq<10**(np.ceil(np.log10(trigXCentFreq))+1))[0])
 	      t = t+ xmin - min(timeH)
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Fourier Frequencies')
 	      plt.title('channel H specgram')	      
 	      ax = plt.gca()
 	      #ax.set_yscale('log')
-	      imshow = ax.pcolor(t, freq, np.log10(Pxx))
+	      imshow = ax.pcolor(t, freq[freqidx], np.log10(Pxx[freqidx]))
 	      ax.axhline(trigHCentFreq, color='w',linestyle='--', linewidth=1 )
 	      centTime = trigHCentTime - min(timeH)
 	      ax.axvline(centTime, color='w', linestyle='--', linewidth=1)
