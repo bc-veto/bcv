@@ -242,19 +242,70 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    #index = np.where(samplFreqX!=samplFreq)[0]
 	    #for iDs in index:
 	      #tempArray = bcv.resample2(dataX[iDs], samplFreqX[iDs], samplFreq)
-          
-          SIGNIFICANCE_THRESH_H = 500.0
-          SIGNIFICANCE_THRESH_X = 20.0
 
 	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
 	  if(highPassCutoff>0):
 	    dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
+	  # In case of bilinear coupling multiply the X and Y channels
+	  # to form a pseudo channel (which a combination of X and Y)
+	  # Also compute some parameters descrining the slow channels(s)
+	  # and store them in vectors.
+	  if(couplingModel=='bilinear'):
+	    segIdx = np.intersect1d(np.where(timeX + timeShift>=segStartTime)[0], np.where(timeX+timeShift<segEndTime)[0])
+	    
+	    meanY = np.mean(dataX[1][segIdx])
+	    varY  = np.var(dataX[1][segIdx])
+	    maxY  = np.max(dataX[1][segIdx])
+	    minY  = np.min(dataX[1][segIdx])
+	    maxYMat.append(maxY)
+	    meanYMat.append(meanY)
+	    varYMat.append(varY)
+	    minYMat.append(minY)
+	    #mindY = np.min(np.diff(dataX[iChan][segIdx]))
+	    #maxdY = np.max(np.diff(dataX[iChan][segIdx]))
+	    #meandY= np.mean(np.diff(dataX[iChan][segIdx]))
+	    
+	    dataP = np.asarray([dataX[0]*dataX[1]])
+	    
+	    #del dataX
+	    #dataX = dataP
+	    #del dataP
+	  else:
+	    meanY = 0
+	    varY = 0
+	    maxY = 0
+	    minY = 0
+	    maxYMat.append(maxY)
+	    meanYMat.append(meanY)
+	    varYMat.append(varY)
+	    minYMat.append(minY)	    
+	    #mindY = 0
+	    #maxdY = 0
+	    #meandY = 0
+	  if(highPassCutoff>0):
+	    dataP = bcv.highpass(dataP, samplFreq, highPassCutoff)
+          
+
+	      
+  
+	  
+	  if(couplingModel=='linear'):
+	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH[0], dataP, timeH, timeX,
+					     transFnXtoH, segStartTime, segEndTime, 
+					     timeShift, samplFreq, logFid, debugLevel)
+	  else:
+	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH[0],
+					     dataP, timeH, timeX, segStartTime,
+					     segEndTime,timeShift, samplFreq, logFid,
+					    debugLevel)
+	  analysedTrigIdx+=1	  
+	  SIGNIFICANCE_THRESH_H = 500.0
+          SIGNIFICANCE_THRESH_X = 20.0
           if (debugLevel>=2):
 	    if((trigHSignific>=SIGNIFICANCE_THRESH_H) & (trigXSignific>=SIGNIFICANCE_THRESH_X)):
 	      if(highPassCutoff>0):
-		tdataX = bcv.highpass(np.asarray([dataX[0]]), samplFreq, highPassCutoff)
-	      
+		tdataX = bcv.highpass(np.asarray([dataX[0]]), samplFreq, highPassCutoff)	      
 	      import os
 	      debugPlotsFolder =  'debug_plots/' + 'timeshift%d'%(timeShift)
 	      debugPlotsDir = outDir[0] + '/' +  debugPlotsFolder
@@ -307,7 +358,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      ax.axvline(trigHStartTime	-min(timeH), color='m', linestyle='--')
 	      ax.axvline(trigHEndTime-min(timeH), color='m', linestyle = '--')	      
 	      ax.text(trigHCentTime-min(timeH),ymax/10.0, '%f'%(trigHCentTime-min(timeH)) )
-	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f\n'%(trigHDuration,trigHSignific ), ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
+	      ax.text(0.3, 0.9, 'Duration=%f\nSignificance=%f, r=%f\n'%(trigHDuration,trigHSignific, rHP[0] ), ha='center', va = 'center', transform=ax.transAxes, fontsize=14,
 	       verticalalignment='top', bbox=props)	      
 	      plt.xlabel('t[sec] since')
 	      plt.ylabel('Time series data: ' + chanHName[0])
@@ -347,7 +398,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      centTime = trigXCentTime - min(timeX)
 	      ax.axvline(centTime, color='w', linestyle = '--', linewidth = 1)
 	      ax.text(centTime, trigXCentFreq, '(%f, %f)'%(centTime, trigXCentFreq))
-	      
 	      #ax.set_ylim((1.0, ymax))
 	      #ax.set_xlim((0.0, bcvreadEndTime - bcvSeadStartTime))
 	      plt.colorbar(imshow)
@@ -374,59 +424,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      #ax.set_xlim((0.0, bcvreadEndTime - bcvSeadStartTime))
 	      plt.savefig(plot_folder +'/Specgram.png')
 	  
-	  # In case of bilinear coupling multiply the X and Y channels
-	  # to form a pseudo channel (which a combination of X and Y)
-	  # Also compute some parameters descrining the slow channels(s)
-	  # and store them in vectors.
-	  if(couplingModel=='bilinear'):
-	    segIdx = np.intersect1d(np.where(timeX + timeShift>=segStartTime)[0], np.where(timeX+timeShift<segEndTime)[0])
-	    
-	    meanY = np.mean(dataX[1][segIdx])
-	    varY  = np.var(dataX[1][segIdx])
-	    maxY  = np.max(dataX[1][segIdx])
-	    minY  = np.min(dataX[1][segIdx])
-	    maxYMat.append(maxY)
-	    meanYMat.append(meanY)
-	    varYMat.append(varY)
-	    minYMat.append(minY)
-	    #mindY = np.min(np.diff(dataX[iChan][segIdx]))
-	    #maxdY = np.max(np.diff(dataX[iChan][segIdx]))
-	    #meandY= np.mean(np.diff(dataX[iChan][segIdx]))
-	    
-	    dataP = np.asarray([dataX[0]*dataX[1]])
-	    
-	    del dataX
-	    dataX = dataP
-	    del dataP
-	  else:
-	    meanY = 0
-	    varY = 0
-	    maxY = 0
-	    minY = 0
-	    maxYMat.append(maxY)
-	    meanYMat.append(meanY)
-	    varYMat.append(varY)
-	    minYMat.append(minY)	    
-	    #mindY = 0
-	    #maxdY = 0
-	    #meandY = 0
-	  if(highPassCutoff>0):
-	    dataX = bcv.highpass(dataX, samplFreq, highPassCutoff)
-          
 
-	      
-  
-	  
-	  if(couplingModel=='linear'):
-	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH[0], dataX, timeH, timeX,
-					     transFnXtoH, segStartTime, segEndTime, 
-					     timeShift, samplFreq, logFid, debugLevel)
-	  else:
-	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH[0],
-					     dataX, timeH, timeX, segStartTime,
-					     segEndTime,timeShift, samplFreq, logFid,
-					    debugLevel)
-	  analysedTrigIdx+=1
 	  
 	  timeShiftVec.append(timeShift)
           rHPMat.append(rHP)
