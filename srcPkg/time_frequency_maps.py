@@ -54,7 +54,7 @@ plt.xlabel('Central Times')
 plt.ylabel('Central Freqs')
 ax.set_title('Triggers of %s'%(channelHName))
 
-plt.savefig(folder + 'Freq_time_%s.png'%(channelXName))
+plt.savefig(folder + '/Freq_time_%s.png'%(channelXName))
 plt.close()
 
 
