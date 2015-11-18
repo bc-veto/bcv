@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 import bcv
-import subprocess
+import os
 
 parser = argparse.ArgumentParser(description = 'Plot the central times, durations and central frequencies of omicron triggers')
 
@@ -25,7 +25,7 @@ COINC_TIME_WINDOW = 0.5
 segLength = 3600
 uniqueArgument = 'nonunique'
 maxNumCoinc = len(trigXData)*len(trigHData)
-folder = subprocess.check_output('pwd').split('\n')[0]
+folder = os.popen('pwd').readlines()[0].split('\n')[0]
 channelXName = trigxfile.split('_', 3)[3].split('.')[0]
 channelHName = trighfile.split('_', 3)[3].split('.')[0]
 
