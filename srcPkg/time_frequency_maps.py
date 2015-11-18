@@ -26,6 +26,7 @@ segLength = 3600
 uniqueArgument = 'nonunique'
 maxNumCoinc = len(trigXData)*len(trigHData)
 folder = os.popen('pwd').readlines()[0].split('\n')[0]
+print 'folder: ', folder
 channelXName = trigxfile.split('_', 3)[3].split('.')[0]
 channelHName = trighfile.split('_', 3)[3].split('.')[0]
 
