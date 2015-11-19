@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import argparse
 import bcv
 import os
+import gwpy.time as gtime
 
 parser = argparse.ArgumentParser(description = 'Plot the central times, durations and central frequencies of omicron triggers')
 
@@ -38,18 +39,19 @@ trigHData = trigHData[segIdh]
 [coincTrigH, coincTrigX] = bcv.mcoinc(maxNumCoinc, trigHData[:, 2], trigXData[:, 2], COINC_TIME_WINDOW, segLength, uniqueArgument)
 
 plt.figure()
+plt.suptitle('Triggers between %s and %s' %(gtime.from_gps(startTime), gtime.from_gps(endTime)))
 plt.subplot(2,1,1)
 ax = plt.gca()
-ax.errorbar(trigXData[:, 2], trigXData[:, 3], xerr=[trigXData[:,2] - trigXData[:, 0], trigXData[:, 1] - trigXData[:, 2]], fmt='o')
-plt.plot(trigXData[coincTrigX,2], trigXData[coincTrigX,3], '*')
+ax.errorbar(trigXData[:, 2], trigXData[:, 3], xerr=[trigXData[:,2] - trigXData[:, 0], trigXData[:, 1] - trigXData[:, 2]], fmt='o', label='Triggers')
+plt.plot(trigXData[coincTrigX,2], trigXData[coincTrigX,3], '*', label='coincident triggers')
 plt.xlabel('Central Times')
 plt.ylabel('Central Freqs')
 ax.set_title('Triggers of %s'%(channelXName))
 
 plt.subplot(2,1,2)
 ax = plt.gca()
-ax.errorbar(trigHData[:, 2], trigHData[:, 3], xerr=[trigHData[:,2] - trigHData[:, 0], trigHData[:, 1] - trigHData[:, 2]], fmt='o')
-plt.plot(trigHData[coincTrigH,2], trigHData[coincTrigH,3], '*')
+ax.errorbar(trigHData[:, 2], trigHData[:, 3], xerr=[trigHData[:,2] - trigHData[:, 0], trigHData[:, 1] - trigHData[:, 2]], fmt='o', label='Triggers')
+plt.plot(trigHData[coincTrigH,2], trigHData[coincTrigH,3], '*', label='coincident triggers')
 plt.xlabel('Central Times')
 plt.ylabel('Central Freqs')
 ax.set_title('Triggers of %s'%(channelHName))
