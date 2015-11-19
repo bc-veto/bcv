@@ -279,7 +279,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    maxYMat.append(maxY)
 	    meanYMat.append(meanY)
 	    varYMat.append(varY)
-	    minYMat.append(minY)	    
+	    minYMat.append(minY)
+	    dataP = np.asarray([dataX[0]])
 	    #mindY = 0
 	    #maxdY = 0
 	    #meandY = 0
@@ -303,10 +304,12 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	  SIGNIFICANCE_THRESH_H = 500.0
           SIGNIFICANCE_THRESH_X = 20.0
           if (debugLevel>=2):
+	    print 'Printing debug plots\n'
 	    if((trigHSignific>=SIGNIFICANCE_THRESH_H) & (trigXSignific>=SIGNIFICANCE_THRESH_X)):
 	      if(highPassCutoff>0):
 		tdataX = bcv.highpass(np.asarray([dataX[0]]), samplFreq, highPassCutoff)	      
 	      import os
+	      print 'making debug plts\n'
 	      debugPlotsFolder =  'debug_plots/' + 'timeshift%d'%(timeShift)
 	      debugPlotsDir = outDir[0] + '/' +  debugPlotsFolder
 	      if(not os.path.exists(debugPlotsDir)):
