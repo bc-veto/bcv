@@ -807,7 +807,7 @@ def _get_veto_segs(cursor,veto_thresh,analyzed_segs,timeShift=False,trigXCentTim
     				return veto_segs.coalesce() & analyzed_segs
 			else:
 				return analyzed_segs
-      		else:
+      		else:\hfill
 			print >> sys.stderr, "WARNING trigXCentTimeData does not have key[0]...skipping, and returning analyzed_segs"
 			return analyzed_segs
 
@@ -936,6 +936,7 @@ function gotoSection(section) {
 <tr><td><b>Veto Efficiency:</b></td>       <td>%.2f %%</td> <td>(%d H trigs in total)</td>
 <tr><td><b>Dead Time:</b></td> <td> %.4f %%</td> <td>(%d s/ %d s)</td>
 <tr><td><b>Veto Efficiency / Deadtime:</b></td>       <td>%.2f </td>
+<tr><td><b>rThresh:</b></td>       <td>%.2f </td>
 <tr><td><b>Accidental Veto Probability:</b></td> <td>%.2e</td>
 <tr><td><b>Accidental Veto Rate (Hz):</b></td> <td>%.2e</td>
 <tr><td><b>Veto Significance:</b></td> <td>%.2f</td>
@@ -945,7 +946,7 @@ function gotoSection(section) {
 </table>
 </center>
 </div>
-  """%(info["vetoEfficiency"],info["numTrigsH"],info["deadTimePercentage"],info["deadTime"],info["analysisDuration"],info["efficiencyOverDeadtime"],info["accidentalVetoProb"],info["accidentalVetoRate"],info["vetoSignificance"],info["Nvetoed"],info["totalInjectionNumber"],info["safetyProbability"],info["safety"]))
+  """%(info["vetoEfficiency"],info["numTrigsH"],info["deadTimePercentage"],info["deadTime"],info["analysisDuration"],info["efficiencyOverDeadtime"],info["rThresh"], info["accidentalVetoProb"],info["accidentalVetoRate"],info["vetoSignificance"],info["Nvetoed"],info["totalInjectionNumber"],info["safetyProbability"],info["safety"]))
 
   ## Time Shift Plot
   contents.append(plot_section(subtitle,\
