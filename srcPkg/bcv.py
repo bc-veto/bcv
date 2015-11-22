@@ -16,6 +16,7 @@ import scipy.signal as sig
 import numpy as np
 import scipy.linalg as linalg
 import scipy.interpolate as sinterp
+import os
 
 class FrameCacheStruct:
   def __init__(self, sites, frameTypes, startTimes, stopTimes, durations, directories ):
@@ -528,12 +529,11 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
       frameFileStopTime = frameFileStartTime +  frameCache.durations[segment]
       
       frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] + '-' + frameCache.frameTypes[segment] + '-' + '%09d' %(frameFileStartTime) + '-' + '%d' %(frameCache.durations[segment]) + '.gwf'
-      print 'frameFilePath ', frameFilePath
       
       import os.path
       if(not os.path.isfile(frameFilePath)):
-	frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] +'-' + frameCache.frameTypes[segment] + '-' + '%010d' %(frameFileStartTime) + '-' + '%d'%(frameCache.durations[segment]) + '.gwf'
-	print 'frameFilePath ', frameFilePath
+	frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] +'-' + frameCache.frameTypes[segment] + '-' + '%010d' %(frameFileStartTime) + '-' + '*'+ '.gwf'
+	frameFilePath = os.popen('ls %s'%(frameFilePath)).readlines()[0].split('\n')[0]
       
       if(os.path.isfile(frameFilePath)):
 	frameFilePaths.append(frameFilePath)
@@ -585,11 +585,7 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     if(keepFrameFileFlag):
       keepFrameFileNumbers.append(frameFileNumber)
   keepFrameFileNumbers = np.asarray(keepFrameFileNumbers)
-  print 'frameType: ', frameType
   print 'frameFilePaths ', frameFilePaths
-  print 'start Time: ', startTime
-  print 'stopTime: ', stopTime
-  print 'segments: ', segments
   frameFilePaths = frameFilePaths[keepFrameFileNumbers]
   frameFileTypes = frameFileTypes[keepFrameFileNumbers]
   frameFileStartTimes = frameFileStartTimes[keepFrameFileNumbers]
