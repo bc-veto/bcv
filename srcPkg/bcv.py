@@ -528,10 +528,12 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
       frameFileStopTime = frameFileStartTime +  frameCache.durations[segment]
       
       frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] + '-' + frameCache.frameTypes[segment] + '-' + '%09d' %(frameFileStartTime) + '-' + '%d' %(frameCache.durations[segment]) + '.gwf'
+      print 'frameFilePath ', frameFilePath
       
       import os.path
       if(not os.path.isfile(frameFilePath)):
 	frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] +'-' + frameCache.frameTypes[segment] + '-' + '%010d' %(frameFileStartTime) + '-' + '%d'%(frameCache.durations[segment]) + '.gwf'
+	print 'frameFilePath ', frameFilePath
       
       if(os.path.isfile(frameFilePath)):
 	frameFilePaths.append(frameFilePath)
