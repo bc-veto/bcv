@@ -587,7 +587,7 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
   print 'frameFilePaths ', frameFilePaths
   print 'start Time: ', startTime
   print 'stopTime: ', stopTime
-  
+  print 'segments: ', segments
   frameFilePaths = frameFilePaths[keepFrameFileNumbers]
   frameFileTypes = frameFileTypes[keepFrameFileNumbers]
   frameFileStartTimes = frameFileStartTimes[keepFrameFileNumbers]
