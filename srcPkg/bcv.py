@@ -582,8 +582,12 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
 	
     if(keepFrameFileFlag):
       keepFrameFileNumbers.append(frameFileNumber)
-  
   keepFrameFileNumbers = np.asarray(keepFrameFileNumbers)
+  print 'frameType: ', frameType
+  print 'frameFilePaths ', frameFilePaths
+  print 'start Time: ', startTime
+  print 'stopTime: ', stopTime
+  
   frameFilePaths = frameFilePaths[keepFrameFileNumbers]
   frameFileTypes = frameFileTypes[keepFrameFileNumbers]
   frameFileStartTimes = frameFileStartTimes[keepFrameFileNumbers]
