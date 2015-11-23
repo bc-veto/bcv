@@ -530,6 +530,8 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
       
       frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] + '-' + frameCache.frameTypes[segment] + '-' + '%09d' %(frameFileStartTime) + '-' + '%d' %(frameCache.durations[segment]) + '.gwf'
       
+      # In case the frame file durations start becoming variable. The ls <name> with a '*' in place of the duration field
+      # returns the file name. we then use that file name
       import os.path
       if(not os.path.isfile(frameFilePath)):
 	frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] +'-' + frameCache.frameTypes[segment] + '-' + '%010d' %(frameFileStartTime) + '-' + '*'+ '.gwf'
@@ -585,7 +587,6 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     if(keepFrameFileFlag):
       keepFrameFileNumbers.append(frameFileNumber)
   keepFrameFileNumbers = np.asarray(keepFrameFileNumbers)
-  print 'frameFilePaths ', frameFilePaths
   frameFilePaths = frameFilePaths[keepFrameFileNumbers]
   frameFileTypes = frameFileTypes[keepFrameFileNumbers]
   frameFileStartTimes = frameFileStartTimes[keepFrameFileNumbers]

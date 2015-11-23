@@ -17,15 +17,21 @@ args = parser.parse_args()
 trighfile = args.trighfile
 trigxfile = args.trigxfile
 
+# Force 2-D array shape
 trigHData = np.loadtxt(trighfile).reshape(-1, 9)
 trigXData = np.loadtxt(trigxfile).reshape(-1, 9)
 startTime = args.startTime
 endTime = args.endTime
 
+# Time window of 0.5 s for co-incident triggers
 COINC_TIME_WINDOW = 0.5
+# Segment legnth in seconds to be fed to the mcoinc function
 segLength = 3600
+# Whether to have unique mapping b/w triggers
 uniqueArgument = 'nonunique'
+# Maximum number of coincidences
 maxNumCoinc = len(trigXData)*len(trigHData)
+# Get current working director
 folder = os.popen('pwd').readlines()[0].split('\n')[0]
 print 'folder: ', folder
 channelXName = trigxfile.split('_', 3)[3].split('.')[0]

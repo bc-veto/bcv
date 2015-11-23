@@ -389,7 +389,7 @@ if(triggerListChHFID>=0):
 			    np.where(startTimeH>=analysisStartTime)[0])
   trigIdxH = np.intersect1d(trigIdxH, 	np.where(endTimeH <= analysisEndTime)[0])
   # Filter out triggers whose duration is greater than 1 second
-  trigIdxH = np.intersect1d(trigIdxH, np.where((endTimeH - startTimeH)<1.0)[0])
+  # trigIdxH = np.intersect1d(trigIdxH, np.where((endTimeH - startTimeH)<1.0)[0])
   
   triggerListH = trigstruct.TrigStruct(trigDataMatrixH[trigIdxH, 0], trigDataMatrixH[trigIdxH, 1], trigDataMatrixH[trigIdxH, 2], trigDataMatrixH[trigIdxH, 3], triggerSignificanceH[trigIdxH])
   
@@ -422,7 +422,7 @@ if(triggerListChXFID >=0):
 			    np.where(startTimeX>=analysisStartTime)[0])
   trigIdxX = np.intersect1d(trigIdxX, np.where(endTimeX <= analysisEndTime)[0])
   # Filter out triggers whose duration is greater than 1 second
-  trigidxX = np.intersect1d(trigIdxX, np.where((endTimeX - startTimeX)<1.0)[0])
+  #trigidxX = np.intersect1d(trigIdxX, np.where((endTimeX - startTimeX)<1.0)[0])
   
   triggerListX = trigstruct.TrigStruct(trigDataMatrixX[trigIdxX, 0],
 				       trigDataMatrixX[trigIdxX, 1], trigDataMatrixX[trigIdxX, 2], trigDataMatrixX[trigIdxX, 3],
