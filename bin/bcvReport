@@ -807,7 +807,7 @@ def _get_veto_segs(cursor,veto_thresh,analyzed_segs,timeShift=False,trigXCentTim
     				return veto_segs.coalesce() & analyzed_segs
 			else:
 				return analyzed_segs
-      		else:\hfill
+      		else:
 			print >> sys.stderr, "WARNING trigXCentTimeData does not have key[0]...skipping, and returning analyzed_segs"
 			return analyzed_segs
 
