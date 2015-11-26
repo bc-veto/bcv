@@ -253,7 +253,7 @@ def calCrossCorr(u,v):
   uConjv = u*np.conj(v)/(np.sqrt(uDotu)*np.sqrt(vDotv))
   r = np.real(np.sum(uConjv))
   
-  xCorr = np.fft.irfft(uConjv)/len(u)
+  xCorr = np.fft.irfft(uConjv)*len(u)
   rMax = np.max(np.real(xCorr))
   rMin = np.min(np.real(xCorr))
   
