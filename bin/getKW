@@ -391,8 +391,7 @@ def get_trigs(channel, segs, min_thresh, trigs_loc=None,\
                       if central_time in segs and snr > min_thresh: #commented out (added)
                           KWcursor.execute("insert into KWtrigs values (?, ?, ?, ?, ?, ?, ?, ?, ?)", (start_time, end_time, central_time, "%d"%frequency, unnormalized_energy, normalized_energy, "%d"%clustered_pixels_num, significance, snr))
                  else:
-                      if channel in str(trig[8]) and (central_time in segs) and snr > min_thresh:
-                          print str(trig[8]) #added
+                      if channel in str(trig[8]) and (central_time in segs) and snr > min_thresh: #added
 
               # insert into the database
               # micro second for GPS time is accurate enough
