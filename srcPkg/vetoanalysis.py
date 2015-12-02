@@ -301,8 +301,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 					     segEndTime,timeShift, samplFreq, logFid,
 					    debugLevel)
 	  analysedTrigIdx+=1	  
-	  SIGNIFICANCE_THRESH_H = 500.0
-          SIGNIFICANCE_THRESH_X = 20.0
+	  SIGNIFICANCE_THRESH_H = 200.0
+          SIGNIFICANCE_THRESH_X = 10.0
           if (debugLevel>=2):
 	    print 'Printing debug plots\n'
 	    if((trigHSignific>=SIGNIFICANCE_THRESH_H) & (trigXSignific>=SIGNIFICANCE_THRESH_X)):
