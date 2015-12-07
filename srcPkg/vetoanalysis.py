@@ -156,6 +156,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
       # Calculate the total number of samples, rounded to the closest integer
       # power of 2 
       totalNumberSamples = bcv.roundtopowertwo(totalDuration*samplFreq, 1024.0)
+      print 'nusamp =%d' %(totalNumberSamples)
       
       # Calculate the length of the data segment used for veto analysis
       segmentDuration = totalNumberSamples / samplFreq
@@ -175,7 +176,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
       bcvreadStartTime = np.floor(segStartTime) - 1
       bcvreadEndTime = np.ceil(segEndTime) + 1
       
-      if (debugLevel >=2):
+      if (debugLevel >=1):
 	#print values of different variables
 	bcv.printvar('--- Analysis Window ---',''
 		 ,'analysisStartTime',analysisStartTime, 
@@ -293,7 +294,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	  if(couplingModel=='linear'):
 	    [rHP, rMaxHP] = bcv.linearCouplingCoeff2(dataH[0], dataP, timeH, timeX,
 					     transFnXtoH, segStartTime, segEndTime, 
-					     timeShift, samplFreq, logFid, debugLevel)
+					     timeShift, samplFreq, logFid, debugLevel)roundtopowertwo
 	  else:
 	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff2(dataH[0],
 					     dataP, timeH, timeX, segStartTime,
