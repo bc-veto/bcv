@@ -247,7 +247,7 @@ def linearCouplingCoeff2(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
     
     
     
-    a = np.correlate(dataH, dataX)/(np.correlate(dataH, dataH)*np.correlate(dataX, dataX))
+    a = np.correlate(dataH, dataX)/(np.sqrt(np.correlate(dataH, dataH)*np.correlate(dataX, dataX)))
     rXH = np.append(rXH, a)
     rMaxXH = np.append(rMaxXH, a)
     return [rXH, rMaxXH]  
@@ -288,7 +288,7 @@ def bilinearCouplingCoeff2(dataH, dataP, timeH, timeP,
       logFid.write('ERROR: len(dataVecP) = %d len(dataH) = %d\n', len(dataVecP), len(dataH))
       return
     else:
-      a = np.correlate(dataH, dataX)/(np.correlate(dataH, dataH)*np.correlate(dataX, dataX))
+      a = np.correlate(dataH, dataX)/(np.sqrt(np.correlate(dataH, dataH)*np.correlate(dataX, dataX)))
       rPH = np.append(rPH, a)
       rPHAbs = np.append(rPHAbs, a)
   
