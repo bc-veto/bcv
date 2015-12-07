@@ -245,8 +245,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 
 	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
-	  #if(highPassCutoff>0):
-	    #dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
+	  if(highPassCutoff>0):
+	    dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
 	  # In case of bilinear coupling multiply the X and Y channels
 	  # to form a pseudo channel (which a combination of X and Y)
 	  # Also compute some parameters descrining the slow channels(s)
@@ -283,8 +283,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    #mindY = 0
 	    #maxdY = 0
 	    #meandY = 0
-	  #if(highPassCutoff>0):
-	    #dataP = bcv.highpass(dataP, samplFreq, highPassCutoff)
+	  if(highPassCutoff>0):
+	    dataP = bcv.highpass(dataP, samplFreq, highPassCutoff)
           
 
 	      
