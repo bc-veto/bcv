@@ -171,7 +171,7 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
   # Set the frequency range of the veto analysis
   
   
-  MIN_FREQ = 10.0
+  MIN_FREQ = 40.0
   MAX_FREQ = 4000.0
   
   # Meta Data
