@@ -245,8 +245,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 
 	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
-	  if(highPassCutoff>0):
-	    dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
+	  #if(highPassCutoff>0):
+	    #dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
 	  # In case of bilinear coupling multiply the X and Y channels
 	  # to form a pseudo channel (which a combination of X and Y)
 	  # Also compute some parameters descrining the slow channels(s)
@@ -267,6 +267,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    #meandY= np.mean(np.diff(dataX[iChan][segIdx]))
 	    
 	    dataP = np.asarray([dataX[0]*dataX[1]])
+	    rHP = np.asarray([np.correlate(dataH[0], dataP[0], same)])
+	    rMaxHP = rHP
 	    
 	    #del dataX
 	    #dataX = dataP
@@ -278,28 +280,30 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    minY = 0
 	    maxYMat.append(maxY)
 	    meanYMat.append(meanY)
-	    varYMat.append(varY)
+	    varYMat.append(varY
 	    minYMat.append(minY)
 	    dataP = np.asarray([dataX[0]])
+	    rHP = np.asarray([np.correlate(dataH[0], dataP[0], same)])
+	    rMaxHP = rHP
 	    #mindY = 0
 	    #maxdY = 0
 	    #meandY = 0
-	  if(highPassCutoff>0):
-	    dataP = bcv.highpass(dataP, samplFreq, highPassCutoff)
+	  #if(highPassCutoff>0):
+	    #dataP = bcv.highpass(dataP, samplFreq, highPassCutoff)
           
 
 	      
   
 	  
-	  if(couplingModel=='linear'):
-	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH[0], dataP, timeH, timeX,
-					     transFnXtoH, segStartTime, segEndTime, 
-					     timeShift, samplFreq, logFid, debugLevel)
-	  else:
-	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH[0],
-					     dataP, timeH, timeX, segStartTime,
-					     segEndTime,timeShift, samplFreq, logFid,
-					    debugLevel)
+	  #if(couplingModel=='linear'):
+	    #[rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH[0], dataP, timeH, timeX,
+					     #transFnXtoH, segStartTime, segEndTime, 
+					     #timeShift, samplFreq, logFid, debugLevel)
+	  #else:
+	    #[rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH[0],
+					     #dataP, timeH, timeX, segStartTime,
+					     #segEndTime,timeShift, samplFreq, logFid,
+					    #debugLevel)
 	  analysedTrigIdx+=1	  
 	  SIGNIFICANCE_THRESH_H = 200.0
           SIGNIFICANCE_THRESH_X = 10.0
