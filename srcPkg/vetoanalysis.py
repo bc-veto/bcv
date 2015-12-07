@@ -266,10 +266,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    #maxdY = np.max(np.diff(dataX[iChan][segIdx]))
 	    #meandY= np.mean(np.diff(dataX[iChan][segIdx]))
 	    
-	    dataP = np.asarray([dataX[0]*dataX[1]])
-	    rHP = np.asarray([np.correlate(dataH[0], dataP[0], same)])
-	    rMaxHP = rHP
-	    
+	    dataP = np.asarray([dataX[0]*dataX[1]])	    
 	    #del dataX
 	    #dataX = dataP
 	    #del dataP
@@ -283,8 +280,6 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    varYMat.append(varY)
 	    minYMat.append(minY)
 	    dataP = np.asarray([dataX[0]])
-	    rHP = np.asarray([np.correlate(dataH[0], dataP[0], same)])
-	    rMaxHP = rHP
 	    #mindY = 0
 	    #maxdY = 0
 	    #meandY = 0
@@ -295,15 +290,15 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	      
   
 	  
-	  #if(couplingModel=='linear'):
-	    #[rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH[0], dataP, timeH, timeX,
-					     #transFnXtoH, segStartTime, segEndTime, 
-					     #timeShift, samplFreq, logFid, debugLevel)
-	  #else:
-	    #[rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH[0],
-					     #dataP, timeH, timeX, segStartTime,
-					     #segEndTime,timeShift, samplFreq, logFid,
-					    #debugLevel)
+	  if(couplingModel=='linear'):
+	    [rHP, rMaxHP] = bcv.linearCouplingCoeff2(dataH[0], dataP, timeH, timeX,
+					     transFnXtoH, segStartTime, segEndTime, 
+					     timeShift, samplFreq, logFid, debugLevel)
+	  else:
+	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff2(dataH[0],
+					     dataP, timeH, timeX, segStartTime,
+					     segEndTime,timeShift, samplFreq, logFid,
+					    debugLevel)
 	  analysedTrigIdx+=1	  
 	  SIGNIFICANCE_THRESH_H = 200.0
           SIGNIFICANCE_THRESH_X = 10.0
