@@ -280,7 +280,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    minY = 0
 	    maxYMat.append(maxY)
 	    meanYMat.append(meanY)
-	    varYMat.append(varY
+	    varYMat.append(varY)
 	    minYMat.append(minY)
 	    dataP = np.asarray([dataX[0]])
 	    rHP = np.asarray([np.correlate(dataH[0], dataP[0], same)])
