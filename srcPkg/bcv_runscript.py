@@ -399,7 +399,8 @@ if(triggerListChHFID):
   
   del trigDataMatrixH, triggerSignificanceH
 else:
-  sys.exit( '### Unable to open the trigger file for channel H\n(%s)' %(triggerListChH))
+  print '### Unable to open the trigger file for channel H\n(%s)' %(triggerListChH)
+  sys.exit()
 
 # Read the trigger list for channel X
 triggerListChX = configuration[channelXIndex].triggerListChX
