@@ -141,7 +141,7 @@ with open(configurationFile, 'r') as configurationFID:
     if(commentIndex>=0):
       line = line[0:commentIndex]
       
-    line = line.strip()    is_non_zero_file
+    line = line.strip()
     
     if(len(line)==0):
       continue
