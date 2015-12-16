@@ -175,7 +175,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
       bcvreadStartTime = np.floor(segStartTime) - 1
       bcvreadEndTime = np.ceil(segEndTime) + 1
       
-      if (debugLevel >=2):
+      if (debugLevel >=1):
 	#print values of different variables
 	bcv.printvar('--- Analysis Window ---',''
 		 ,'analysisStartTime',analysisStartTime, 
@@ -266,8 +266,7 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    #maxdY = np.max(np.diff(dataX[iChan][segIdx]))
 	    #meandY= np.mean(np.diff(dataX[iChan][segIdx]))
 	    
-	    dataP = np.asarray([dataX[0]*dataX[1]])
-	    
+	    dataP = np.asarray([dataX[0]*dataX[1]])	    
 	    #del dataX
 	    #dataX = dataP
 	    #del dataP
@@ -292,11 +291,12 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
   
 	  
 	  if(couplingModel=='linear'):
-	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH[0], dataP, timeH, timeX,
+	    [rHP, rMaxHP] = bcv.linearCouplingCoeff2(dataH[0], dataP, timeH, timeX,
 					     transFnXtoH, segStartTime, segEndTime, 
 					     timeShift, samplFreq, logFid, debugLevel)
+	    print '%d %f' %(timeShift, rHP)
 	  else:
-	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH[0],
+	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff2(dataH[0],
 					     dataP, timeH, timeX, segStartTime,
 					     segEndTime,timeShift, samplFreq, logFid,
 					    debugLevel)

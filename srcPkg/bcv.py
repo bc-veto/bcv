@@ -171,7 +171,7 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
   # Set the frequency range of the veto analysis
   
   
-  MIN_FREQ = 10.0
+  MIN_FREQ = 40.0
   MAX_FREQ = 4000.0
   
   # Meta Data
@@ -218,6 +218,82 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
       rPHAbs = np.append(rPHAbs, b)
   
   return [rPH, rPHAbs]
+
+def linearCouplingCoeff2(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
+			segEndTime, timeShift, samplFreq, logFid, debugLevel):
+  # LINEARCOUPLINGCOEFF - calculate the cross correlation coeff b/w the gravitational
+  # ave channel H and the "projected" instrumental channel X. The noise in the
+  # instrumental channel X is projected to the domain of the H using a linear coupling
+  # function Txh
+
+
+  rXH = np.asarray([])
+  rMaxXH = np.asarray([])
+  if((len(dataH)==0) | (len(dataX)==0)):
+    logFid.write('Error: One or more data vectors are empty..\n')
+    logFid.write('Error: len(dataH) = %d len(dataX) = %d..\n' %(len(dataH), len(dataX[0])))
+  
+  elif(len(dataH)!=len(dataX[0])):
+    logFid.write('Error: Different lengths. len(dataH) = %d len(dataX) = %d..\n'%(len(dataH), len(dataX[0])))
+  else:
+    dataH = dataH #- np.mean(dataH)
+    dataX = dataX[0] #- np.mean(dataX[0])
+    
+    segIdxH = np.intersect1d(np.where(timeH>=segStartTime)[0], np.where(timeH<segEndTime)[0])
+    dataH = dataH[segIdxH]
+    
+    segIdxX = np.intersect1d(np.where(timeX + timeShift >= segStartTime)[0], np.where(timeX + timeShift < segEndTime)[0])
+    dataX = dataX[segIdxX]
+    
+    
+    
+    a = np.correlate(dataH, dataX)/(np.sqrt(np.correlate(dataH, dataH)*np.correlate(dataX, dataX)))
+    rXH = np.append(rXH, a)
+    rMaxXH = np.append(rMaxXH, a)
+    return [rXH, rMaxXH]  
+
+
+
+def bilinearCouplingCoeff2(dataH, dataP, timeH, timeP,
+			  segStartTime,segEndTime, timeShift, samplFreq, logFid, debugLevel):
+  # This function computes the correlation coefficient between Channel H and al
+  # the pseudo channels P.
+  #
+  # Usage: [rPH, rPHAbs] = bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
+  #                               segStartTime, segEndTime, timeShift, samplFreq
+  #                               logFid, debugLevel)
+  # Set the frequency range of the veto analysis
+  
+  
+  
+  # Meta Data
+  segIdxH = np.intersect1d(np.where(timeH>=segStartTime)[0], np.where(timeH<segEndTime)[0])
+  dataH = dataH[segIdxH]
+  #dataH = dataH - np.mean(dataH)
+
+  
+  [numChanP, lengthP] = np.shape(dataP)
+  segIdxP = np.intersect1d(np.where(timeP + timeShift >= segStartTime)[0], np.where(timeP + timeShift < segEndTime)[0])
+  rPH = np.asarray([])
+  rPHAbs = np.asarray([])
+  
+  for iChan in xrange(numChanP):
+    dataVecP = dataP[iChan]
+    dataVecP = dataVecP[segIdxP]
+    #dataVecP = dataVecP - np.mean(dataVecP)
+    
+    # Make sure the fft vectors are of the same size
+    if(len(dataVecP)!=len(dataH)):
+      logFid.write('ERROR: Unequal size of data. vectors. \n')
+      logFid.write('ERROR: len(dataVecP) = %d len(dataH) = %d\n', len(dataVecP), len(dataH))
+      return
+    else:
+      a = np.correlate(dataH, dataX)/(np.sqrt(np.correlate(dataH, dataH)*np.correlate(dataX, dataX)))
+      rPH = np.append(rPH, a)
+      rPHAbs = np.append(rPHAbs, a)
+  
+  return [rPH, rPHAbs]
+
 
 def interpolatetransfn(tfFreq, tfMag, tfPhase, reqFreqRes):
   
