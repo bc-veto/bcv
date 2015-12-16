@@ -25,6 +25,10 @@ class TransferFunctionXtoH:
     self.frequency = Freq
     self.Txh = txh
 
+# Function to check if the file exists AND is non-empty
+def is_non_zero_file(fpath):  
+    return True if os.path.isfile(fpath) and os.path.getsize(fpath) > 0 else False
+
 #if(len(sys.argv)<13):
   #print 'Veto analysis pipeline using instrumental coupling models\n'
   #print 'Usage (Python executable from unix shell)\n'
@@ -137,7 +141,7 @@ with open(configurationFile, 'r') as configurationFID:
     if(commentIndex>=0):
       line = line[0:commentIndex]
       
-    line = line.strip()    
+    line = line.strip()    is_non_zero_file
     
     if(len(line)==0):
       continue
@@ -373,9 +377,9 @@ triggerListChH = configuration[channelHIndex].triggerListChH
 logFid.write('LOG: Reading channel H trigger list %s...\n' %(triggerListChH))
 
 # Open channel H trigger list file for reading
-triggerListChHFID = open(triggerListChH, 'r')
+triggerListChHFID = is_non_zero_file(triggerListChH)
 
-if(triggerListChHFID>=0):
+if(triggerListChHFID):
   # Selct only triggers passing the SNR threshold
   # Force as 2-d array
   trigDataMatrixH = np.loadtxt(triggerListChH, dtype=np.float64).reshape(-1, 9)
@@ -404,12 +408,12 @@ triggerListChX = configuration[channelXIndex].triggerListChX
 logFid.write('LOG: Reading channel X trigger list %s...\n' %(triggerListChX))
 
 # Open channel X trigger list for reading
-triggerListChXFID = open(triggerListChX, 'r')
+triggerListChXFID = is_non_zero_file(triggerListChX)
 
 # Create a counter for the number of lines in channel X trigger list file
 numTriggerXLines = 0
 
-if(triggerListChXFID >=0):
+if(triggerListChXFID):
   # Force as 2-d array
   trigDataMatrixX = np.loadtxt(triggerListChX, dtype=np.float64).reshape(-1, 9)
   
