@@ -291,12 +291,12 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
   
 	  
 	  if(couplingModel=='linear'):
-	    [rHP, rMaxHP] = bcv.linearCouplingCoeff2(dataH[0], dataP, timeH, timeX,
+	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH[0], dataP, timeH, timeX,
 					     transFnXtoH, segStartTime, segEndTime, 
 					     timeShift, samplFreq, logFid, debugLevel)
 	    print '%d %f' %(timeShift, rHP)
 	  else:
-	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff2(dataH[0],
+	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH[0],
 					     dataP, timeH, timeX, segStartTime,
 					     segEndTime,timeShift, samplFreq, logFid,
 					    debugLevel)

@@ -436,7 +436,7 @@ if(triggerListChXFID):
   del trigDataMatrixX, triggerSignificanceX
 else:
   print '### Unable to open trigger file for channel X\n(%s)'%(triggerListChX)
-  sys.exit()
+  sys.exit(0)
 
 nSeg = len(segStartTimeVec)
 
