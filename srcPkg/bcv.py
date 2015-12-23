@@ -805,6 +805,8 @@ def mcoinc(maxCoinc, A, B, P, seglen, *args):
   t0 = np.int(np.floor(min(np.min(A), np.min(B) ) ))
   # Find the max of time contained in the first row of the matrices A and B
   tmax = np.int(np.round(max(np.max(A), np.max(B))))
+  if(t0==tmax):
+    tmax = t0+seglen
   
   # Initialize the output row vectors that will indicate coincident trigger
   # columns b/w matrices A and B
