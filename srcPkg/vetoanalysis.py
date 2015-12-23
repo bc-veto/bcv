@@ -51,6 +51,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
   print 'TriggerXList.centralTime ', TriggerXList.centralTime
   
   [coincTrigH, coincTrigX] = bcv.mcoinc(maxNumCoinc, TriggerHList.centralTime, TriggerXList.centralTime + timeShift, COINC_TIME_WINDOW, segLength, uniqueArgument)
+  print 'coincTrigH: ', coincTrigH
+  print 'coincTrigX: ', coincTrigX
   
   trigHCentralTimeVec = TriggerHList.centralTime[coincTrigH]
   trigXCentralTimeVec = TriggerXList.centralTime[coincTrigX]
