@@ -47,6 +47,8 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
   
   logFid.write( 'LOG: Finding coincidences... Num trigs H = %d, Num trigs X = %d\n'\
     %(len(TriggerHList.centralTime), len(TriggerXList.centralTime)))
+  print TriggerHList.centralTime
+  print TriggerXList.centralTime
   
   [coincTrigH, coincTrigX] = bcv.mcoinc(maxNumCoinc, TriggerHList.centralTime, TriggerXList.centralTime + timeShift, COINC_TIME_WINDOW, segLength, uniqueArgument)
   
