@@ -871,7 +871,7 @@ def mfindcoinc(maxCoinc, A, B, P):
       # Check if the difference is less than the time window
       if(np.abs(A[i] - B[j]) <=P):
 	# If number of triggers is more than maxCoinc, exit.
-	if(n<maxCoinc):
+	if(n<=maxCoinc):
 	  # Add those indexes to the list
 	  C1.append(i)
 	  C2.append(j)
