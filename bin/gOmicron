@@ -193,7 +193,7 @@ for line in segments:
 		for l in range(0, (len(printresult)-1)):
 		#for line in printresult:
 	#print >> sys.stderr, "SNR threshold: %s"%opts.min_thresh
-			if (float(printresult[l][8]) >= float(opts.min_thresh)):  #write lines to final trigger file if SNR is above threshold
+			if (float(printresult[l][8]) >= float(opts.min_thresh) and (printresult[l][3] <= 2048.0)):  #write lines to final trigger file if SNR is above threshold
 				if (float(printresult[l][1]) <= float(segment_breakup[1])):
 					os.system('clear')
 					print >> sys.stderr, "Writing line...SNR: %s > %s"%(printresult[l][8],opts.min_thresh)
