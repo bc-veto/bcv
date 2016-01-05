@@ -34,7 +34,7 @@ channelHName = trighfile.split('_', 3)[3].split('.')[0]
 
 [coincTrigH, coincTrigX] = bcv.mcoinc(maxNumCoinc, trigHData[:, 2], trigXData[:, 2], COINC_TIME_WINDOW, segLength, uniqueArgument)
 
-if(coincTrigH!=coincTrigX):
+if(len(coincTrigH)!=len(coincTrigX)):
   sys.exit('Inconsistent number of triggers')
 
 plt.figure()
