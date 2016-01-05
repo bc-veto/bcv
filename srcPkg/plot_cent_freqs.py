@@ -8,6 +8,7 @@ parser = argparse.ArgumentParser(description = 'Plot the central frequency of x 
 
 parser.add_argument('trighfile', type=str, help='Name of the h trigger file')
 parser.add_argument('trigxfile', type=str, help='Name of the x trigger file')
+parser.add_argument('uarg', type=str, help='Uniqueness arguement', choices=['unique', 'nonunique'])
 
 args = parser.parse_args()
 
@@ -23,7 +24,7 @@ COINC_TIME_WINDOW = 0.5
 # Segment legnth in seconds to be fed to the mcoinc function
 segLength = 3600
 # Whether to have unique mapping b/w triggers
-uniqueArgument = 'nonunique'
+uniqueArgument = args.uarg
 # Maximum number of coincidences
 maxNumCoinc = len(trigXData)*len(trigHData)
 # Get current working director
