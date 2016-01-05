@@ -38,7 +38,7 @@ if(len(coincTrigH)!=len(coincTrigX)):
   sys.exit('Inconsistent number of triggers')
 
 plt.figure()
-plt.plot(trigXData[coincTrigX:, 4], trigHData[coincTrigH:, 4], '.')
+plt.plot(trigXData[coincTrigX, 4], trigHData[coincTrigH, 4], '.')
 plt.xlabel('Central frequencies of X triggers')
 plt.ylabel('Central frequencies of Y triggers')
 plt.savefig(folder + '/Central_freqs_%s.png'%(channelXName))
