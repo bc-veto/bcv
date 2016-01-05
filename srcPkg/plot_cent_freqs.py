@@ -3,6 +3,7 @@ import argparse
 import matplotlib.pyplot as plt
 import sys
 import os
+import bcv
 parser = argparse.ArgumentParser(description = 'Plot the central frequency of x triggers vs h triggers')
 
 parser.add_argument('trighfile', type=str, help='Name of the h trigger file')
