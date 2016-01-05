@@ -41,6 +41,6 @@ plt.figure()
 plt.plot(trigXData[:, 4][coincTrigX], trigHData[:, 4][coincTrigH], '.')
 plt.xlabel('Central frequencies of X triggers')
 plt.ylabel('Central frequencies of Y triggers')
-plt.savefig(folder + 'Central_freqs_%s.png'%(channelXName))
+plt.savefig(folder + '/Central_freqs_%s.png'%(channelXName))
 plt.close()
 
