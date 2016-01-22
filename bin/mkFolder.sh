@@ -8,9 +8,9 @@
 
 # ln -s /gds-h1/dmt/triggers/H-KW_TRIGGERS/H-KW_TRIGGERS-10780/* /home/bernard.hall/triggers/
 
-SOURCE_ROOT="/gds-h1/dmt/triggers/H-KW_TRIGGERS/H-KW_TRIGGERS-"
-DEST_ROOT="/home/bernard.hall/"
-DEST_FOLDER="triggers"
+SOURCE_ROOT=""
+DEST_ROOT="/home/sudarshan.ghonge/"
+DEST_FOLDER="triggers/"
 DEST_DIR=$DEST_ROOT$DEST_FOLDER
 
 echo "The destination directory is : "$DEST_DIR
@@ -47,7 +47,7 @@ done
 #working part
 #SOURCE_DIR="/gds-h1/dmt/triggers/H-KW_TRIGGERS/H-KW_TRIGGERS-10780"
 echo "Working..."
-ln -s $SOURCE_DIR/* $DEST_DIR
+DIR_LIST=("${DIR_LIST[@]}" $SOURCE_DIR)
 echo "Done!"
 
 echo "Enter another?"
@@ -68,5 +68,11 @@ fi
 #echo $ITERATOR
 
 done
+echo "${DIR_LIST[@]}"
 
+for DIRECTORY in "${DIR_LIST[@]}"
+do
+	echo $DIRECTORY
+	ln -s $DIRECTORY/* $DEST_DIR
+done
 echo "Exiting script!"
