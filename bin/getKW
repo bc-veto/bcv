@@ -368,6 +368,12 @@ def get_trigs(channel, segs, min_thresh, trigs_loc=None,\
 
 #          for line in  open(trigs_file): #old
                for line in  open(full_file_name): #added
+                 # Remove headers
+                 commentIndex = line.find('#')
+                 if(commentIndex>=0):
+                   line = line[0:commentIndex]
+                 if(len(line)==0):
+                   continue
             # now use the above variable name to with the "open" command.  Again,
             # note that "trigs_file" is only created in the above "correction" block.
             # get central time and KW significance
