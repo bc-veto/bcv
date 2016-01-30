@@ -361,7 +361,7 @@ def summary_page(channel_info,veto_segs):
   </tr>
   """]
 
-  sorted_keys_by_effoverdeadtime = sorted(channel_info, key=lambda x: channel_info[x]['efficiencyOverDeadtime'], reverse=True)
+  sorted_keys_by_effoverdeadtime = sorted(channel_info, key=lambda x: float(channel_info[x]['efficiencyOverDeadtime']), reverse=True)
   for chan in sorted_keys_by_effoverdeadtime:
     if channel_info[chan]["safety"] == "Unsafe":
       color = "red"
