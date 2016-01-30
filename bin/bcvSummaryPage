@@ -368,7 +368,7 @@ def summary_page(channel_info,veto_segs):
     elif channel_info[chan]["candidate"] == "True":
       color = "yellow"
     else:
-      color = "white"
+      continue
     table.append("""
             <tr bgcolor="%s">
             <td><a href="channel_pages/%s_%s-report_page.html">%s</a></td>
