@@ -30,5 +30,3 @@ plt.ylabel('correlation statistic $r$')
 plt.xlabel('trigger durations')
 plt.savefig('./corr_vs_duration_%s.png'%(channelName))
 plt.close()
-  
-

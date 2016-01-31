@@ -1,4 +1,33 @@
 #!/home/detchar/opt/gwpysoft/bin/python
+
+'''
+- bcv_runscript - perform veto analysis using different coupling models between 
+- the instrumental channel and the gravitational-wave channel. 
+- 
+- usage: bcv_runscript.py segmentFile, configurationFile, frameCacheFile, ...
+-        couplingModel, highPassCutoff, trigSignThreshX, trigSignThreshH, ...
+-        outDir, logFile, timeShiftMin, timeShiftMax, numTimeShifts, debugLevel
+-        
+- configurationFile 	- Path name of channel configuration file
+- frameCacheFile 	- Path name of framecache file
+- outDir 		- Directory to write results
+- logFile		- string specifying the name of the log file 
+- debugLevel 		- Verboseness of debug level output
+-
+- The configuration file is an ASCII text file describing the parameters
+- for each channel to be analyzed. The entries should have the following
+- syntax:
+-
+- We will assume that the first channel that is read from the configuration
+- file is channel H (the h(t) detector output data vector), followed by a
+- X channel and Y channel (the "fast" and "slow" aux. channles). 
+-
+- Aaron B. Pearlman <aaronp1@umbc.edu>, 22-06-09
+- P. Ajith <ajith@caltech.edu>, 23-07-09
+- Tomoki Isogai <isogait@carleton.edu>
+
+- Re-written by Sudarshan Ghonge <sudu.ghonge@gmail.com> 27-09-15
+ '''
 import sys
 import string
 import numpy as np
@@ -74,45 +103,6 @@ timeShiftMax = args.timeShiftMax
 numTimeShifts = args.numTimeShifts
 debugLevel = args.debugLevel
 
-
-
-##Process command line arguments
-#segmentFile = sys.argv[1]
-#configurationFile = sys.argv[2]
-#frameCacheFile = sys.argv[3]
-#couplingModel = sys.argv[4]
-#highPassCutoff = sys.argv[5]
-#trigSignThreshX = sys.argv[6]
-#trigSignThreshH = sys.argv[7]
-#outDir = sys.argv[8]
-#logFileName = sys.argv[9]
-#timeShiftMin = sys.argv[10]
-#timeShiftMax = sys.argv[11]
-#numTimeShifts = sys.argv[12]
-#debugLevel = sys.argv[13]
-
-
-##Process command line arguments
-#if(isinstance(trigSignThreshH, basestring)):
-  #trigSignThreshH = string.atof(trigSignThreshH)
-
-#if(isinstance(trigSignThreshX, basestring)):
-  #trigSignThreshX = string.atof(trigSignThreshX)
-
-#if(isinstance(highPassCutoff, basestring)):
-  #highPassCutoff = string.atof(highPassCutoff)
-
-#if(isinstance(timeShiftMin, basestring)):
-  #timeShiftMin = string.atof(timeShiftMin)
-  
-#if(isinstance(timeShiftMax, basestring)):
-  #timeShiftMax = string.atof(timeShiftMax)
-  
-#if(isinstance(numTimeShifts, basestring)):
-  #numTimeShifts = string.atof(numTimeShifts)
-  
-#if(isinstance(debugLevel, basestring)):
-  #debugLevel = string.atof(debugLevel)
 
 print "Reading segment file %s..\n" %(segmentFile)
 
