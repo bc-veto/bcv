@@ -97,8 +97,10 @@ for line in segments:
 	j = 0	
 	loc_flag = 0	
 
-	while (loc_flag == 0):  # need to make handler for case that the correct folder does not exist!!!
-		if int(time_prefix[j]) == int(sb_truncated_1):
+	while (loc_flag == 0 and j+1!=len(time_prefix)):  # need to make handler for case that the correct folder does not exist!!!
+		if(len(time_prefix)==0):
+			print 'Folder not found\n'
+		elif int(time_prefix[j]) == int(sb_truncated_1):
 			loc_flag = 1
 			j = j - 1 # make sure j has the correct value
 		j = j + 1
@@ -109,7 +111,12 @@ for line in segments:
 
 	o_trigger_files = []
         #o_trigger_files = os.listdir(Omicron_loc + '/' + channel_o + '/' + time_prefix[j])
-	o_trigger_files = os.listdir(Omicron_loc + channel_o + '/' + time_prefix[j])
+        if(loc_flag==1):
+          o_trigger_files = os.listdir(Omicron_loc + channel_o + '/' + time_prefix[j])
+        else:
+          bad_chan = open('bad_chan.txt', 'a')
+          bad_chan.write('%s\n'%(channel))
+          bad_chan.close()
 	
 	o_trigger_files_1 = []
 	m = 0
@@ -186,7 +193,7 @@ for line in segments:
 		for l in range(0, (len(printresult)-1)):
 		#for line in printresult:
 	#print >> sys.stderr, "SNR threshold: %s"%opts.min_thresh
-			if (float(printresult[l][8]) >= float(opts.min_thresh)):  #write lines to final trigger file if SNR is above threshold
+			if (float(printresult[l][8]) >= float(opts.min_thresh) and (printresult[l][3] <= 2048.0)):  #write lines to final trigger file if SNR is above threshold
 				if (float(printresult[l][1]) <= float(segment_breakup[1])):
 					os.system('clear')
 					print >> sys.stderr, "Writing line...SNR: %s > %s"%(printresult[l][8],opts.min_thresh)

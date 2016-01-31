@@ -1,4 +1,4 @@
-#!/home/detchar/opt/gwpysoft/bin/python
+#!/usr/bin/python
 #
 # Copyright (C) 2010  Tomoki Isogai
 #
@@ -173,8 +173,7 @@ def calcProbDensity(r,rVec):
     probDens.append(i)
     i = 0
 
-  return [array(probDens) / counter / dx, counter]
-  #return array(probDens)
+  return array(probDens) / counter / dx
 
 def findVetoThreshold(cursor, reqAccVetoRate, effNumSecs):
   """
@@ -325,9 +324,9 @@ def applyVetoThreshold(channel, resultsDir, reqAccVetoRate, gpsTriggerHList, num
         start = time.time()
         if verbose: print >> sys.stderr, "Calculating probability densities..."
 
-    probDensTS, countTS = calcProbDensity(cursor.execute("select abs(%s) from data where tau != 0 order by abs(%s)"%(statistics,statistics)),rVec)
+    probDensTS = calcProbDensity(cursor.execute("select abs(%s) from data where tau != 0 order by abs(%s)"%(statistics,statistics)),rVec)
 
-    probDensZL, countZL = calcProbDensity(cursor.execute("select abs(%s) from data where tau == 0 order by abs(%s)"%(statistics,statistics)),rVec)
+    probDensZL = calcProbDensity(cursor.execute("select abs(%s) from data where tau == 0 order by abs(%s)"%(statistics,statistics)),rVec)
 
     if perftest:
         elapsed = time.time() - start
@@ -663,9 +662,9 @@ def applyVetoThreshold(channel, resultsDir, reqAccVetoRate, gpsTriggerHList, num
   
     # cross correlation histogram
     if max(probDensTS) > 0:
-      semilogy(rVec, probDensTS,'b',label="Time-shift. Num-trigs=%d"%(countTS),drawstyle="steps")
+      semilogy(rVec, probDensTS,'b',label="Time-shift",drawstyle="steps")
     if max(probDensZL) > 0:
-      semilogy(rVec, probDensZL,'r',label="Zero-lag. Num-trigs=%d"%(countZL),drawstyle="steps")
+      semilogy(rVec, probDensZL,'r',label="Zero-lag",drawstyle="steps")
     axvline(x=rThresh,ymin=0.001,ymax=10,color='k',ls="--")
     legend(loc='upper right')
     grid()
@@ -937,7 +936,6 @@ function gotoSection(section) {
 <tr><td><b>Veto Efficiency:</b></td>       <td>%.2f %%</td> <td>(%d H trigs in total)</td>
 <tr><td><b>Dead Time:</b></td> <td> %.4f %%</td> <td>(%d s/ %d s)</td>
 <tr><td><b>Veto Efficiency / Deadtime:</b></td>       <td>%.2f </td>
-<tr><td><b>rThresh:</b></td>       <td>%.2f </td>
 <tr><td><b>Accidental Veto Probability:</b></td> <td>%.2e</td>
 <tr><td><b>Accidental Veto Rate (Hz):</b></td> <td>%.2e</td>
 <tr><td><b>Veto Significance:</b></td> <td>%.2f</td>
@@ -947,7 +945,7 @@ function gotoSection(section) {
 </table>
 </center>
 </div>
-  """%(info["vetoEfficiency"],info["numTrigsH"],info["deadTimePercentage"],info["deadTime"],info["analysisDuration"],info["efficiencyOverDeadtime"],info["rThresh"], info["accidentalVetoProb"],info["accidentalVetoRate"],info["vetoSignificance"],info["Nvetoed"],info["totalInjectionNumber"],info["safetyProbability"],info["safety"]))
+  """%(info["vetoEfficiency"],info["numTrigsH"],info["deadTimePercentage"],info["deadTime"],info["analysisDuration"],info["efficiencyOverDeadtime"],info["accidentalVetoProb"],info["accidentalVetoRate"],info["vetoSignificance"],info["Nvetoed"],info["totalInjectionNumber"],info["safetyProbability"],info["safety"]))
 
   ## Time Shift Plot
   contents.append(plot_section(subtitle,\
