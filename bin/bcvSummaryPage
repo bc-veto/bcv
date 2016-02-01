@@ -250,11 +250,11 @@ def summary_page(channel_info,veto_segs):
   pylab.legend(loc='upper right')
   pylab.savefig("%s/Htriggers_freq_snr.png"%baseDir,dpi=100)
   
-  efficiencyList = np.array([channel_info[x]['vetoEfficiency'] for x in channel_info.keys()])
+  efficiencyList = array([channel_info[x]['vetoEfficiency'] for x in channel_info.keys()])
   fig  = plt.figure()
   ax = fig.add_subplot(1,1,1)
   ax.hist(efficiencyList, 30)
-  ax.set_xlim([1, np.max(efficiencyList) + 2.0])
+  ax.set_xlim([1, max(efficiencyList) + 2.0])
   ax.set_xlabel('Efficiency')
   ax.set_ylabel('Number of channels')
   ax.set_title('Histogram plot of the veto efficiencies')
