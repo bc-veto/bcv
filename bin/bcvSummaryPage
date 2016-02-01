@@ -250,7 +250,7 @@ def summary_page(channel_info,veto_segs):
   pylab.legend(loc='upper right')
   pylab.savefig("%s/Htriggers_freq_snr.png"%baseDir,dpi=100)
   
-  efficiencyList = array([channel_info[x]['vetoEfficiency'] for x in channel_info.keys()])
+  efficiencyList = array([float(channel_info[x]['vetoEfficiency'].split('%')[0]) for x in channel_info.keys()])
   fig  = plt.figure()
   ax = fig.add_subplot(1,1,1)
   ax.hist(efficiencyList, 30)
