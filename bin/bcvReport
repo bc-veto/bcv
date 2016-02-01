@@ -447,9 +447,11 @@ def applyVetoThreshold(channel, resultsDir, reqAccVetoRate, gpsTriggerHList, num
     #print >> sys.stderr, "Time shift veto_segments_TS_list: ",veto_segments_TS_list # 6-15-2015
     #print >> sys.stderr, "gpsTriggerHList['centralTime']: ",gpsTriggerHList['centralTime'] # 6-15-2015
 
-    vetoEffCoincTS = []
+    #vetoEffCoincTS = []
+    vetoedNumTS=0
+    TSNum=0
     for veto_segments_TS in veto_segments_TS_list:
-      vetoedNumTS = len([t for t in gpsTriggerHList['centralTime'] if t in veto_segments_TS[1]])
+      vetoedNumTS += len([t for t in gpsTriggerHList['centralTime'] if t in veto_segments_TS[1]])
       if verbose: #print veto_segments_TS[0]
 		print >> sys.stderr, "veto_segments_TS[0]: ",veto_segments_TS[0] # 6-15-2015
 		print >> sys.stderr, "veto_segments_TS[1]: ",veto_segments_TS[1] # 6-15-2015
@@ -457,15 +459,16 @@ def applyVetoThreshold(channel, resultsDir, reqAccVetoRate, gpsTriggerHList, num
 		print >> sys.stderr, "vetoedNumTS: ",vetoedNumTS # 6-15-2015
       TSNum_qstring = "select count(%s) from data where tau == %s"%(statistics,veto_segments_TS[0],)
       print >> sys.stderr, "TSNum_qstring : %s"%TSNum_qstring
-      TSNum = int(cursor.execute(TSNum_qstring).fetchone()[0])
+      TSNum += int(cursor.execute(TSNum_qstring).fetchone()[0]) or 0
 
 #      TSNum = int(cursor.execute("select count(%s) from data where tau == ?"%statistics,(veto_segments_TS[0],)).fetchone()[0])
-      vetoEffCoincTS.append(vetoedNumTS / (TSNum or 1))
+      #vetoEffCoincTS.append(vetoedNumTS / (TSNum or 1))
     
     #print >> sys.stderr, "vetoEffCoincTS: %s"%vetoEffCoincTS  # 6-15-2015
+    vetoEffCoincTS = vetoedNumTS/(TSNum or 1)
 
-    if (not(math.isnan(mean(array(vetoEffCoincTS))))) and (mean(array(vetoEffCoincTS)) != 0): # added/changed 6-14-2015
-	vetoSignificance = vetoEffCoinc / mean(array(vetoEffCoincTS))
+    if ((vetoEffCoincTS!=0) and (vetoEffCoinc != 0)): # added/changed 2-1-2016
+	vetoSignificance = vetoEffCoinc / vetoEffCoincTS
     else:
 	vetoSignificance = vetoEffCoinc
 	 
