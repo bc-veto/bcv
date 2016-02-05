@@ -1,4 +1,6 @@
 #!/usr/bin/python
+# Edited 2016-02-05 
+# Sudarshan Ghonge <sudu.ghonge@gmail.com>
 
 import os
 import sys
@@ -8,7 +10,7 @@ import optparse
 import os.path
 import re
 
-from numpy import sqrt
+from numpy import sqrt, pi, log
 #from numpy import matrix
 
 from bcv import git_version
@@ -69,138 +71,202 @@ segments = []
 #seg = open('test_seg.txt', 'r')
 seg = open(opts.segFile, 'r')
 
-i = 0
+#i = 0
 
-for line in seg: #obtain segemnts from user's segment file
-	segments.insert(i,line)	
-	i = i + 1	
+#for line in seg: #obtain segemnts from user's segment file
+	#segments.insert(i,line)	
+	#i = i + 1	
 
-seg.close()
+#seg.close()
 
-time_prefix = []
+#time_prefix = []
 #first loop to find appropriate time directories
 #time_prefix = os.listdir(Omicron_loc + '/' + channel_o) #get available time directories
-time_prefix = os.listdir(Omicron_loc + channel_o) #get available time directories
+#time_prefix = os.listdir(Omicron_loc + channel_o) #get available time directories
+# Edited 2016-02-05 Sudarshan Ghonge <sudu.ghonge@gmail.com>: Not needed for using GetOmicronTriggers. 
 
-z = 0
-j = 0
-loc_flag = 0
+#z = 0
+#j = 0
+#loc_flag = 0
+# Edited 2016-02-05 Sudarshan Ghonge <sudu.ghonge@gmail.com>: Not needed for using GetOmicronTriggers. 
 
-for line in segments:
-	segment_breakup = segments[z].split()
-	sb_truncated = str(segment_breakup[0])
-	sb_truncated_1 = sb_truncated[0:5]
+for line in seg:
+        # Break line into start and end time times of segment
+        seg_break = line.split(' ')
+        startTime = seg_break[0]
+        endTime = seg_break[1]
 
-        #print >> sys.stderr, "%s"%sb_truncated_1
-        #print >> sys.stderr, "%s"%time_prefix
+	# Remove pre-existing temporary file
+	if os.path.isfile('temp_local_data.txt'):
+	os.remove('temp_local_data.txt')
+	string = 'GetOmicronTriggers.sh -c %s -s %d -e %d -q -x %f '%(ifo + ':' + channel, startTime, endTime, opts.min_thresh) + '> temp_local_data.txt'
 
-	j = 0	
-	loc_flag = 0	
 
-	while (loc_flag == 0 and j+1!=len(time_prefix)):  # need to make handler for case that the correct folder does not exist!!!
-		if(len(time_prefix)==0):
-			print 'Folder not found\n'
-		elif int(time_prefix[j]) == int(sb_truncated_1):
-			loc_flag = 1
-			j = j - 1 # make sure j has the correct value
-		j = j + 1
-	z = z + 1
+	os.system(string)
+	printresult = []
 
-        #print >> sys.stderr, "j: %s"%j
-	#print >> sys.stderr, "Time prefix: %s"%time_prefix[j]
-
-	o_trigger_files = []
-        #o_trigger_files = os.listdir(Omicron_loc + '/' + channel_o + '/' + time_prefix[j])
-        if(loc_flag==1):
-          o_trigger_files = os.listdir(Omicron_loc + channel_o + '/' + time_prefix[j])
-        else:
-          bad_chan = open('bad_chan.txt', 'a')
-          bad_chan.write('%s\n'%(channel))
-          bad_chan.close()
+	f = open('temp_local_data.txt', 'r')
 	
-	o_trigger_files_1 = []
-	m = 0
-
-	#print >> sys.stderr, "o_trigger_files: %s"%o_trigger_files
-
-	for line in o_trigger_files:  #extract only those trigger files that fit within the segment
-		otf = re.findall('\d+', line)
-		cmpr_index = 0
-		cmpr = 0		
-
-		for index in otf:
-			if float(otf[cmpr_index]) > 1000000000:
-				cmpr = cmpr_index
-			cmpr_index = cmpr_index + 1		
-
-		#print >> sys.stderr, "%s"%otf
-		#print >> sys.stderr, "%s"%cmpr
-		#print >> sys.stderr, "otf[cmpr]: %s"%otf[cmpr] # normally otf[1], but sometimes otf[2]
-		#print >> sys.stderr, "sb0: %s"%segment_breakup[0]
-		#print >> sys.stderr, "sb1: %s"%segment_breakup[1]	
-
-		if (float(otf[cmpr])>float(segment_breakup[0])) and (float(otf[cmpr])<float(segment_breakup[1])):# changed from otf[1] to otf[2]
-			o_trigger_files_1.insert(m,line)		
-		m = m + 1
+	# Sanity check
+	line in f.readline()
+	if line == 'GetOmicronTriggers.sh: Omicron triggers are not available\n':
+	  print >> sys.stderr, 'Could not find channel %s' %(channel)
+	  sys.exit(0)
 	
-	k = 0
+	
+	i = 0
+	# Constant required while calculating the full width at half maximum
+	const_fwhm = sqrt(2.0*log(2.0))
+	for line in f:
+	    if not line.startswith('#'):
+		Q = float(line[2])
+		f0 = float(line[1])
+		sd = Q/(f0*pi)
+		hwhm = const_fwhm*sd/2.0 # Half width at half maximum.
+		trigger_peak = float(line[0])
+		trigger_start = trigger_peak - hwhm
+		trigger_end = trigger_peak + hwhm
+		trigger_snr = float(line[3])
+		line1 = '%.4f %.4f %.4f %.4f %.2f'%(trigger_start, trigger_end, trigger_peak, f0, trigger_snr )
+		printresult.insert(i,line1)
+		i+=1
+	f.close()
 
-	for line in o_trigger_files_1:
-		if os.path.isfile('temp_local_data.txt'):
-			os.remove('temp_local_data.txt')
-		#string = 'ligolw_print -t sngl_burst -c start_time -c duration -d " " -c peak_time -c peak_frequency -c snr ' + Omicron_loc + '/' + channel_o + '/' + time_prefix[j] + '/' + line + ' > temp_local_data.txt'
+	if os.path.isfile('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt'):
+		g = open('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt', 'a')  #append
+	else:	
+		g = open('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt', 'w')  #create new file is it doesn't exist
 
-		string = 'ligolw_print -t sngl_burst -c start_time -c duration -d " " -c peak_time -c peak_frequency -c snr ' + Omicron_loc + channel_o + '/' + time_prefix[j] + '/' + line + ' > temp_local_data.txt'
-
-		#print >> sys.stderr, "querry string: %s"%string
-
-		os.system(string)
-		printresult = []
-
-		f = open('temp_local_data.txt', 'r')
-		i = 0
-		for line in f:
-			printresult.insert(i,line)
-			i = i + 1
-
-		f.close()	
-
-		i = 0
-
-		for line in printresult:
-			printresult_temp = printresult[i].split()
-			#print >> sys.stderr, "printresult_temp length: %s"%(len(printresult_temp))
-                        #print >> sys.stderr, "printresult_temp: %s"%printresult_temp
-			#SNR_dup = printresult_temp[4]
-			printresult_temp.insert(4,'0.0')
-			printresult_temp.insert(5,'0.0')
-			printresult_temp.insert(6,'0.0')
-			printresult_temp.insert(7,'0.0')
-			#print >> sys.stderr, "printresult_temp length: %s"%(len(printresult_temp))
-			#print >> sys.stderr, "printresult_temp: %s"%printresult_temp
-			printresult_temp[5] = str((float(printresult_temp[8])*float(printresult_temp[8])))
-		        printresult_temp[1] = str(float(printresult_temp[0]) +float(printresult_temp[1]))
-			printresult[i] = printresult_temp  # need to check this loop is working right
-			i = i + 1
-		if os.path.isfile('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt'):
-			g = open('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt', 'a')  #append
-		else:	
-			g = open('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt', 'w')  #create new file is it doesn't exist
-
-		#l = 0
+	#l = 0
 
                                  
-		for l in range(0, (len(printresult)-1)):
-		#for line in printresult:
-	#print >> sys.stderr, "SNR threshold: %s"%opts.min_thresh
-			if (float(printresult[l][8]) >= float(opts.min_thresh) and (printresult[l][3] <= 2048.0)):  #write lines to final trigger file if SNR is above threshold
-				if (float(printresult[l][1]) <= float(segment_breakup[1])):
-					os.system('clear')
-					print >> sys.stderr, "Writing line...SNR: %s > %s"%(printresult[l][8],opts.min_thresh)
-					print >> sys.stderr, "end time: %s"%printresult[l][1]
-					g.write('  '.join(printresult[l]) + '\n')
-			#l = l + 1
-			#print >> sys.stderr, "printresult length: %s"%(len(printresult))
-			#print >> sys.stderr, "Counter : %s"%l
-
+	for l in range(0, (len(printresult))):
+		os.system('clear')
+		print >> sys.stderr, "Writing line...SNR: %s > %s"%(printresult[l][4],opts.min_thresh)
+		print >> sys.stderr, "end time: %s"%printresult[l][1]
+		g.write('  '.join(printresult[l]) + '\n')
+		#l = l + 1
+		#print >> sys.stderr, "printresult length: %s"%(len(printresult))
+		#print >> sys.stderr, "Counter : %s"%l
 		g.close()
+
+
+
+#for line in segments:
+	#segment_breakup = segments[z].split()
+	#sb_truncated = str(segment_breakup[0])
+	#sb_truncated_1 = sb_truncated[0:5]
+
+        ##print >> sys.stderr, "%s"%sb_truncated_1
+        ##print >> sys.stderr, "%s"%time_prefix
+
+	#j = 0	
+	#loc_flag = 0	
+
+	#while (loc_flag == 0 and j+1!=len(time_prefix)):  # need to make handler for case that the correct folder does not exist!!!
+		#if(len(time_prefix)==0):
+			#print 'Folder not found\n'
+		#elif int(time_prefix[j]) == int(sb_truncated_1):
+			#loc_flag = 1
+			#j = j - 1 # make sure j has the correct value
+		#j = j + 1
+	#z = z + 1
+
+        ##print >> sys.stderr, "j: %s"%j
+	##print >> sys.stderr, "Time prefix: %s"%time_prefix[j]
+
+	#o_trigger_files = []
+        ##o_trigger_files = os.listdir(Omicron_loc + '/' + channel_o + '/' + time_prefix[j])
+        #if(loc_flag==1):
+          #o_trigger_files = os.listdir(Omicron_loc + channel_o + '/' + time_prefix[j])
+        #else:
+          #bad_chan = open('bad_chan.txt', 'a')
+          #bad_chan.write('%s\n'%(channel))
+          #bad_chan.close()
+	
+	#o_trigger_files_1 = []
+	#m = 0
+
+	##print >> sys.stderr, "o_trigger_files: %s"%o_trigger_files
+
+	#for line in o_trigger_files:  #extract only those trigger files that fit within the segment
+		#otf = re.findall('\d+', line)
+		#cmpr_index = 0
+		#cmpr = 0		
+
+		#for index in otf:
+			#if float(otf[cmpr_index]) > 1000000000:
+				#cmpr = cmpr_index
+			#cmpr_index = cmpr_index + 1		
+
+		##print >> sys.stderr, "%s"%otf
+		##print >> sys.stderr, "%s"%cmpr
+		##print >> sys.stderr, "otf[cmpr]: %s"%otf[cmpr] # normally otf[1], but sometimes otf[2]
+		##print >> sys.stderr, "sb0: %s"%segment_breakup[0]
+		##print >> sys.stderr, "sb1: %s"%segment_breakup[1]	
+
+		#if (float(otf[cmpr])>float(segment_breakup[0])) and (float(otf[cmpr])<float(segment_breakup[1])):# changed from otf[1] to otf[2]
+			#o_trigger_files_1.insert(m,line)		
+		#m = m + 1
+	
+	#k = 0
+
+	#for line in o_trigger_files_1:
+		#if os.path.isfile('temp_local_data.txt'):
+			#os.remove('temp_local_data.txt')
+		##string = 'ligolw_print -t sngl_burst -c start_time -c duration -d " " -c peak_time -c peak_frequency -c snr ' + Omicron_loc + '/' + channel_o + '/' + time_prefix[j] + '/' + line + ' > temp_local_data.txt'
+
+		#string = 'ligolw_print -t sngl_burst -c start_time -c duration -d " " -c peak_time -c peak_frequency -c snr ' + Omicron_loc + channel_o + '/' + time_prefix[j] + '/' + line + ' > temp_local_data.txt'
+
+		##print >> sys.stderr, "querry string: %s"%string
+
+		#os.system(string)
+		#printresult = []
+
+		#f = open('temp_local_data.txt', 'r')
+		#i = 0
+		#for line in f:
+			#printresult.insert(i,line)
+			#i = i + 1
+
+		#f.close()	
+
+		#i = 0
+
+		#for line in printresult:
+			#printresult_temp = printresult[i].split()
+			##print >> sys.stderr, "printresult_temp length: %s"%(len(printresult_temp))
+                        ##print >> sys.stderr, "printresult_temp: %s"%printresult_temp
+			##SNR_dup = printresult_temp[4]
+			#printresult_temp.insert(4,'0.0')
+			#printresult_temp.insert(5,'0.0')
+			#printresult_temp.insert(6,'0.0')
+			#printresult_temp.insert(7,'0.0')
+			##print >> sys.stderr, "printresult_temp length: %s"%(len(printresult_temp))
+			##print >> sys.stderr, "printresult_temp: %s"%printresult_temp
+			#printresult_temp[5] = str((float(printresult_temp[8])*float(printresult_temp[8])))
+		        #printresult_temp[1] = str(float(printresult_temp[0]) +float(printresult_temp[1]))
+			#printresult[i] = printresult_temp  # need to check this loop is working right
+			#i = i + 1
+		#if os.path.isfile('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt'):
+			#g = open('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt', 'a')  #append
+		#else:	
+			#g = open('KWtrigs/' + tag  + '_' + ifo + opts.separator + channel + '.txt', 'w')  #create new file is it doesn't exist
+
+		##l = 0
+
+                                 
+		#for l in range(0, (len(printresult)-1)):
+		##for line in printresult:
+	##print >> sys.stderr, "SNR threshold: %s"%opts.min_thresh
+			#if (float(printresult[l][8]) >= float(opts.min_thresh) and (printresult[l][3] <= 2048.0)):  #write lines to final trigger file if SNR is above threshold
+				#if (float(printresult[l][1]) <= float(segment_breakup[1])):
+					#os.system('clear')
+					#print >> sys.stderr, "Writing line...SNR: %s > %s"%(printresult[l][8],opts.min_thresh)
+					#print >> sys.stderr, "end time: %s"%printresult[l][1]
+					#g.write('  '.join(printresult[l]) + '\n')
+			##l = l + 1
+			##print >> sys.stderr, "printresult length: %s"%(len(printresult))
+			##print >> sys.stderr, "Counter : %s"%l
+
+		#g.close()
