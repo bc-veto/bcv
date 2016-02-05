@@ -94,7 +94,7 @@ for line in seg:
         # Break line into start and end time times of segment
         seg_break = line.split(' ')
         startTime = seg_break[0]
-        endTime = seg_break[1]
+        endTime = seg_break[1].split('\n')[0]
 
 	# Remove pre-existing temporary file
 	if os.path.isfile('temp_local_data.txt'):
@@ -108,17 +108,21 @@ for line in seg:
 	f = open('temp_local_data.txt', 'r')
 	
 	# Sanity check
-	line in f.readline()
-	if line == 'GetOmicronTriggers.sh: Omicron triggers are not available\n':
-	  print >> sys.stderr, 'Could not find channel %s' %(channel)
-	  sys.exit(0)
-	
-	
+	line = f.readline()
+	if 'GetOmicronTriggers.sh: Omicron triggers are not available' in line:
+		continue	
+#	f.seek(0)
+#	for line in f:
+#		print line
+#	f.seek(0)
+
+#	sys.exit(0)
 	i = 0
 	# Constant required while calculating the full width at half maximum
 	const_fwhm = sqrt(2.0*log(2.0))
 	for line in f:
-	    if not line.startswith('#'):
+	    if (not line.startswith('#') and line!=''):
+		line = line.split()
 		Q = float(line[2])
 		f0 = float(line[1])
 		sd = Q/(f0*pi)
@@ -128,6 +132,7 @@ for line in seg:
 		trigger_end = trigger_peak + hwhm
 		trigger_snr = float(line[3])
 		line1 = '%.4f %.4f %.4f %.4f %.2f'%(trigger_start, trigger_end, trigger_peak, f0, trigger_snr )
+		line1 = line1.split()
 		printresult.insert(i,line1)
 		i+=1
 	f.close()
@@ -141,14 +146,14 @@ for line in seg:
 
                                  
 	for l in range(0, (len(printresult))):
-		os.system('clear')
+		#os.system('clear')
 		print >> sys.stderr, "Writing line...SNR: %s > %s"%(printresult[l][4],opts.min_thresh)
 		print >> sys.stderr, "end time: %s"%printresult[l][1]
 		g.write('  '.join(printresult[l]) + '\n')
 		#l = l + 1
 		#print >> sys.stderr, "printresult length: %s"%(len(printresult))
 		#print >> sys.stderr, "Counter : %s"%l
-		g.close()
+	g.close()
 
 
 
