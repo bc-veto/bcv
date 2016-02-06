@@ -1161,7 +1161,7 @@ analyzed_segs = bcvUtils.read_segfile(opts.segment_file)
 # Read lines avoiding white space and comment lines, and transdpose
 # cut by SNR cutoff
 trigs = bcvUtils.textRead(opts.HTriggerFile)
-SNRsH = sqrt(array(trigs[5])-array(trigs[6]))
+SNRsH = array(trigs[4])
 aboveThreshIdxH = SNRsH >= opts.SNRcutoffH
 
 gpsTriggerHList = {}
@@ -1187,7 +1187,7 @@ else:
 Xtrigs = bcvUtils.textRead("%s/KWtrigs/%s_%s.txt"%(opts.base_dir, original_tag,single_chan_name))
 
 if Xtrigs:
-	SNRsX = sqrt(array(Xtrigs[5])-array(Xtrigs[6]))        
+	SNRsX = array(Xtrigs[4])
 	aboveThreshIdxX = SNRsX >= opts.SNRcutoffX
 	numXTrigs = len(SNRsX[aboveThreshIdxX])
 	del aboveThreshIdxX

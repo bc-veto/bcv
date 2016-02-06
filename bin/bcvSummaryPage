@@ -155,7 +155,7 @@ def summary_page(channel_info,veto_segs):
   Htrigs =  bcvUtils.textRead(opts.HTriggerFile)
   # significance cut
   Hgps = array(Htrigs[2])
-  Hsig = sqrt(array(Htrigs[5])-array(Htrigs[6]))
+  Hsig = array(Htrigs[4])
   Hfreq= array(Htrigs[3])
   survived_H_snr = []
 # vetoed trigger's SNR 
