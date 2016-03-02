@@ -361,13 +361,12 @@ def summary_page(channel_info,veto_segs):
   
   ## make a summary
   sorted_keys_by_effoverdeadtime = sorted(channel_info, key=lambda x: float(channel_info[x]['efficiencyOverDeadtime']), reverse=True)
+  nVetoCandidates=0
   table = ["""
   <big><big><b>- Summary Table </b></big></big> <br><br> 
   This table summarizes the veto performance of each (pseudo) channel. <br>
   Channels that didn't pass the safety test are highlighted in red and veto candidate channels are highlighted in yellow.<br>
   Please click the channel name to see more detail information on each (pseudo) channel.<br>
-  Total number of veto candidates: %d."""%(len(sorted_keys_by_effoverdeadtime))]
-  table.append("""
   <br><br>
   <table border="1">
   <tbody>
@@ -379,7 +378,7 @@ def summary_page(channel_info,veto_segs):
   <th>Vetoed Injections </th>
   <th>Safety Probability</th>
   </tr>
-  """)
+  """]
 
   for chan in sorted_keys_by_effoverdeadtime:
     if channel_info[chan]["safety"] == "Unsafe":
@@ -388,6 +387,7 @@ def summary_page(channel_info,veto_segs):
       color = "yellow"
     else:
       continue
+    nVetoCandidates+=1
     table.append("""
             <tr bgcolor="%s">
             <td><a href="channel_pages/%s_%s-report_page.html">%s</a></td>
@@ -400,6 +400,7 @@ def summary_page(channel_info,veto_segs):
             """%(color,name_tag,chan,chan,channel_info[chan]["vetoEfficiency"],channel_info[chan]["deadTime"],channel_info[chan]["efficiencyOverDeadtime"],channel_info[chan]["Nvetoed"],channel_info[chan]["totalInjectionNumber"],channel_info[chan]["safetyProbability"],channel_info[chan]["safety"]))
 
   table.append("</tbody></table><br><br>")
+  table.append("Number of veto candidates:%d<br>"%(nVetoCandidates))
 
   contents.append("".join(table))
 
