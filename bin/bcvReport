@@ -448,18 +448,18 @@ def applyVetoThreshold(channel, resultsDir, reqAccVetoRate, gpsTriggerHList, num
     #print >> sys.stderr, "gpsTriggerHList['centralTime']: ",gpsTriggerHList['centralTime'] # 6-15-2015
 
     #vetoEffCoincTS = []
-    vetoedNumTS=0
-    TSNum=0
-    for veto_segments_TS in veto_segments_TS_list:
-      vetoedNumTS += len([t for t in gpsTriggerHList['centralTime'] if t in veto_segments_TS[1]])
-      if verbose: #print veto_segments_TS[0]
-		print >> sys.stderr, "veto_segments_TS[0]: ",veto_segments_TS[0] # 6-15-2015
-		print >> sys.stderr, "veto_segments_TS[1]: ",veto_segments_TS[1] # 6-15-2015
-		#print >> sys.stderr, "veto_segments_TS[1]: ",veto_segments_TS[1].split() # 6-15-2015
-		print >> sys.stderr, "vetoedNumTS: ",vetoedNumTS # 6-15-2015
-      TSNum_qstring = "select count(%s) from data where tau == %s"%(statistics,veto_segments_TS[0],)
-      print >> sys.stderr, "TSNum_qstring : %s"%TSNum_qstring
-      TSNum += int(cursor.execute(TSNum_qstring).fetchone()[0]) or 0
+    vetoedNumTS=accNum
+    TSNum= int(cursor.execute("select count(%s) from data where tau != 0"%(statistics)).fetchone()[0])
+   # for veto_segments_TS in veto_segments_TS_list:
+   #   vetoedNumTS += len([t for t in gpsTriggerHList['centralTime'] if t in veto_segments_TS[1]])
+   #   if verbose: #print veto_segments_TS[0]
+   #		print >> sys.stderr, "veto_segments_TS[0]: ",veto_segments_TS[0] # 6-15-2015
+   #		print >> sys.stderr, "veto_segments_TS[1]: ",veto_segments_TS[1] # 6-15-2015
+   #		#print >> sys.stderr, "veto_segments_TS[1]: ",veto_segments_TS[1].split() # 6-15-2015
+   #		print >> sys.stderr, "vetoedNumTS: ",vetoedNumTS # 6-15-2015
+   #   TSNum_qstring = "select count(%s) from data where tau == %s"%(statistics,veto_segments_TS[0],)
+   #   print >> sys.stderr, "TSNum_qstring : %s"%TSNum_qstring
+   #   TSNum += int(cursor.execute(TSNum_qstring).fetchone()[0]) or 0
 
 #      TSNum = int(cursor.execute("select count(%s) from data where tau == ?"%statistics,(veto_segments_TS[0],)).fetchone()[0])
       #vetoEffCoincTS.append(vetoedNumTS / (TSNum or 1))
@@ -666,9 +666,9 @@ def applyVetoThreshold(channel, resultsDir, reqAccVetoRate, gpsTriggerHList, num
   
     # cross correlation histogram
     if max(probDensTS) > 0:
-      semilogy(rVec, probDensTS,'b',label="Time-shift. Num-trigs=%d"%(countTS),drawstyle="steps")
+      semilogy(rVec, probDensTS,'b',label="TS. N-trigs=%d. V-trigs= %d"%(TSNum, vetoedNumTS),drawstyle="steps")
     if max(probDensZL) > 0:
-      semilogy(rVec, probDensZL,'r',label="Zero-lag. Num-trigs=%d"%(countZL),drawstyle="steps")
+      semilogy(rVec, probDensZL,'r',label="ZL. Ntrigs=%d. V-trigs= %d"%(ZLNum, vetoedNum),drawstyle="steps")
     axvline(x=rThresh,ymin=0.001,ymax=10,color='k',ls="--")
     legend(loc='upper right')
     grid()
