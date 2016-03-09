@@ -426,10 +426,12 @@ def applyVetoThreshold(channel, resultsDir, reqAccVetoRate, gpsTriggerHList, num
     # and veto significance
     numHTrigs = len(gpsTriggerHList['centralTime'])
     if veto_segments:
-    	vetoedNum = len([t for t in gpsTriggerHList['centralTime'] if t in veto_segments])
+    	vetoedTrigs = len([t for t in gpsTriggerHList['centralTime'] if t in veto_segments])
+        vetoedNum = int(cursor.execute("select count(%s) from data where tau == 0 and abs(%s) >= ?"%(statistics,statistics),(rThresh,)).fetchone()[0])
     else:
 	vetoedNum = 0
-    vetoEff = 100 * vetoedNum / (numHTrigs or 1)
+        vetoedTrigs = 0
+    vetoEff = 100 * vetoedTrigs / (numHTrigs or 1)
     accNum = int(cursor.execute("select count(%s) from data where tau != 0 and abs(%s) >= ?"%(statistics,statistics),(rThresh,)).fetchone()[0])
     accVetoProb = accNum / (numHTrigs * numTimeShifts or 1)
     if veto_segments:
