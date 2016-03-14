@@ -109,7 +109,7 @@ def parse_commandline():
 #
 # =============================================================================
 
-def summary_page(channel_info,veto_segs):
+def summary_page(channel_info,veto_segs, chan_name_list):
   """
   creates summary report page that links to each channel page
   """
@@ -158,6 +158,7 @@ def summary_page(channel_info,veto_segs):
   Hsig = array(Htrigs[4])
   Hfreq= array(Htrigs[3])
   survived_H_snr = []
+  totalHNum = len(Hsig)
 # vetoed trigger's SNR 
   for i in range(len(Hgps)):
     if not Hgps[i] in deadTime_segs: # i.e. if not vetoed
@@ -255,14 +256,75 @@ def summary_page(channel_info,veto_segs):
   ax = fig.add_subplot(1,1,1)
   ax.hist(efficiencyList, 30)
   ax.set_xlim([1, max(efficiencyList) + 2.0])
-  ax.set_ylim([0, 600])
+  ax.set_ylim([0, len(efficiencyList)])
   ax.grid(b=True, which='major', color='k', linestyle='-')
   ax.grid(b=True, which='minor', color='#ACACAA')  
   ax.set_xlabel('Efficiency')
   ax.set_ylabel('Number of channels')
   ax.set_title('Histogram plot of the veto efficiencies')
   pylab.savefig('%s/Hist_efficiencies.png'%baseDir, dpi=100)  
+  
+  
+  primary_chan_names = []
+  for channel in chan_name_list:
+    tempName = channel.split('+')[0]
+    primary_chan_names.append(tempName)
+  primary_chan_names = unique(primary_chan_names)
+  primary_chan_info = {}
+  for iprim in primary_chan_names:
+    primary_chan_info[iprim] = None
+  
+  for iprim in primary_chan_names:
+    for chan in sorted(channel_info.keys()):
+      if(chan.startswith(iprim) and channel_info[chan]["candidate"]==True):
+	if(primary_chan_info[iprim]==None):
+	  tempInfo = {}
+	  tempInfo["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
+	  tempInfo["vetoSegs"] = veto_segs[chan]
+	  primary_chan_info[iprim] = tempInfo
+	else:
+	  if(channel_info[chan]["vetoEfficiency"] > primary_chan_info[iprim]["vetoEfficiency"]):
+	    primary_chan_info[iprim]["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
+	    primary_chan_info[iprim]["vetoSegs"] = veto_segs[chan]
+  
+  for iprim in primary_chan_names:
+    if(primary_chan_info[iprim]==None):
+      primary_chan_info.pop(iprim)
+	    
+  
+  sorted_keys_by_efficiency = sorted(channel_info, key=lambda x: float(primary_chan_info[x]['vetoEfficiency']), reverse=True)
+  channel_number = np.arange(len(sorted_keys_by_efficiency))+1
+  differential_efficiency = np.zeros(len(sorted_keys_by_efficiency))
+  cumDeadTime = primary_chan_info[sorted_keys_by_efficiency[0]]["vetoSegs"]
+  for j in range(totalHNum):
+    if Hgps[j] in cumDeadTime:
+	vetoedHtrigs.append(Hgps[j])
+  differential_efficiency[0] = float(len(vetoedHtrigs))/totalHNum
+  del vetoedHtrigs
+  i=1
+  for iprim in sorted_keys_by_efficiency[1:]:
+    cumDeadTime |= primary_chan_info[iprim]["vetoSegs"]
+    vetoedHtrigs = []
+    for j in range(totalHNum):
+      if Hgps[j] in cumDeadTime:
+	vetoedHtrigs.append(Hgps[j])
+    eff = float(len(vetoedHtrigs))/totalHNum
+    differential_efficiency[i] = eff - differential_efficiency[i-1]
+    i+=1
+    
+  fig = plt.figure()
+  ax = fig.add_subplot(1, 1, 1)
+  ax.plot(channel_number, differential_efficiency)
+  ax.xticks(channel_number, sorted_keys_by_efficiency, rotation=90)
+  ax.grid(b=True, which='major', color='k', linestyle='-')
+  ax.grid(b=True, which='minor', color='#ACACAA')  
+  ax.set_ylabel('Cumulative veto efficiencies of primary channels maximised over secondary channels')
+  ax.set_title("Plot of cumulative veto efficiencies over primary channels v/s primary channels")
+  pylab.savefig('%s/Cumulative_primary_efficiencies.png' %baseDir, dpi=100)
   pylab.close('all')
+  
+
+    
 
   # add the plot to the page
   contents.append("<big><big><b>- Vetoed GW Triggers </b></big></big><br>")
@@ -270,7 +332,8 @@ def summary_page(channel_info,veto_segs):
   contents.append('<img id="H_time_snr" src="./Htriggers_time_snr.png" style="float: left; width: 50%;">')
   contents.append('<img id="H_time_freq" src="./Htriggers_time_freq.png" style="float: left; width: 50%;">')
   contents.append('<img id="H_freq_snr" src="./Htriggers_freq_snr.png" style="float: left; width: 50%;">')
-  contents.append('<img id="Hist_efficiencies" src="./Hist_efficiencies.png" style="float: left; width: 50%;"><br>')
+  contents.append('<img id="Hist_efficiencies" src="./Hist_efficiencies.png" style="float: left; width: 50%;">')
+  contents.append('<img id="Hist_efficiencies" src="./Cumulative_primary_efficiencies.png" style="float: left; width: 50%;"><br>')
 
   ############################## Summary Info #################################
 
@@ -372,7 +435,7 @@ def summary_page(channel_info,veto_segs):
   <tbody>
   <tr>
   <th>(Pseudo) Channel</th>
-  <th>Veto Efficiency (\%)</th>
+  <th>Veto Efficiency (%)</th>
   <th>Dead Time (s)</th>
   <th>Efficiency / Dead Time</th>
   <th>Vetoed Injections </th>
@@ -549,6 +612,7 @@ color_map = pylab.get_cmap(color_scheme)
 ## get data for each channel
 channel_info={}
 veto_segs={}
+chan_name_list = []
 for chan_dir in dir_list:
 	chan_dir = os.path.abspath(os.path.join(opts.result_dir,chan_dir))
 	if opts.verbose:
@@ -557,6 +621,7 @@ for chan_dir in dir_list:
   # Assumption is that tag doesn't contain "-" (checked in veto_setup)
   	chan_file = os.path.basename(chan_dir)
   	chan_name = chan_file.split("-",2)[-1]
+  	chan_name_list.append(chan_name)
 
   	channel_info[chan_name] = bcvUtils.read_summary(os.path.join(chan_dir,"summary.txt"))
   	if channel_info[chan_name]["candidate"] == "True":
@@ -583,6 +648,6 @@ pylab.close('all')
 
 
 # do the work
-summary_page(channel_info,veto_segs)
+summary_page(channel_info,veto_segs, chan_name_list)
 if opts.verbose: print >> sys.stderr, "%s done!"%__prog__
 
