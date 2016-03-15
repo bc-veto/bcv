@@ -34,7 +34,7 @@ import optparse
 import ConfigParser
 import re
 import math
-from numpy import array, sqrt
+from numpy import array, sqrt, unique, arange, zeros
 
 try:
     import sqlite3
@@ -147,9 +147,11 @@ def summary_page(channel_info,veto_segs, chan_name_list):
     deadTime_segs = reduce(lambda x, y: x | y, veto_segs.values())
     totalDeadTime = abs(deadTime_segs)
   # Writing the total vetoed segments
-  file = open("%s/vetoed_segment.html"%(baseDir),"w")
-  file.write('Total Vetoed Segment = '+ repr(deadTime_segs) + '\n' )
-  file.close()
+  veto_seg_file = "%s/vetoed_segment.txt"%(baseDir)
+  #file.write('Total Vetoed Segment = '+ repr(deadTime_segs) + '\n' )
+  #file.close()
+  deadTime_segs.coalesce()
+  segmentsUtils.tosegwizard(open(veto_seg_file, 'w'), deadTime_segs)
    
 # read in H triggers  
   Htrigs =  bcvUtils.textRead(opts.HTriggerFile)
@@ -276,7 +278,8 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   
   for iprim in primary_chan_names:
     for chan in sorted(channel_info.keys()):
-      if(chan.startswith(iprim) and channel_info[chan]["candidate"]==True):
+      #print 'chan: %s, prim_chan: %s'%(chan, iprim)
+      if(chan.startswith(iprim) and channel_info[chan]["candidate"]=="True"):
 	if(primary_chan_info[iprim]==None):
 	  tempInfo = {}
 	  tempInfo["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
@@ -285,21 +288,22 @@ def summary_page(channel_info,veto_segs, chan_name_list):
 	else:
 	  if(channel_info[chan]["vetoEfficiency"] > primary_chan_info[iprim]["vetoEfficiency"]):
 	    primary_chan_info[iprim]["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
-	    primary_chan_info[iprim]["vetoSegs"] = veto_segs[chan]
+          primary_chan_info[iprim]["vetoSegs"] |= veto_segs[chan]
   
   for iprim in primary_chan_names:
     if(primary_chan_info[iprim]==None):
       primary_chan_info.pop(iprim)
 	    
   
-  sorted_keys_by_efficiency = sorted(channel_info, key=lambda x: float(primary_chan_info[x]['vetoEfficiency']), reverse=True)
-  channel_number = np.arange(len(sorted_keys_by_efficiency))+1
-  differential_efficiency = np.zeros(len(sorted_keys_by_efficiency))
+  sorted_keys_by_efficiency = sorted(primary_chan_info, key=lambda x: float(primary_chan_info[x]['vetoEfficiency']), reverse=True)
+  channel_number = arange(len(sorted_keys_by_efficiency))+1
+  cumm_efficiency = zeros(len(sorted_keys_by_efficiency))
   cumDeadTime = primary_chan_info[sorted_keys_by_efficiency[0]]["vetoSegs"]
+  vetoedHtrigs = []
   for j in range(totalHNum):
     if Hgps[j] in cumDeadTime:
 	vetoedHtrigs.append(Hgps[j])
-  differential_efficiency[0] = float(len(vetoedHtrigs))/totalHNum
+  cumm_efficiency[0] = float(len(vetoedHtrigs))/totalHNum
   del vetoedHtrigs
   i=1
   for iprim in sorted_keys_by_efficiency[1:]:
@@ -309,19 +313,21 @@ def summary_page(channel_info,veto_segs, chan_name_list):
       if Hgps[j] in cumDeadTime:
 	vetoedHtrigs.append(Hgps[j])
     eff = float(len(vetoedHtrigs))/totalHNum
-    differential_efficiency[i] = eff - differential_efficiency[i-1]
+    cumm_efficiency[i] = eff
     i+=1
     
-  fig = plt.figure()
+  fig = plt.figure(figsize=(8, 8))
   ax = fig.add_subplot(1, 1, 1)
-  ax.plot(channel_number, differential_efficiency)
-  ax.xticks(channel_number, sorted_keys_by_efficiency, rotation=90)
+  ax.plot(channel_number, cumm_efficiency*100)
+  fig.subplots_adjust(bottom=0.5)
+  plt.xticks(channel_number, sorted_keys_by_efficiency, rotation=90, size=6)
   ax.grid(b=True, which='major', color='k', linestyle='-')
   ax.grid(b=True, which='minor', color='#ACACAA')  
-  ax.set_ylabel('Cumulative veto efficiencies of primary channels maximised over secondary channels')
-  ax.set_title("Plot of cumulative veto efficiencies over primary channels v/s primary channels")
+  ax.set_ylabel('Cumulative veto efficiencies of primary channels\nmaximised over secondary channels')
+  ax.set_title("Plot of cumulative veto efficiencies over primary channels")
   pylab.savefig('%s/Cumulative_primary_efficiencies.png' %baseDir, dpi=100)
   pylab.close('all')
+  print 'Finished plots'
   
 
     
@@ -333,7 +339,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   contents.append('<img id="H_time_freq" src="./Htriggers_time_freq.png" style="float: left; width: 50%;">')
   contents.append('<img id="H_freq_snr" src="./Htriggers_freq_snr.png" style="float: left; width: 50%;">')
   contents.append('<img id="Hist_efficiencies" src="./Hist_efficiencies.png" style="float: left; width: 50%;">')
-  contents.append('<img id="Hist_efficiencies" src="./Cumulative_primary_efficiencies.png" style="float: left; width: 50%;"><br>')
+  contents.append('<img id="Cumulative_efficiencies" src="./Cumulative_primary_efficiencies.png" style="float: left; width: 50%;"><br>')
 
   ############################## Summary Info #################################
 
@@ -355,7 +361,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   contents.append("<b>Total Veto Efficiency: %.3f %% (%d / %d) </b><br>"%(combinedEff,vetoedHNum,totalHNum))
   contents.append("<b>Total Dead Time: %d s (%.2f %%)</b><br>"%(totalDeadTime,deadTimePer))  
   contents.append("<b>Required Accidental Veto Rate: %s Hz </b><br>"%(reqAccVetoRate))  
-  contents.append('<b><a href="vetoed_segment.html">Total Vetoed Segments</a></b><br><br><br>')
+  contents.append('<b><a href="vetoed_segment.txt">Total Vetoed Segments</a></b><br><br><br>')
  
   ############################# FOM Table ############################    
   ## make a table to the performance of each channel pair
