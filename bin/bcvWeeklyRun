@@ -13,9 +13,9 @@ from glue.segments import segment, segmentlist
 
 parser = optparse.OptionParser(usage=__doc__)
 parser.add_option("-i", "--ifo", help="IFO to be analyze. Required.")
-parser.add_option("-o", "--offset", type="int", default=0,
-                  help="Run for --offset weeks earlier.")
-parser.add_option("-a", "--account", type="str", default="isogait",
+parser.add_option("-s", "--start", type="int", default=0,
+                  help="Start time.")
+parser.add_option("-a", "--account", type="str", default="sudarshan.ghonge",
                   help="Account from which this code is run. For example, 'detchar', or 'isogait'")
 parser.add_option("-d", "--duration", type="int", default=604800,
                   help="Duration (seconds) of analysis. Default is 604800 (1 week).")
@@ -36,18 +36,20 @@ ifo = opts.ifo
 dur = opts.duration
 tt = opts.trigType
 
-if ifo=="H1":
-        GWchannel = "CAL_DELTAL_EXTERNAL_DQ"
-else:
-        GWchannel = "OAF-CAL_DARM_DQ"
+#if ifo=="H1":
+#        GWchannel = "CAL_DELTAL_EXTERNAL_DQ"
+#else:
+#        GWchannel = "OAF-CAL_DARM_DQ"i
+GWchannel="GDS-CALIB_STRAIN"
 print "running veto code on %s:%s"%(ifo, GWchannel)
 print "date: %s"%curTime
 print "user: %s"%user
 
 print "finding start and end GPS times..."
-gpsNow = int(os.popen('tconvert now - %d week'%opts.offset).readline())
-gpsEnd = (gpsNow - 930700815) / dur * dur + 930700815
-gpsStart = gpsEnd - dur
+#gpsNow = int(os.popen('tconvert now - %d week'%opts.offset).readline())
+#gpsEnd = (gpsNow - 930700815) / dur * dur + 930700815
+gpsStart = opts.start
+gpsEnd = gpsStart + dur
 #tag = "%s_DARMERR_%d_%d_WEEKLY"%(ifo,gpsStart,gpsEnd)
 tag = "%s_%d_%d"%(ifo,gpsStart,gpsEnd)
 if os.path.isdir("/home/%s/public_html/BCV/results/%s_webpage"%(opts.account,tag) ):
@@ -98,7 +100,7 @@ xmlSegFile = os.path.join(newDir,tag+"_segs.xml")
 #if not os.path.isfile(xmlSegFile):
 #os.system('export S6_SEGMENT_SERVER="https://segdb.ligo.caltech.edu"')
 os.system('export S6_SEGMENT_SERVER="https://dqsegdb5.phy.syr.edu"')
-cmd = "ligolw_segment_query_dqsegdb --segment-url=https://dqsegdb5.phy.syr.edu --query-segments --gps-start-time %d --gps-end-time %d --include-segments='%s:DMT-ANALYSIS_READY:1' -o %s"%(gpsStart,gpsEnd,ifo,xmlSegFile)
+cmd = "ligolw_segment_query_dqsegdb --segment-url=https://segments.ligo.org --query-segments --gps-start-time %d --gps-end-time %d --include-segments='%s:DMT-ANALYSIS_READY:1' -o %s"%(gpsStart,gpsEnd,ifo,xmlSegFile)
 #cmd = "ligolw_segment_query --segment-url https://segdb.ligo.caltech.edu --query-segments --include-segments '%s:DMT-SCIENCE' --gps-start-time %d --gps-end-time %d --output-file %s"%(ifo,gpsStart,gpsEnd,xmlSegFile)
 print cmd
 exit = os.system(cmd)
@@ -123,17 +125,17 @@ if exit > 0:
   os.system("rm -f %s"%segFile)
   sys.exit(1)
 
-print "getting veto definer file and excluding burst injection..."
-tmpVetoDefFile = os.path.join(newDir,"tmp_H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml")
-vetoDefFile = os.path.join(newDir,"H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml")
-cmd = "wget -O %s https://www.lsc-group.phys.uwm.edu/ligovirgo/cbc/public/segments/S6/H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml --no-check-certificate"%tmpVetoDefFile
-exit = os.system(cmd)
-if exit > 0:
-  print >> sys.stderr, "Error: Failed to retrieve veto definer file."
-  print >> sys.stderr, cmd
-  system.exit(1)
-
-os.system("grep -v INJECTION_BURST %s > %s"%(tmpVetoDefFile,vetoDefFile))
+#print "getting veto definer file and excluding burst injection..."
+#tmpVetoDefFile = os.path.join(newDir,"tmp_H1L1-HOFT_C01_O1_CBC.xml")
+#vetoDefFile = os.path.join(newDir,"H1L1-HOFT_C01_O1_CBC.xml")
+#cmd = "wget -O %s https://www.lsc-group.phys.uwm.edu/ligovirgo/cbc/public/segments/S6/H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml --no-check-certificate"%tmpVetoDefFile
+#exit = os.system(cmd)
+#if exit > 0:
+#  print >> sys.stderr, "Error: Failed to retrieve veto definer file."
+#  print >> sys.stderr, cmd
+#  system.exit(1)
+#
+#os.system("grep -v INJECTION_BURST %s > %s"%(tmpVetoDefFile,vetoDefFile))
 
 print "getting configuration file..."
 configFile = os.path.join(newDir,tag+"_conf.txt")
@@ -189,7 +191,7 @@ if exit > 0:
 
 dagFile = os.path.join("dags",tag+".dag")
 print "running %s..."%dagFile
-cmd = "condor_submit_dag -maxjobs 300 %s"%dagFile
+cmd = "condor_submit_dag %s"%dagFile
 exit = os.system(cmd)
 if exit > 0:
   print "failed: %s"%cmd
