@@ -360,7 +360,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
 	    tempInfo["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
 	    tempInfo["vetoSegs"] = veto_segs[chan]
 	    secondary_chan_info[isec] = tempInfo
-	    else:
+	  else:
 	      if(channel_info[chan]["vetoEfficiency"] > secondary_chan_info[isec]["vetoEfficiency"]):
 		secondary_chan_info[isec]["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
 		secondary_chan_info[isec]["vetoSegs"] |= veto_segs[chan]
