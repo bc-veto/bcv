@@ -291,6 +291,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
     if(primary_chan_info[iprim]==None):
       primary_chan_info.pop(iprim)
     else:
+      vetoedHtrigs = []
       for j in range(totalHNum):
 	if Hgps[j] in primary_chan_info[iprim]["vetoSegs"]:
 	  vetoedHtrigs.append(Hgps[j])
@@ -368,6 +369,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
     if(secondary_chan_info[isec]==None):
       secondary_chan_info.pop(isec)
     else:
+      vetoedHtrigs
       for j in range(totalHNum):
 	if Hgps[j] in secondary_chan_info[isec]["vetoSegs"]:
 	  vetoedHtrigs.append(Hgps[j])
