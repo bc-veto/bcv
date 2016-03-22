@@ -282,17 +282,20 @@ def summary_page(channel_info,veto_segs, chan_name_list):
       if(chan.startswith(iprim) and channel_info[chan]["candidate"]=="True"):
 	if(primary_chan_info[iprim]==None):
 	  tempInfo = {}
-	  tempInfo["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
 	  tempInfo["vetoSegs"] = veto_segs[chan]
 	  primary_chan_info[iprim] = tempInfo
 	else:
-	  if(channel_info[chan]["vetoEfficiency"] > primary_chan_info[iprim]["vetoEfficiency"]):
-	    primary_chan_info[iprim]["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
           primary_chan_info[iprim]["vetoSegs"] |= veto_segs[chan]
   
   for iprim in primary_chan_names:
     if(primary_chan_info[iprim]==None):
       primary_chan_info.pop(iprim)
+    else:
+      for j in range(totalHNum):
+	if Hgps[j] in primary_chan_info[iprim]["vetoSegs"]:
+	  vetoedHtrigs.append(Hgps[j])
+      primary_chan_info[iprim]["vetoEfficiency"] = float(len(vetoedHtrigs))/totalHNum
+      
 	    
   
   sorted_keys_by_efficiency = sorted(primary_chan_info, key=lambda x: float(primary_chan_info[x]['vetoEfficiency']), reverse=True)
@@ -356,17 +359,20 @@ def summary_page(channel_info,veto_segs, chan_name_list):
 	if(chan.endswith(isec) and chan.startswith(iprim) and channel_info[chan]["candidate"]=="True"):
 	  if(secondary_chan_info[isec]==None):
 	    tempInfo = {}
-	    tempInfo["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
 	    tempInfo["vetoSegs"] = veto_segs[chan]
 	    secondary_chan_info[isec] = tempInfo
 	  else:
-	    if(channel_info[chan]["vetoEfficiency"] > secondary_chan_info[isec]["vetoEfficiency"]):
-	      secondary_chan_info[isec]["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
 	    secondary_chan_info[isec]["vetoSegs"] |= veto_segs[chan]
   
   for isec in secondary_chan_names:
     if(secondary_chan_info[isec]==None):
       secondary_chan_info.pop(isec)
+    else:
+      for j in range(totalHNum):
+	if Hgps[j] in secondary_chan_info[isec]["vetoSegs"]:
+	  vetoedHtrigs.append(Hgps[j])
+      secondary_chan_info[isec]["vetoEfficiency"] = float(len(vetoedHtrigs))/totalHNum
+      
 	    
   
   sorted_keys_by_efficiency = sorted(secondary_chan_info, key=lambda x: float(secondary_chan_info[x]['vetoEfficiency']), reverse=True)
