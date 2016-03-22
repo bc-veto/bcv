@@ -333,7 +333,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   
   i=0
   for num in range(len(sorted_keys_by_efficiency)):
-    if(cumm_efficiency>=requiredEff):  
+    if(cumm_efficiency[i]>=requiredEff):  
       break
     i+=1
   requiredPrimaryChannelList = sorted_keys_by_efficiency[:i+1]
