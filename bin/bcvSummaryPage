@@ -34,7 +34,7 @@ import optparse
 import ConfigParser
 import re
 import math
-from numpy import array, sqrt, unique, arange, zeros
+from numpy import array, sqrt, unique, arange, zeros, savetxt
 
 try:
     import sqlite3
@@ -341,7 +341,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   
   for isec in secondary_chan_names:
     for chan in sorted(channel_info.keys()):
-      print 'chan: %s, sec_chan: %s'%(chan, isec)
+      #print 'chan: %s, sec_chan: %s'%(chan, isec)
       if(chan.endswith(isec) and channel_info[chan]["candidate"]=="True"):
 	if(secondary_chan_info[isec]==None):
 	  tempInfo = {}
@@ -383,13 +383,15 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   fig = plt.figure(figsize=(8, 8))
   ax = fig.add_subplot(1, 1, 1)
   ax.plot(channel_number, cumm_efficiency*100)
-  fig.subplots_adjust(bottom=0.5)
-  plt.xticks(channel_number, sorted_keys_by_efficiency, rotation=90, size=6)
+  #fig.subplots_adjust(bottom=0.5)
+  #plt.xticks(channel_number, sorted_keys_by_efficiency, rotation=90, size=6)
   ax.grid(b=True, which='major', color='k', linestyle='-')
   ax.grid(b=True, which='minor', color='#ACACAA')  
   ax.set_ylabel('Cumulative veto efficiencies of secondary channels\nmaximised over primary channels')
   ax.set_title("Plot of cumulative veto efficiencies over secondary channels")
   pylab.savefig('%s/Cumulative_secondary_efficiencies.png' %baseDir, dpi=100)
+  
+  savetxt('%s/List_of_secondary_channels.txt'%(baseDir),array(channel_number, sorted_keys_by_efficiency).transpose() )
   
   
   
@@ -428,7 +430,8 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   contents.append("<big><big><b>- Summary</b></big></big><br><br>")
   contents.append("<b>Total Veto Efficiency: %.3f %% (%d / %d) </b><br>"%(combinedEff,vetoedHNum,totalHNum))
   contents.append("<b>Total Dead Time: %d s (%.2f %%)</b><br>"%(totalDeadTime,deadTimePer))  
-  contents.append("<b>Required Accidental Veto Rate: %s Hz </b><br>"%(reqAccVetoRate))  
+  contents.append("<b>Required Accidental Veto Rate: %s Hz </b><br>"%(reqAccVetoRate))
+  contents.append('<b><a href="List_of_secondary_channels.txt"> Secondary Channels in decreasing order of efficiency</a></b><br>')
   contents.append('<b><a href="vetoed_segment.txt">Total Vetoed Segments</a></b><br><br><br>')
  
   ############################# FOM Table ############################    
