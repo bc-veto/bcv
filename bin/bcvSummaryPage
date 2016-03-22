@@ -337,6 +337,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
       break
     i+=1
   requiredPrimaryChannelList = sorted_keys_by_efficiency[:i+1]
+  savetxt('%s/Optimal_Primary_channel_list.txt'%(baseDir), array(requiredPrimaryChannelList).transpose(), fmt='%s')
   
   
   # Compuations needed for getting cumulative veto efficiencies v/s secondary channels
@@ -443,6 +444,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   contents.append("<b>Total Veto Efficiency: %.3f %% (%d / %d) </b><br>"%(combinedEff,vetoedHNum,totalHNum))
   contents.append("<b>Total Dead Time: %d s (%.2f %%)</b><br>"%(totalDeadTime,deadTimePer))  
   contents.append("<b>Required Accidental Veto Rate: %s Hz </b><br>"%(reqAccVetoRate))
+  contents.append('<b><a href="Optimal_Primary_channel_list.txt"> Optima primary channel list</a></b><br>')
   contents.append('<b><a href="List_of_secondary_channels.txt"> Secondary Channels in decreasing order of efficiency</a></b><br>')
   contents.append('<b><a href="vetoed_segment.txt">Total Vetoed Segments</a></b><br><br><br>')
  
