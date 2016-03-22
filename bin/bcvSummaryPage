@@ -363,7 +363,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
 	  else:
 	      if(channel_info[chan]["vetoEfficiency"] > secondary_chan_info[isec]["vetoEfficiency"]):
 		secondary_chan_info[isec]["vetoEfficiency"] = channel_info[chan]["vetoEfficiency"]
-		secondary_chan_info[isec]["vetoSegs"] |= veto_segs[chan]
+	      secondary_chan_info[isec]["vetoSegs"] |= veto_segs[chan]
   
   for isec in secondary_chan_names:
     if(secondary_chan_info[isec]==None):
