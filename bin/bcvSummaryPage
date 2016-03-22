@@ -364,6 +364,15 @@ def summary_page(channel_info,veto_segs, chan_name_list):
 	    secondary_chan_info[isec] = tempInfo
 	  else:
 	    secondary_chan_info[isec]["vetoSegs"] |= veto_segs[chan]
+  for isec in secondary_chan_names:
+    for chan in sorted(channel_info.keys()):
+      if(chan.endswith(isec) and channel_info[chan]["candidate"]=="True"):
+	if(secondary_chan_info[isec]==None):
+	  tempInfo = {}
+	  tempInfo["vetoSegs"] = veto_segs[chan]
+	  secondary_chan_info[isec] = tempInfo
+	else:
+	  secondary_chan_info[isec]["vetoSegs"] |= veto_segs[chan]	    
   
   for isec in secondary_chan_names:
     if(secondary_chan_info[isec]==None):
