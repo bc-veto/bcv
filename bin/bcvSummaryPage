@@ -334,7 +334,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   for channel in chan_name_list:
     tempName = channel.split('+')[1]
     secondary_chan_names.append(tempName)
-  secondary_chan_names = unique(primary_chan_names)
+  secondary_chan_names = unique(secondary_chan_names)
   secondary_chan_info = {}
   for isec in secondary_chan_names:
     secondary_chan_info[isec] = None
