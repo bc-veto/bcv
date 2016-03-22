@@ -391,7 +391,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   ax.set_title("Plot of cumulative veto efficiencies over secondary channels")
   pylab.savefig('%s/Cumulative_secondary_efficiencies.png' %baseDir, dpi=100)
   
-  savetxt('%s/List_of_secondary_channels.txt'%(baseDir),array([channel_number, sorted_keys_by_efficiency]).transpose() , fmt = '%d\t%s')
+  savetxt('%s/List_of_secondary_channels.txt'%(baseDir),array([channel_number, sorted_keys_by_efficiency]).transpose() , fmt = '%s', delimiter=' ')
   
   
   
