@@ -253,18 +253,19 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   pylab.legend(loc='upper right')
   pylab.savefig("%s/Htriggers_freq_snr.png"%baseDir,dpi=100)
   
-  #efficiencyList = array([float(channel_info[x]['vetoEfficiency'].split('%')[0]) for x in channel_info.keys()])
-  #fig  = plt.figure()
-  #ax = fig.add_subplot(1,1,1)
-  #ax.hist(efficiencyList, 30)
-  #ax.set_xlim([1, max(efficiencyList) + 2.0])
-  #ax.set_ylim([0, len(efficiencyList)])
-  #ax.grid(b=True, which='major', color='k', linestyle='-')
-  #ax.grid(b=True, which='minor', color='#ACACAA')  
-  #ax.set_xlabel('Efficiency')
-  #ax.set_ylabel('Number of channels')
-  #ax.set_title('Histogram plot of the veto efficiencies')
-  #pylab.savefig('%s/Hist_efficiencies.png'%baseDir, dpi=100)  
+  significances = array([float(channel_info[x]['vetoSignificance']) for x in channel_info.keys()])
+  fig  = plt.figure()
+  ax = fig.add_subplot(1,1,1)
+  ax.hist(significances, 30)
+  ax.set_xlim([0, max(significances) + 2])
+  ax.set_ylim([0, len(significances)])
+  ax.grid(b=True, which='major', color='k', linestyle='-')
+  ax.grid(b=True, which='minor', color='#ACACAA')  
+  ax.set_xlabel('Significance')
+  ax.set_ylabel('Number of channels')
+  ax.set_title('Histogram plot of the veto significances')
+  ax.axvline(x=3)
+  pylab.savefig('%s/Hist_significances.png'%baseDir, dpi=100)  
   
   # Compuations done to get plot of cumulative efficiency v/s primary channel names
   primary_chan_names = []
@@ -437,9 +438,9 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   contents.append('<img id="H_time_snr" src="./Htriggers_time_snr.png" style="float: left; width: 50%;">')
   contents.append('<img id="H_time_freq" src="./Htriggers_time_freq.png" style="float: left; width: 50%;">')
   contents.append('<img id="H_freq_snr" src="./Htriggers_freq_snr.png" style="float: left; width: 50%;">')
-  #contents.append('<img id="Hist_efficiencies" src="./Hist_efficiencies.png" style="float: left; width: 50%;">')
+  contents.append('<img id="Hist_significances" src="./Hist_significances.png" style="float: left; width: 50%;">')
   contents.append('<img id="H_freq_snr" src="./Cumulative_primary_efficiencies.png" style="float: left; width: 50%;">')
-  contents.append('<img id="Cumulative_efficiencies" src="./Cumulative_secondary_efficiencies.png" style="float: left; width: 50%;"><br>')
+  #contents.append('<img id="Cumulative_efficiencies" src="./Cumulative_secondary_efficiencies.png" style="float: left; width: 50%;"><br>')
 
   ############################## Summary Info #################################
 
