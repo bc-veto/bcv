@@ -27,7 +27,7 @@ for iFile in fileDir:
   duration = np.append(duration, corrData[:, 9])
   
 plt.figure()
-plt.plot(duration, correlation, '.')
+plt.plot(duration, np.abs(correlation), '.')
 plt.title('Correlation vs trigger durations of %s channel' %(channelName))
 plt.ylabel('correlation statistic $r$')
 plt.xlabel('trigger durations')
