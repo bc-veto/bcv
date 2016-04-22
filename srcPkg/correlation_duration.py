@@ -1,5 +1,8 @@
 import numpy as np
-import matplotlib.pyplt as plt
+import matplotlib
+matplotlib.use('Agg')
+import sys
+import matplotlib.pyplot as plt
 #import argparse
 
 #parser = argparse.ArgumentParser(description = 'Script to generate correlation v/s duration plots of x triggers\n.
@@ -14,12 +17,12 @@ if(len(sys.argv)<2):
 
 fileDir = sys.argv[1:]
 
-channelName = fileDir[0].split('results/')[1].split('/')[0].split('+')[0].split('H1-')[1]
+channelName = fileDir[0].split('results/')[1].split('/')[0].split('+')[0].split('L1-')[1]
 correlation = np.asarray([])
-duration = np.asraay([])
+duration = np.asarray([])
 
 for iFile in fileDir:
-  corrData = np.loadtxt(fileDir[iFile]).reshape(-1, 15)
+  corrData = np.loadtxt(iFile).reshape(-1, 15)
   correlation = np.append(correlation, corrData[:, 1])
   duration = np.append(duration, corrData[:, 9])
   
