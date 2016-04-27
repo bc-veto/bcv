@@ -101,5 +101,10 @@ setup(name="BCV",
       },
       scripts=["bin/bcvSetup_unv","bin/bcvOmegaveto","bin/bcvReport","bin/bcvSummaryPage","bin/bcvInsert","bin/bcvWeeklyRun","bin/getKW","compile/omegaveto"],
       data_files = [("etc",["etc/bcv-user-env.sh"]),
-                    ("config",["config/example.ini","config/configuration.txt","config/weekly.ini"])]
+                    ("config",["config/example.ini","config/configuration.txt","config/weekly.ini"])],
+      install_requires=["numpy>=1.10.1",	
+                          "scipy>=0.16.0",
+			  "matplotlib>=1.3.1",
+		          "glue",
+                          "gwpy"]
      )

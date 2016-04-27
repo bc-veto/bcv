@@ -505,18 +505,18 @@ for iSeg = 1:nSeg
     	trigDataMatrixH = load(triggerListChH);
 
         [p,q]=size(trigDataMatrixH)
-	if p > 100
+%	if p > 100
                 %trigDataMatrixH = imresize(trigDataMatrixH, [100 q]);
-                warning(sprintf('More than 100 H triggers found.  If this causes excessive resource use, try reducing the segment lengths in the .ini file before running setup.'));
+%                warning(sprintf('More than 100 H triggers found.  If this causes excessive resource use, try reducing the segment lengths in the .ini file before running setup.'));
                 %[p,q]=size(trigDataMatrixH)
-        end
+%        end
 
     	gpsTriggerHList.startTime = trigDataMatrixH(:,1);
     	gpsTriggerHList.endTime = trigDataMatrixH(:,2);
     	gpsTriggerHList.centralTime = trigDataMatrixH(:,3);
     	gpsTriggerHList.centralFrequency = trigDataMatrixH(:,4);
         % hacked: using SNR instead of significance
-    	gpsTriggerHList.triggerSignificance = sqrt(trigDataMatrixH(:,6) - trigDataMatrixH(:,7));
+    	gpsTriggerHList.triggerSignificance = trigDataMatrixH(:,5);
     
     	clear trigDataMatrixH;
     else
@@ -577,7 +577,7 @@ for iSeg = 1:nSeg
         	gpsTriggerXList.centralTime = trigDataMatrixX(:,3);
         	gpsTriggerXList.centralFrequency = trigDataMatrixX(:,4);
 	        % hacked: using SNR instead of significance
-    		gpsTriggerXList.triggerSignificance = sqrt(trigDataMatrixX(:,6) - trigDataMatrixX(:,7));
+    		gpsTriggerXList.triggerSignificance = trigDataMatrixX(:,5);
 	        %gpsTriggerXList.triggerSignificance = trigDataMatrixX(:,8);
     
         	clear trigDataMatrixX;
