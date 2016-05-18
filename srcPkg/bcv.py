@@ -17,6 +17,7 @@ import numpy as np
 import scipy.linalg as linalg
 import scipy.interpolate as sinterp
 import os
+from gwpy.timeseries import TimeSeries as TS
 
 class FrameCacheStruct:
   def __init__(self, sites, frameTypes, startTimes, stopTimes, durations, directories ):
@@ -705,17 +706,15 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     
     readStartTime = np.maximum(startTime, frameFileStartTime)
     
-    readDuration = np.minimum(stopTime, frameFileStopTime) - readStartTime
+    readEndTime = np.minimum(stopTime, frameFileStopTime)
     
     realChannelName = channelName
     
     try:
-      outputStruct = Fr.frgetvect(frameFilePath, realChannelName, readStartTime, readDuration, False)
-      readData = outputStruct[0]
-      readTime = outputStruct[2]
+      #outputStruct = Fr.frgetvect(frameFilePath, realChannelName, readStartTime, readDuration, False)
+      outputStruct  = TS.read(frameFilePath, realChannelName, readStartTime, readEndTime)
+      readData = outputStruct.data
       readSampleFrequency = 1.0/outputStruct[3][0]
-      readTimeStep = outputStruct[3][0]
-      readGPS = outputStruct[1]
       
     except Exception as inst:
       if(debugLevel>=2):
