@@ -713,8 +713,8 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     try:
       #outputStruct = Fr.frgetvect(frameFilePath, realChannelName, readStartTime, readDuration, False)
       outputStruct  = TS.read(frameFilePath, realChannelName, readStartTime, readEndTime)
-      readData = outputStruct.data
-      readSampleFrequency = 1.0/outputStruct[3][0]
+      readData = np.array(outputStruct.data)
+      readSampleFrequency = 1.0/outputStruct.dt.value
       
     except Exception as inst:
       if(debugLevel>=2):
