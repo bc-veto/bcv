@@ -11,6 +11,7 @@ import os.path
 import re
 
 from numpy import sqrt, pi, log
+sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
 #from numpy import matrix
 
 from bcv import git_version
