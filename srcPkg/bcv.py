@@ -598,7 +598,11 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     
     
     lastFrameFileStartTime = frameCache.startTimes[segment] + frameCache.durations[segment]*np.ceil((segmentStopTimes[segment] - frameCache.startTimes[segment])/frameCache.durations[segment] - 1)
-    
+    #print 'firstFrameFileStartTime ', firstFrameFileStartTime
+    #print 'lastFrameFileStartTime  ', lastFrameFileStartTime
+    #print 'frameCache.startTimes ', frameCache.startTimes
+    #print 'frameCache.stopTIMES ', frameCache.stopTimes
+   
     for frameFileStartTime in np.arange(firstFrameFileStartTime,
 					lastFrameFileStartTime + frameCache.durations[segment],
 					frameCache.durations[segment]):
@@ -612,7 +616,9 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
       import os.path
       if(not os.path.isfile(frameFilePath)):
 	frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] +'-' + frameCache.frameTypes[segment] + '-' + '%010d' %(frameFileStartTime) + '-' + '*'+ '.gwf'
-	frameFilePath = os.popen('ls %s'%(frameFilePath)).readlines()[0].split('\n')[0]
+	tempPath = os.popen('ls %s'%(frameFilePath)).readlines()
+        if(len(tempPath)!=0):
+          frameFilePath=tempPath[0].split('\n')[0]
       
       if(os.path.isfile(frameFilePath)):
 	frameFilePaths.append(frameFilePath)
