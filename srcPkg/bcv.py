@@ -17,7 +17,7 @@ import numpy as np
 import scipy.linalg as linalg
 import scipy.interpolate as sinterp
 import os
-from gwpy.timeseries import TimeSeries as TS
+#from gwpy.timeseries import TimeSeries as TS
 
 class FrameCacheStruct:
   def __init__(self, sites, frameTypes, startTimes, stopTimes, durations, directories ):
@@ -712,15 +712,24 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     
     readStartTime = np.maximum(startTime, frameFileStartTime)
     
-    readEndTime = np.minimum(stopTime, frameFileStopTime)
+    #readEndTime = np.minimum(stopTime, frameFileStopTime)
+
+    readDuration = np.minimum(stopTime, frameFileStopTime) - readStartTime
     
     realChannelName = channelName
     
     try:
-      #outputStruct = Fr.frgetvect(frameFilePath, realChannelName, readStartTime, readDuration, False)
-      outputStruct  = TS.read(frameFilePath, realChannelName, readStartTime, readEndTime)
-      readData = np.array(outputStruct.data)
-      readSampleFrequency = 1.0/outputStruct.dt.value
+     # There are two libraries one can use to read frame files. The gwpy or the frgetvect. 
+     # My observation is that frgetvect is considerably faster. I have, all the same, merely commented out the lines pertaining to the
+     # gwpy function calls should the library get better optimized in the future.
+     # Edit: 2016-07-29. Sudarshan Ghonge <sudu.ghonge@gmail.com>
+      outputStruct = Fr.frgetvect(frameFilePath, realChannelName, readStartTime, readDuration, False)
+      
+      readData = outputStruct[0]
+      readSampleFrequency = 1.0/outputStruct[3][0]
+      #outputStruct  = TS.read(frameFilePath, realChannelName, readStartTime, readEndTime)
+     # readData = np.array(outputStruct.data)
+     # readSampleFrequency = 1.0/outputStruct.dt.value
       
     except Exception as inst:
       if(debugLevel>=2):
