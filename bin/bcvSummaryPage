@@ -268,161 +268,161 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   pylab.savefig('%s/Hist_significances.png'%baseDir, dpi=100)  
   
   # Compuations done to get plot of cumulative efficiency v/s primary channel names
-  primary_chan_names = []
-  for channel in chan_name_list:
-    tempName = channel.split('+')[0]
-    primary_chan_names.append(tempName)
-  primary_chan_names = unique(primary_chan_names)
-  primary_chan_info = {}
-  for iprim in primary_chan_names:
-    primary_chan_info[iprim] = None
+  #primary_chan_names = []
+  #for channel in chan_name_list:
+    #tempName = channel.split('+')[0]
+    #primary_chan_names.append(tempName)
+  #primary_chan_names = unique(primary_chan_names)
+  #primary_chan_info = {}
+  #for iprim in primary_chan_names:
+    #primary_chan_info[iprim] = None
   
-  for iprim in primary_chan_names:
-    for chan in sorted(channel_info.keys()):
-      #print 'chan: %s, prim_chan: %s'%(chan, iprim)
-      if(chan.startswith(iprim) and channel_info[chan]["candidate"]=="True"):
-	if(primary_chan_info[iprim]==None):
-	  tempInfo = {}
-	  tempInfo["vetoSegs"] = veto_segs[chan]
-	  primary_chan_info[iprim] = tempInfo
-	else:
-          primary_chan_info[iprim]["vetoSegs"] |= veto_segs[chan]
+  #for iprim in primary_chan_names:
+    #for chan in sorted(channel_info.keys()):
+      ##print 'chan: %s, prim_chan: %s'%(chan, iprim)
+      #if(chan.startswith(iprim) and channel_info[chan]["candidate"]=="True"):
+	#if(primary_chan_info[iprim]==None):
+	  #tempInfo = {}
+	  #tempInfo["vetoSegs"] = veto_segs[chan]
+	  #primary_chan_info[iprim] = tempInfo
+	#else:
+          #primary_chan_info[iprim]["vetoSegs"] |= veto_segs[chan]
   
-  for iprim in primary_chan_names:
-    if(primary_chan_info[iprim]==None):
-      primary_chan_info.pop(iprim)
-    else:
-      vetoedHtrigs = []
-      for j in range(totalHNum):
-	if Hgps[j] in primary_chan_info[iprim]["vetoSegs"]:
-	  vetoedHtrigs.append(Hgps[j])
-      primary_chan_info[iprim]["vetoEfficiency"] = float(len(vetoedHtrigs))/totalHNum
+  #for iprim in primary_chan_names:
+    #if(primary_chan_info[iprim]==None):
+      #primary_chan_info.pop(iprim)
+    #else:
+      #vetoedHtrigs = []
+      #for j in range(totalHNum):
+	#if Hgps[j] in primary_chan_info[iprim]["vetoSegs"]:
+	  #vetoedHtrigs.append(Hgps[j])
+      #primary_chan_info[iprim]["vetoEfficiency"] = float(len(vetoedHtrigs))/totalHNum
       
 	    
   
-  sorted_keys_by_efficiency = sorted(primary_chan_info, key=lambda x: float(primary_chan_info[x]['vetoEfficiency']), reverse=True)
-  channel_number = arange(len(sorted_keys_by_efficiency))+1
-  cumm_efficiency = zeros(len(sorted_keys_by_efficiency))
-  cumDeadTime = primary_chan_info[sorted_keys_by_efficiency[0]]["vetoSegs"]
-  vetoedHtrigs = []
-  for j in range(totalHNum):
-    if Hgps[j] in cumDeadTime:
-	vetoedHtrigs.append(Hgps[j])
-  cumm_efficiency[0] = float(len(vetoedHtrigs))/totalHNum
-  del vetoedHtrigs
-  i=1
-  for iprim in sorted_keys_by_efficiency[1:]:
-    cumDeadTime |= primary_chan_info[iprim]["vetoSegs"]
-    vetoedHtrigs = []
-    for j in range(totalHNum):
-      if Hgps[j] in cumDeadTime:
-	vetoedHtrigs.append(Hgps[j])
-    eff = float(len(vetoedHtrigs))/totalHNum
-    cumm_efficiency[i] = eff
-    i+=1
+  #sorted_keys_by_efficiency = sorted(primary_chan_info, key=lambda x: float(primary_chan_info[x]['vetoEfficiency']), reverse=True)
+  #channel_number = arange(len(sorted_keys_by_efficiency))+1
+  #cumm_efficiency = zeros(len(sorted_keys_by_efficiency))
+  #cumDeadTime = primary_chan_info[sorted_keys_by_efficiency[0]]["vetoSegs"]
+  #vetoedHtrigs = []
+  #for j in range(totalHNum):
+    #if Hgps[j] in cumDeadTime:
+	#vetoedHtrigs.append(Hgps[j])
+  #cumm_efficiency[0] = float(len(vetoedHtrigs))/totalHNum
+  #del vetoedHtrigs
+  #i=1
+  #for iprim in sorted_keys_by_efficiency[1:]:
+    #cumDeadTime |= primary_chan_info[iprim]["vetoSegs"]
+    #vetoedHtrigs = []
+    #for j in range(totalHNum):
+      #if Hgps[j] in cumDeadTime:
+	#vetoedHtrigs.append(Hgps[j])
+    #eff = float(len(vetoedHtrigs))/totalHNum
+    #cumm_efficiency[i] = eff
+    #i+=1
     
-  # Plot of Cumulative plot efficiencies v/s primary channel list
-  fig = plt.figure(figsize=(8, 8))
-  ax = fig.add_subplot(1, 1, 1)
-  ax.plot(channel_number, cumm_efficiency*100)
-  fig.subplots_adjust(bottom=0.5)
-  plt.xticks(channel_number, sorted_keys_by_efficiency, rotation=90, size=6)
-  ax.grid(b=True, which='major', color='k', linestyle='-')
-  ax.grid(b=True, which='minor', color='#ACACAA')  
-  ax.set_ylabel('Cumulative veto efficiencies of primary channels\nmaximised over secondary channels')
-  ax.set_title("Plot of cumulative veto efficiencies over primary channels")
-  pylab.savefig('%s/Cumulative_primary_efficiencies.png' %baseDir, dpi=100)
+  ## Plot of Cumulative plot efficiencies v/s primary channel list
+  #fig = plt.figure(figsize=(8, 8))
+  #ax = fig.add_subplot(1, 1, 1)
+  #ax.plot(channel_number, cumm_efficiency*100)
+  #fig.subplots_adjust(bottom=0.5)
+  #plt.xticks(channel_number, sorted_keys_by_efficiency, rotation=90, size=6)
+  #ax.grid(b=True, which='major', color='k', linestyle='-')
+  #ax.grid(b=True, which='minor', color='#ACACAA')  
+  #ax.set_ylabel('Cumulative veto efficiencies of primary channels\nmaximised over secondary channels')
+  #ax.set_title("Plot of cumulative veto efficiencies over primary channels")
+  #pylab.savefig('%s/Cumulative_primary_efficiencies.png' %baseDir, dpi=100)
   
-  totalEff = cumm_efficiency[i-1]
-  requiredEff = 0.8*totalEff
+  #totalEff = cumm_efficiency[i-1]
+  #requiredEff = 0.8*totalEff
   
-  i=0
-  for num in range(len(sorted_keys_by_efficiency)):
-    if(cumm_efficiency[i]>=requiredEff):  
-      break
-    i+=1
-  requiredPrimaryChannelList = sorted_keys_by_efficiency[:i+1]
-  savetxt('%s/Optimal_Primary_channel_list.txt'%(baseDir), array(requiredPrimaryChannelList).transpose(), fmt='%s')
+  #i=0
+  #for num in range(len(sorted_keys_by_efficiency)):
+    #if(cumm_efficiency[i]>=requiredEff):  
+      #break
+    #i+=1
+  #requiredPrimaryChannelList = sorted_keys_by_efficiency[:i+1]
+  #savetxt('%s/Optimal_Primary_channel_list.txt'%(baseDir), array(requiredPrimaryChannelList).transpose(), fmt='%s')
   
   
-  # Compuations needed for getting cumulative veto efficiencies v/s secondary channels
-  secondary_chan_names = []
-  for channel in chan_name_list:
-    tempName = channel.split('+')[1]
-    secondary_chan_names.append(tempName)
-  secondary_chan_names = unique(secondary_chan_names)
-  secondary_chan_info = {}
-  for isec in secondary_chan_names:
-    secondary_chan_info[isec] = None
+  ## Compuations needed for getting cumulative veto efficiencies v/s secondary channels
+  #secondary_chan_names = []
+  #for channel in chan_name_list:
+    #tempName = channel.split('+')[1]
+    #secondary_chan_names.append(tempName)
+  #secondary_chan_names = unique(secondary_chan_names)
+  #secondary_chan_info = {}
+  #for isec in secondary_chan_names:
+    #secondary_chan_info[isec] = None
   
-  for isec in secondary_chan_names:
-    for iprim in requiredPrimaryChannelList:
-      for chan in sorted(channel_info.keys()):
-	if(chan.endswith(isec) and chan.startswith(iprim) and channel_info[chan]["candidate"]=="True"):
-	  if(secondary_chan_info[isec]==None):
-	    tempInfo = {}
-	    tempInfo["vetoSegs"] = veto_segs[chan]
-	    secondary_chan_info[isec] = tempInfo
-	  else:
-	    secondary_chan_info[isec]["vetoSegs"] |= veto_segs[chan]
-  for isec in secondary_chan_names:
-    for chan in sorted(channel_info.keys()):
-      if(chan.endswith(isec) and channel_info[chan]["candidate"]=="True"):
-	if(secondary_chan_info[isec]==None):
-	  tempInfo = {}
-	  tempInfo["vetoSegs"] = veto_segs[chan]
-	  secondary_chan_info[isec] = tempInfo
-	else:
-	  secondary_chan_info[isec]["vetoSegs"] |= veto_segs[chan]	    
+  #for isec in secondary_chan_names:
+    #for iprim in requiredPrimaryChannelList:
+      #for chan in sorted(channel_info.keys()):
+	#if(chan.endswith(isec) and chan.startswith(iprim) and channel_info[chan]["candidate"]=="True"):
+	  #if(secondary_chan_info[isec]==None):
+	    #tempInfo = {}
+	    #tempInfo["vetoSegs"] = veto_segs[chan]
+	    #secondary_chan_info[isec] = tempInfo
+	  #else:
+	    #secondary_chan_info[isec]["vetoSegs"] |= veto_segs[chan]
+  #for isec in secondary_chan_names:
+    #for chan in sorted(channel_info.keys()):
+      #if(chan.endswith(isec) and channel_info[chan]["candidate"]=="True"):
+	#if(secondary_chan_info[isec]==None):
+	  #tempInfo = {}
+	  #tempInfo["vetoSegs"] = veto_segs[chan]
+	  #secondary_chan_info[isec] = tempInfo
+	#else:
+	  #secondary_chan_info[isec]["vetoSegs"] |= veto_segs[chan]	    
   
-  for isec in secondary_chan_names:
-    if(secondary_chan_info[isec]==None):
-      secondary_chan_info.pop(isec)
-    else:
-      vetoedHtrigs
-      for j in range(totalHNum):
-	if Hgps[j] in secondary_chan_info[isec]["vetoSegs"]:
-	  vetoedHtrigs.append(Hgps[j])
-      secondary_chan_info[isec]["vetoEfficiency"] = float(len(vetoedHtrigs))/totalHNum
+  #for isec in secondary_chan_names:
+    #if(secondary_chan_info[isec]==None):
+      #secondary_chan_info.pop(isec)
+    #else:
+      #vetoedHtrigs
+      #for j in range(totalHNum):
+	#if Hgps[j] in secondary_chan_info[isec]["vetoSegs"]:
+	  #vetoedHtrigs.append(Hgps[j])
+      #secondary_chan_info[isec]["vetoEfficiency"] = float(len(vetoedHtrigs))/totalHNum
       
 	    
   
-  sorted_keys_by_efficiency = sorted(secondary_chan_info, key=lambda x: float(secondary_chan_info[x]['vetoEfficiency']), reverse=True)
-  channel_number = arange(len(sorted_keys_by_efficiency))+1
-  cumm_efficiency = zeros(len(sorted_keys_by_efficiency))
-  cumDeadTime = secondary_chan_info[sorted_keys_by_efficiency[0]]["vetoSegs"]
-  vetoedHtrigs = []
-  for j in range(totalHNum):
-    if Hgps[j] in cumDeadTime:
-	vetoedHtrigs.append(Hgps[j])
-  cumm_efficiency[0] = float(len(vetoedHtrigs))/totalHNum
-  del vetoedHtrigs
-  i=1
-  for isec in sorted_keys_by_efficiency[1:]:
-    cumDeadTime |= secondary_chan_info[isec]["vetoSegs"]
-    vetoedHtrigs = []
-    for j in range(totalHNum):
-      if Hgps[j] in cumDeadTime:
-	vetoedHtrigs.append(Hgps[j])
-    eff = float(len(vetoedHtrigs))/totalHNum
-    cumm_efficiency[i] = eff
-    i+=1
+  #sorted_keys_by_efficiency = sorted(secondary_chan_info, key=lambda x: float(secondary_chan_info[x]['vetoEfficiency']), reverse=True)
+  #channel_number = arange(len(sorted_keys_by_efficiency))+1
+  #cumm_efficiency = zeros(len(sorted_keys_by_efficiency))
+  #cumDeadTime = secondary_chan_info[sorted_keys_by_efficiency[0]]["vetoSegs"]
+  #vetoedHtrigs = []
+  #for j in range(totalHNum):
+    #if Hgps[j] in cumDeadTime:
+	#vetoedHtrigs.append(Hgps[j])
+  #cumm_efficiency[0] = float(len(vetoedHtrigs))/totalHNum
+  #del vetoedHtrigs
+  #i=1
+  #for isec in sorted_keys_by_efficiency[1:]:
+    #cumDeadTime |= secondary_chan_info[isec]["vetoSegs"]
+    #vetoedHtrigs = []
+    #for j in range(totalHNum):
+      #if Hgps[j] in cumDeadTime:
+	#vetoedHtrigs.append(Hgps[j])
+    #eff = float(len(vetoedHtrigs))/totalHNum
+    #cumm_efficiency[i] = eff
+    #i+=1
 
     
     
-  # Plot of Cumulative plot efficiencies v/s secondary channel list
-  fig = plt.figure(figsize=(8, 8))
-  ax = fig.add_subplot(1, 1, 1)
-  ax.plot(channel_number, cumm_efficiency*100)
-  #fig.subplots_adjust(bottom=0.5)
-  #plt.xticks(channel_number, sorted_keys_by_efficiency, rotation=90, size=6)
-  ax.grid(b=True, which='major', color='k', linestyle='-')
-  ax.grid(b=True, which='minor', color='#ACACAA')  
-  ax.set_ylabel('Cumulative veto efficiencies of secondary channels\nmaximised over primary channels')
-  ax.set_title("Plot of cumulative veto efficiencies over secondary channels")
-  pylab.savefig('%s/Cumulative_secondary_efficiencies.png' %baseDir, dpi=100)
+  ## Plot of Cumulative plot efficiencies v/s secondary channel list
+  #fig = plt.figure(figsize=(8, 8))
+  #ax = fig.add_subplot(1, 1, 1)
+  #ax.plot(channel_number, cumm_efficiency*100)
+  ##fig.subplots_adjust(bottom=0.5)
+  ##plt.xticks(channel_number, sorted_keys_by_efficiency, rotation=90, size=6)
+  #ax.grid(b=True, which='major', color='k', linestyle='-')
+  #ax.grid(b=True, which='minor', color='#ACACAA')  
+  #ax.set_ylabel('Cumulative veto efficiencies of secondary channels\nmaximised over primary channels')
+  #ax.set_title("Plot of cumulative veto efficiencies over secondary channels")
+  #pylab.savefig('%s/Cumulative_secondary_efficiencies.png' %baseDir, dpi=100)
   
-  savetxt('%s/List_of_secondary_channels.txt'%(baseDir),array([channel_number, sorted_keys_by_efficiency]).transpose() , fmt = '%s', delimiter=' ')
+  #savetxt('%s/List_of_secondary_channels.txt'%(baseDir),array([channel_number, sorted_keys_by_efficiency]).transpose() , fmt = '%s', delimiter=' ')
   
   
   
@@ -439,7 +439,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   contents.append('<img id="H_time_freq" src="./Htriggers_time_freq.png" style="float: left; width: 50%;">')
   contents.append('<img id="H_freq_snr" src="./Htriggers_freq_snr.png" style="float: left; width: 50%;">')
   contents.append('<img id="Hist_significances" src="./Hist_significances.png" style="float: left; width: 50%;">')
-  contents.append('<img id="H_freq_snr" src="./Cumulative_primary_efficiencies.png" style="float: left; width: 50%;">')
+  #contents.append('<img id="H_freq_snr" src="./Cumulative_primary_efficiencies.png" style="float: left; width: 50%;">')
   #contents.append('<img id="Cumulative_efficiencies" src="./Cumulative_secondary_efficiencies.png" style="float: left; width: 50%;"><br>')
 
   ############################## Summary Info #################################
@@ -462,8 +462,8 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   contents.append("<b>Total Veto Efficiency: %.3f %% (%d / %d) </b><br>"%(combinedEff,vetoedHNum,totalHNum))
   contents.append("<b>Total Dead Time: %d s (%.2f %%)</b><br>"%(totalDeadTime,deadTimePer))  
   contents.append("<b>Required Accidental Veto Rate: %s Hz </b><br>"%(reqAccVetoRate))
-  contents.append('<b><a href="Optimal_Primary_channel_list.txt"> Optima primary channel list</a></b><br>')
-  contents.append('<b><a href="List_of_secondary_channels.txt"> Secondary Channels in decreasing order of efficiency</a></b><br>')
+  #contents.append('<b><a href="Optimal_Primary_channel_list.txt"> Optima primary channel list</a></b><br>')
+  #contents.append('<b><a href="List_of_secondary_channels.txt"> Secondary Channels in decreasing order of efficiency</a></b><br>')
   contents.append('<b><a href="vetoed_segment.txt">Total Vetoed Segments</a></b><br><br><br>')
  
   ############################# FOM Table ############################    
