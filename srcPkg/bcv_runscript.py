@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/home/detchar/opt/gwpysoft/bin/python
 
 '''
 - bcv_runscript - perform veto analysis using different coupling models between 

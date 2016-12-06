@@ -40,7 +40,7 @@ import glob
 from numpy import *
 
 import math
-
+import warnings
 import matplotlib
 matplotlib.use('Agg')
 from pylab import *
@@ -1126,7 +1126,7 @@ original_tag = os.path.basename(opts.result_dir).split("-")[0]
 timeShiftMin = cp.getint("data_conditioning","timeShiftMin")
 timeShiftMax = cp.getint("data_conditioning","timeShiftMax")
 numTimeShifts = cp.getint("data_conditioning","numTimeShifts")
-
+warnings.filterwarnings("ignore")
 # 
 if opts.use_rMax:
   statistics = "rMax"

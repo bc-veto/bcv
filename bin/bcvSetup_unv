@@ -483,7 +483,7 @@ def get_analyze_segment(ifo):
       """
       seg_list = segmentlist()
       i = 0
-      for i in range(math.floor(abs(seg)/upper)):
+      for i in range(int(math.floor(abs(seg)/upper))):
          seg_list.append(segment(seg[0]+i*upper,seg[0]+(i+1)*upper))
       seg_list.append(segment(seg[0]+i*upper,seg[-1]))
       return seg_list
