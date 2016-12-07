@@ -17,9 +17,9 @@ parser.add_option("-s", "--gpsStart", type="int", default=0,
                   help="GPS start time. Required")
 parser.add_option("-e", "--gpsEnd", type="int", default=0,
                   help="GPS end time. Required")
-parser.add_option("-a", "--account", type="str", default="isogait",
+parser.add_option("-a", "--account", type="str", default="sudarshan.ghonge",
                   help="Account from which this code is run. For example, 'detchar', or 'isogait'")
-parser.add_option("-f", "--iniFile", type="str", default="/archive/home/detchar/BCV/config/weekly.ini",
+parser.add_option("-f", "--iniFile", type="str", default="/home/sudarshan.ghonge/weekly.ini",
                   help=".ini file containing the run parameters")
 parser.add_option("-t", "--triggerDir", type="str", default="/archive/home/lindy/public_html/triggers/s6-online",
                   help="Root directory of triggers.")
@@ -43,16 +43,18 @@ iniFile = opts.iniFile;
 triggerDir = opts.triggerDir;
 tt = opts.trigType
 
-if ifo=="H1":
-	GWchannel = "CAL_DELTAL_EXTERNAL_DQ"
-else:
-	GWchannel = "OAF-CAL_DARM_DQ"
+#if ifo=="H1":
+#	GWchannel = "CAL_DELTAL_EXTERNAL_DQ"
+#else:
+#	GWchannel = "OAF-CAL_DARM_DQ"
+GWchannel = "GDS-CALIB_STRAIN"
 print "running veto code on %s:%s"%(ifo, GWchannel)
 print "date: %s"%curTime
 print "user: %s"%user
 
 print "triggerDir = %s gpsStart = %d gpsEnd = %d" %(triggerDir, gpsStart, gpsEnd);
 
+linkFolderPath = '/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/linkFolder.sh'
 #tag = "%s_DARMERR_%d_%d_WEEKLY"%(ifo,gpsStart,gpsEnd)
 tag = "%s_%d_%d"%(ifo,gpsStart,gpsEnd)
 
@@ -74,11 +76,11 @@ if not os.path.isdir("/home/%s/public_html/BCV/results/%s_webpage"%(opts.account
 USfile = open("/home/%s/public_html/BCV/results/%s_webpage"%(opts.account,tag)+"/"+uString,'w')
 USfile.close()
 
-if not os.path.isdir("/archive/home/%s/BCV/"%opts.account):
+if not os.path.isdir("/home/%s/BCV/"%opts.account):
   print "Creating directory BCV/"
-  os.makedirs("/archive/home/%s/BCV/"%opts.account)
+  os.makedirs("/home/%s/BCV/"%opts.account)
 
-newDir = os.path.join("/archive/home/%s/BCV/"%opts.account,tag)
+newDir = os.path.join("/home/%s/BCV/"%opts.account,tag)
 if not os.path.isdir(newDir):
   print "Creating directory %s"%newDir
   os.makedirs(newDir)
@@ -105,7 +107,7 @@ xmlSegFile = os.path.join(newDir,tag+"_segs.xml")
 os.system('export S6_SEGMENT_SERVER="https://dqsegdb5.phy.syr.edu"')
 #cmd = "ligolw_segment_query --segment-url https://segdb.ligo.caltech.edu --query-segments --include-segments '%s:DMT-SCIENCE' --gps-start-time %d --gps-end-time %d --output-file %s"%(ifo,gpsStart,gpsEnd,xmlSegFile)
 
-cmd = "ligolw_segment_query_dqsegdb --segment-url=https://dqsegdb5.phy.syr.edu --query-segments --gps-start-time %d --gps-end-time %d --include-segments='%s:DMT-ANALYSIS_READY:1' -o %s"%(gpsStart,gpsEnd,ifo,xmlSegFile)
+cmd = "ligolw_segment_query_dqsegdb --segment-url=https://segments.ligo.org  --query-segments --gps-start-time %d --gps-end-time %d --include-segments='%s:DMT-ANALYSIS_READY:1' -o %s"%(gpsStart,gpsEnd,ifo,xmlSegFile)
 
 print cmd
 exit = os.system(cmd)
@@ -146,7 +148,7 @@ os.system("grep -v INJECTION_BURST %s > %s"%(tmpVetoDefFile,vetoDefFile))
 print "getting configuration file..."
 #configFile = os.path.join(newDir,tag+".conf")
 configFile = os.path.join(newDir,tag+"_conf.txt")
-os.system("cp /archive/home/%s/configuration.txt %s"%(opts.account, configFile))
+os.system("cp /home/%s/configuration.txt %s"%(opts.account, configFile))
 
 print "editing parameter file..."
 paramFile = os.path.join(newDir,tag+".ini")
@@ -182,10 +184,24 @@ for line in open(iniFile).readlines():
 
   ini.append(line)
 open(paramFile,'w').write("".join(ini))
-
+os.mkdir('%s/triggers'%(newDir))
+destTrigDir = '%s/triggers'%(newDir)
 os.chdir(newDir)
+if tt=='KW':
+        minPrefix = gpsStart/100000
+        maxPrefix = gpsEnd/100000
+        ifo_small = 'h' if ifo=='H1' else 'l'
+        ifo_caps = 'H' if ifo=='H1' else 'L'
+        for prefix in range(minPrefix, maxPrefix+1):
+
+                t_arg = '/gds-%s1/dmt/triggers/%s-KW_TRIGGERS/%s-KW_TRIGGERS-%d'%(ifo_small, ifo_caps, ifo_caps, prefix)
+		h_arg = '/gds-%s1/dmt/triggers/%s-KW_HOFT/%s-KW_HOFT-%d'%(ifo_small, ifo_caps, ifo_caps, prefix)
+                cmd='%s %s %s/'%(linkFolderPath, t_arg, destTrigDir)
+                os.system(cmd)
+                cmd='%s %s %s/'%(linkFolderPath, h_arg, destTrigDir)
+                os.system(cmd)		
 #cmd = "bcvSetup -i %s -k %s -sv"%(paramFile, triggerDir)
-cmd = "bcvSetup_unv -svi %s"%paramFile
+cmd = "bcvSetup_unv -svi %s -k %s"%(paramFile, destTrigDir)
 
 exit = os.system(cmd)
 if exit > 0:
