@@ -1,0 +1,8 @@
+#!/bin/bash
+
+CURR_PATH="$(pwd)"
+
+PATH=$PATH:$CURR_PATH
+PYTHONPATH=${PYTHONPATH}$CURR_PATH:
+
+#export $PATH

@@ -436,6 +436,7 @@ def get_analyze_segment(ifo):
       analyzed_segs = analyzed_segs - segs
   
     analyzed_segs.coalesce()
+    print 'analysed_segs: ', analyzed_segs
   
     ######################### subtract category times ######################
   
@@ -457,16 +458,25 @@ def get_analyze_segment(ifo):
           Error: command below failed.
                  %s"""%cmd
           sys.exit(1)
-  
       for i in cats.keys():
         if cats[i] == True:
-          cat_file = "segfiles/%s-VETOTIME_CAT%d-%d-%d.xml"%(ifo,i,start,duration)  
+          cat_file = "segfiles/%s-VETOTIME_CAT%d-%d-%d.txt"%(ifo,i,start,duration)  
           if not os.path.isfile(cat_file):
             get_cats()
+            cat_xml = "segfiles/%s-VETOTIME_CAT%d-%d-%d.xml"%(ifo,i,start,duration)
+            cmd = 'lwtprint %s -c start_time -c end_time -t segment -d " " > %s' %(cat_xml, cat_file)
+            print cmd
+            exit = os.system(cmd)
+            if exit>0:
+              print >> sys.stderr, """
+              Error: command below failed.
+               %s"""%cmd
+              sys.exit(1)
           if opts.verbose: print "subtracting %s"%cat_file  
-          analyzed_segs = analyzed_segs - bcvUtils.read_segfile_xml(cat_file,opts.verbose)
+          analyzed_segs = analyzed_segs - bcvUtils.read_segfile(cat_file)
   
-    analyzed_segs.coalesce
+    analyzed_segs.coalesce()
+    print analyzed_segs
   
     # divide up segments that are too long
     analysis_segments = segmentlist()
@@ -629,7 +639,6 @@ def config_maker():
       GWchan = "%s:LSC-DARM_ERR"%ifo
     # output file name
     GWtrigFile = os.path.join("KWtrigs",original_tag+"_"+GWchan+".txt")
-    
     # where KW triggers are retreived (?)
     if trigger_type == "OMICRON": 
     	#cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, verbose)	

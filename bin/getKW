@@ -336,7 +336,7 @@ def get_trigs(channel, segs, min_thresh, trigs_loc=None,\
                 find_file_from_channel(channel,os.path.join(trigs_loc,dump))
          for trigs_file in trigs_files:
               if trigs_file != None:
-                   if verbose: print "retreiving data from %s..."%trigs_file
+                   if verbose: print "retreiving data from %s...\n"%trigs_file
     
                    for line in  open(trigs_file): #old
 
@@ -377,6 +377,7 @@ def get_trigs(channel, segs, min_thresh, trigs_loc=None,\
             # now use the above variable name to with the "open" command.  Again,
             # note that "trigs_file" is only created in the above "correction" block.
             # get central time and KW significance
+                 #print "Trig file name %s"%(full_file_name)
                  trig = line.split()
                  start_time = float(trig[0]) 
                  end_time = float(trig[1]) 

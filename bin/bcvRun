@@ -6,10 +6,14 @@ import time
 import glob
 import optparse
 import datetime
-
+from glue.segments import segment, segmentlist
+from glue.iterutils import *
+sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
 from bcv import bcvUtils
 
-from glue.segments import segment, segmentlist
+
+
+
 
 parser = optparse.OptionParser(usage=__doc__)
 parser.add_option("-i", "--ifo", help="IFO to be analyze. Required.")
@@ -104,7 +108,7 @@ xmlSegFile = os.path.join(newDir,tag+"_segs.xml")
 #if not os.path.isfile(xmlSegFile):
 #https://dqsegdb5.phy.syr.edu
 #os.system('export S6_SEGMENT_SERVER="https://segdb.ligo.caltech.edu"')
-os.system('export S6_SEGMENT_SERVER="https://dqsegdb5.phy.syr.edu"')
+#os.system('export S6_SEGMENT_SERVER="https://dqsegdb5.phy.syr.edu"')
 #cmd = "ligolw_segment_query --segment-url https://segdb.ligo.caltech.edu --query-segments --include-segments '%s:DMT-SCIENCE' --gps-start-time %d --gps-end-time %d --output-file %s"%(ifo,gpsStart,gpsEnd,xmlSegFile)
 
 cmd = "ligolw_segment_query_dqsegdb --segment-url=https://segments.ligo.org  --query-segments --gps-start-time %d --gps-end-time %d --include-segments='%s:DMT-ANALYSIS_READY:1' -o %s"%(gpsStart,gpsEnd,ifo,xmlSegFile)
@@ -133,18 +137,18 @@ if exit > 0:
   os.system("rm -f %s"%segFile)
   sys.exit(1)
 
-print "getting veto definer file and excluding burst injection..."
-tmpVetoDefFile = os.path.join(newDir,"tmp_H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml")
-vetoDefFile = os.path.join(newDir,"H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml")
-cmd = "wget -O %s https://www.lsc-group.phys.uwm.edu/ligovirgo/cbc/public/segments/S6/H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml --no-check-certificate"%tmpVetoDefFile
-exit = os.system(cmd)
-if exit > 0:
-  print >> sys.stderr, "Error: Failed to retrieve veto definer file."
-  print >> sys.stderr, cmd
-  system.exit(1)
-
-os.system("grep -v INJECTION_BURST %s > %s"%(tmpVetoDefFile,vetoDefFile))
-
+#print "getting veto definer file and excluding burst injection..."
+#tmpVetoDefFile = os.path.join(newDir,"tmp_H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml")
+#vetoDefFile = os.path.join(newDir,"H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml")
+#cmd = "wget -O %s https://www.lsc-group.phys.uwm.edu/ligovirgo/cbc/public/segments/S6/H1L1V1-S6_CBC_LOWMASS_ONLINE-937473702-0.xml --no-check-certificate"%tmpVetoDefFile
+#exit = os.system(cmd)
+#if exit > 0:
+#  print >> sys.stderr, "Error: Failed to retrieve veto definer file."
+#  print >> sys.stderr, cmd
+#  system.exit(1)
+#
+#os.system("grep -v INJECTION_BURST %s > %s"%(tmpVetoDefFile,vetoDefFile))
+#
 print "getting configuration file..."
 #configFile = os.path.join(newDir,tag+".conf")
 configFile = os.path.join(newDir,tag+"_conf.txt")
@@ -166,8 +170,8 @@ for line in open(iniFile).readlines():
     line = "configuration_file = %s\n"%configFile
   if line.startswith("analyzed_seg_files"):
     line = "analyzed_seg_files = %s\n"%segFile
-  if line.startswith("veto_definer_file"):
-    line = "veto_definer_file = %s\n"%vetoDefFile
+#  if line.startswith("veto_definer_file"):
+#    line = "veto_definer_file = %s\n"%vetoDefFile
   if line.startswith("outdir"):
     line = "outdir = /home/%s/public_html/BCV/results/"%opts.account
   if line.startswith("trigger_type"):
@@ -200,17 +204,18 @@ if tt=='KW':
                 os.system(cmd)
                 cmd='%s %s %s/'%(linkFolderPath, h_arg, destTrigDir)
                 os.system(cmd)		
-#cmd = "bcvSetup -i %s -k %s -sv"%(paramFile, triggerDir)
 cmd = "bcvSetup_unv -svi %s -k %s"%(paramFile, destTrigDir)
+
+#cmd = "bcvSetup_unv -svi %s"%(paramFile)
 
 exit = os.system(cmd)
 if exit > 0:
   print sys.stderr, "failed: %s"%cmd
   sys.exit(1)
 
-dagFile = os.path.join("dags",tag+".dag")
-print "running %s..."%dagFile
-cmd = "condor_submit_dag -maxjobs 500 %s"%dagFile
-exit = os.system(cmd)
-if exit > 0:
-  print "failed: %s"%cmd
+#dagFile = os.path.join("dags",tag+".dag")
+#print "running %s..."%dagFile
+#cmd = "condor_submit_dag -maxjobs 500 %s"%dagFile
+#exit = os.system(cmd)
+#if exit > 0:
+#  print "failed: %s"%cmd
