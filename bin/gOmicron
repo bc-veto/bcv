@@ -100,9 +100,10 @@ for line in seg:
 	# Remove pre-existing temporary file
 	if os.path.isfile('temp_local_data.txt'):
 	  os.remove('temp_local_data.txt')
-	string = 'GetOmicronTriggers.sh -c %s -s %s -e %s -q -x %f > temp_local_data.txt '%(ifo + ':' + channel, startTime, endTime, opts.min_thresh)
+	string = 'omicron-print.exe channel=%s gps-start=%s gps-end=%s print-q=1 snr-min=%f cluster-dt=0.01> temp_local_data.txt '%(ifo + ':' + channel, startTime, endTime, opts.min_thresh)
 
 
+        print 'Executing "%s"'%(string)
 	os.system(string)
 	printresult = []
 

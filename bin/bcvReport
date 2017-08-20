@@ -792,6 +792,9 @@ def _get_veto_segs(cursor,veto_thresh,analyzed_segs,timeShift=False,trigXCentTim
 	      veto_times = []
 	      if trigXCentTimeData.has_key(tau):
 	      	for r, trigXCentTimes in trigXCentTimeData[tau].iteritems():
+                        r = float(r)
+                        if (isnan(r)):
+                                r = 0.0
 	        	if abs(r) >= veto_thresh:
 	          		veto_times += trigXCentTimes
 	      			veto_segs = segmentlist([bcvUtils.get_segment(t, opts.positive_window, opts.negative_window) for t in veto_times])
@@ -804,6 +807,9 @@ def _get_veto_segs(cursor,veto_thresh,analyzed_segs,timeShift=False,trigXCentTim
 		if trigXCentTimeData.has_key(0):
     			veto_times = []
     			for r, trigXCentTimes in trigXCentTimeData[0].iteritems():
+                                r = float(r)
+                                if (isnan(r)):
+                                        r = 0.0
       				if abs(r) >= veto_thresh:
         				veto_times += trigXCentTimes
     					veto_segs = segmentlist([bcvUtils.get_segment(t, opts.positive_window, opts.negative_window) for t in veto_times])
