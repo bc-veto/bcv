@@ -73,7 +73,7 @@ def readData(frameCache, channelNames,frameTypes, startTime, stopTime, timeShift
 
 def resample2(data, samplFreqD, samplFreq):
   totalTime = len(data)/samplFreqD
-  new_num = totalTime*samplFreq
+  new_num = int(totalTime*samplFreq)
   dataInter = sig.resample(data, new_num)
   return dataInter
 
