@@ -542,7 +542,6 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
   
   # identify cache segments which overlap requested times
   segments = np.where(segmentStopTimes > segmentStartTimes)[0]
-  
   # if no segments overlap with requested times
   if(len(segments)==0):
     
@@ -598,10 +597,6 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     
     
     lastFrameFileStartTime = frameCache.startTimes[segment] + frameCache.durations[segment]*np.ceil((segmentStopTimes[segment] - frameCache.startTimes[segment])/frameCache.durations[segment] - 1)
-    #print 'firstFrameFileStartTime ', firstFrameFileStartTime
-    #print 'lastFrameFileStartTime  ', lastFrameFileStartTime
-    #print 'frameCache.startTimes ', frameCache.startTimes
-    #print 'frameCache.stopTIMES ', frameCache.stopTimes
    
     for frameFileStartTime in np.arange(firstFrameFileStartTime,
 					lastFrameFileStartTime + frameCache.durations[segment],
@@ -619,7 +614,6 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
 	tempPath = os.popen('ls %s'%(frameFilePath)).readlines()
         if(len(tempPath)!=0):
           frameFilePath=tempPath[0].split('\n')[0]
-      
       if(os.path.isfile(frameFilePath)):
 	frameFilePaths.append(frameFilePath)
 	frameFileTypes.append(frameFileType)
