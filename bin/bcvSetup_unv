@@ -646,7 +646,7 @@ def config_maker():
       		print "Omicron triggers selected for GW channel..."
       		#print cmd
     elif trigger_type == "KW":
-	cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, verbose)
+	cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min_freq %f --max_freq %f %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, cp.get("data_conditioning","trigMinFreq"), cp.get("data_conditioning","trigMaxFreq"), verbose)
         if opts.verbose:
                 print "retrieving KW triggers for GW channel..."
                 print cmd
@@ -667,7 +667,7 @@ def config_maker():
       GWtrigFile = os.path.join("KWtrigs",cp.get("general","tag")+"_"+os.path.basename(trigger_file) + '.txt')
       print >> sys.stderr, "Expected name: %s"%GWtrigFile
       #cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, verbose)
-      cmd = "%s -c %s -s : -m %s -o Omicron -O %s -I %s -k %s -S %s"%(cp.get("condor","getKW"), tf_1[1], minSNRH, OMpath,tf_1[0], cp.get("general","tag"),cp.get("input","analyzed_seg_files"))
+      cmd = "%s -c %s -s : -m %s -o Omicron -O %s -I %s -k %s -S %s -l %f -h %f"%(cp.get("condor","getKW"), tf_1[1], minSNRH, OMpath,tf_1[0], cp.get("general","tag"),cp.get("input","analyzed_seg_files"),cp.get("data_conditioning","trigMinFreq"), cp.get("data_conditioning","trigMaxFreq"))
       if opts.verbose:
                 print "retrieving OMICRON triggers for GW channel..."
                 print cmd

@@ -47,6 +47,10 @@ def parse_commandline():
                       help="IFO entry.")
 	parser.add_option("-S", "--segFile", default=None,
                       help="User's segment file.")
+        parser.add_option("-l", "-min-freq", default=None,
+                          help="Minumum frequency of trigger")
+        parser.add_option("-h", "-max-freq", default=None,
+                          help="Maximum frequency of trigger")
 
 	opts, args = parser.parse_args()
 
@@ -100,7 +104,10 @@ for line in seg:
 	# Remove pre-existing temporary file
 	if os.path.isfile('temp_local_data.txt'):
 	  os.remove('temp_local_data.txt')
-	string = 'omicron-print.exe channel=%s gps-start=%s gps-end=%s print-q=1 snr-min=%f cluster-dt=0.01> temp_local_data.txt '%(ifo + ':' + channel, startTime, endTime, opts.min_thresh)
+        if (opts.min_freq is None or opts.max_freq is None):
+            string = 'omicron-print.exe channel=%s gps-start=%s gps-end=%s print-q=1 snr-min=%f cluster-dt=0.01> temp_local_data.txt '%(ifo + ':' + channel, startTime, endTime, opts.min_thresh)
+        else:
+            string = 'omicron-print.exe channel=%s gps-start=%s gps-end=%s print-q=1 snr-min=%f freq-min=%f freq-max=%f cluster-dt=0.01> temp_local_data.txt '%(ifo + ':' + channel, startTime, endTime, opts.min_thresh, opts.min_freq, opts.max_freq)
 
 
         print 'Executing "%s"'%(string)
