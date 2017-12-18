@@ -9,7 +9,8 @@
 -        outDir, logFile, timeShiftMin, timeShiftMax, numTimeShifts, debugLevel
 -        
 - configurationFile 	- Path name of channel configuration file
-- frameCacheFile 	- Path name of framecache file
+- frameCacheFileH 	- Path name of h(t) framecache file (Now lalcache)
+- frameCacheFileX       - Path name of the x(t) and y(t) framecache file (Now lalcache)
 - outDir 		- Directory to write results
 - logFile		- string specifying the name of the log file 
 - debugLevel 		- Verboseness of debug level output
@@ -75,7 +76,8 @@ import argparse
 parser = argparse.ArgumentParser(description='Veto analysis pipeline using instrumental coupling models')
 parser.add_argument('segmentFile', type=str, help='Name of file where information of the segments (in seconds) to be analysed is stored')
 parser.add_argument('configurationFile', type=str, help='Name of the file which describes the configuration of the analysis to be done')
-parser.add_argument('frameCacheFile', type=str, help='Name of the file where information about frame files is stored')
+parser.add_argument('frameCacheFileH', type=str, help='Name of the file where information about h(t) frame files is stored')
+parser.add_argument('frameCacheFileX', type=str, help='Name of the file where information about the x(t) and y(t) files is stored')
 parser.add_argument('couplingModel', type=str, help='Choose between linear and bilinear', choices=['linear', 'bilinear'])
 parser.add_argument('highPassCutoff', type=float, help='Provide high pass frequency cut-off')
 parser.add_argument('trigSignThreshX', type=float, help='Provide minimum SNR value needed in X triggers')
@@ -91,7 +93,8 @@ args = parser.parse_args()
 
 segmentFile = args.segmentFile
 configurationFile = args.configurationFile
-frameCacheFile = args.frameCacheFile
+frameCacheFileH = args.frameCacheFileH
+frameCacheFileX = args.frameCacheFileX
 couplingModel = args.couplingModel
 highPassCutoff = args.highPassCutoff
 trigSignThreshX = args.trigSignThreshX
@@ -338,8 +341,8 @@ if(debugLevel>=0):
 
 # Load Frame cache file, segment list etc
 
-logFid.write('LOG: Reading framecache file %s...\n'%( frameCacheFile))
-frameCache = bcv.loadframecache(frameCacheFile)
+#logFid.write('LOG: Reading framecache file %s...\n'%( frameCacheFile))
+#frameCache = bcv.loadframecache(frameCacheFile)
 
 numTrigsH = 0
 numTrigsX = 0
@@ -481,7 +484,7 @@ for iSeg in xrange(nSeg):
     
     for iTimeShift in xrange(len(timeShiftVec)):
       timeShift = timeShiftVec[iTimeShift]
-      vetoanalysis.vetoanalysis(frameCache, [chanHName], chanXName, [frameTypeH], frameTypeX, samplFreqH, samplFreqX,
+      vetoanalysis.vetoanalysis(frameCacheFileH, frameCacheFileX, [chanHName], chanXName, [frameTypeH], frameTypeX, samplFreqH, samplFreqX,
 				highPassCutoff, triggerListHSeg, triggerListXSeg,
 				couplingModel, transFnXtoH, segStartTime, segEndTime,
 				timeShift, outDirList, logFid, debugLevel)
@@ -500,7 +503,8 @@ for iDir in xrange(len(outDirList)):
   textSummaryFID.write('analysisStartTime UTC : %s\n' %(gtime.from_gps(analysisStartTime)))
   textSummaryFID.write('segEndTime UTC : %s\n' %(gtime.from_gps(segEndTime)))
   textSummaryFID.write('configurationFile : %s\n' %(configurationFile))
-  textSummaryFID.write('frameCacheFile : %s\n'%(frameCacheFile))
+  textSummaryFID.write('frameCacheFileH : %s\n'%(frameCacheFileH))
+  textSummaryFID.write('frameCacheFileX : %s\n'%(frameCacheFileX))
   textSummaryFID.write('couplingModel :%s\n' %(couplingModel))
   textSummaryFID.write('highPassCutoff : %3.2f\n' %(highPassCutoff))
   textSummaryFID.write('outDir : %s\n' %(outDirList[iDir]))

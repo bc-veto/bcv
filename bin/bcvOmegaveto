@@ -24,7 +24,14 @@ Tomoki Isogai (isogait@carleton.edu)
 This is a simple wrapper for compiled omegaveto.m (much easier to handle in condor this way).
 This code does two things:
 1) input arguments handling for omegaveto.m
+
 2) combine frame cache files in a way omegaveto.m likes
+Edit: Omegaveto.m has been replaced by bcv_runscript.py which is a part of the larger
+python source code. The source uses gwpy which needs independent frame cache files for each frame type.
+The combination therefore is now unnecessary
+
+Sudarshan Ghonge (sudarshan.ghonge@gatech.edu)
+<2017-11-30>
 
 """
 
@@ -142,29 +149,34 @@ def parse_commandline():
 def main():
     ## parse the command line
     opts = parse_commandline()
+    frameCacheFileH = opts.frameCacheFileH
+    frameCacheFileX = opts.frameCacheFileX
     
     ## combine framecache
-    frameCacheDir = os.path.dirname(opts.frameCacheFileH)
+    ## Removed since shifted to lal-cache. See the comments at the start of this file
+
+
+#    frameCacheDir = os.path.dirname(opts.frameCacheFileH)
     # combine file names to get a unique name
-    frameCacheFile =\
-        os.path.splitext(os.path.basename(opts.frameCacheFileH))[0] + "-" +\
-        os.path.splitext(os.path.basename(opts.frameCacheFileX))[0]
-    if opts.frameCacheFileY != "":
-      frameCacheFile = frameCacheFile + "-" + os.path.splitext(os.path.basename(opts.frameCacheFileX))[0]
-    frameCacheFile += ".cache"
+#    frameCacheFile =\
+#        os.path.splitext(os.path.basename(opts.frameCacheFileH))[0] + "-" +\
+#        os.path.splitext(os.path.basename(opts.frameCacheFileX))[0]
+#    if opts.frameCacheFileY != "":
+#      frameCacheFile = frameCacheFile + "-" + os.path.splitext(os.path.basename(opts.frameCacheFileX))[0]
+#    frameCacheFile += ".cache"
     # retrieve the absolute path
-    frameCacheFile = os.path.join(frameCacheDir,frameCacheFile)
+#    frameCacheFile = os.path.join(frameCacheDir,frameCacheFile)
 
     # combine files
-    if not os.path.isfile(frameCacheFile):
-      os.system("cat %s %s %s > %s"%(opts.frameCacheFileH,opts.frameCacheFileX,opts.frameCacheFileY,frameCacheFile))
+#    if not os.path.isfile(frameCacheFile):
+#      os.system("cat %s %s %s > %s"%(opts.frameCacheFileH,opts.frameCacheFileX,opts.frameCacheFileY,frameCacheFile))
 
 
     # run omegaveto
    
-    cmd = "%s %s %s %s %s %f %d %d %s %s %d %d %d %d"%(opts.omegaveto_bin,
+    cmd = "%s %s %s %s %s %s %f %d %d %s %s %d %d %d %d"%(opts.omegaveto_bin,
             opts.segmentFile, 
-            opts.configurationFile, frameCacheFile, opts.couplingModel,
+            opts.configurationFile, frameCacheFileH, frameCacheFileX, opts.couplingModel,
             opts.highPassCutoff, opts.SNRcutoffX, opts.SNRcutoffH,
             opts.outDir, os.path.basename(opts.logFile), 
             opts.timeShiftMin, opts.timeShiftMax, opts.numTimeShifts,

@@ -4,20 +4,16 @@
 # The functions are called by the main script (vetoanalysis.py) to process this data
 # based on inputs received by the Event Trigger Generator (ETG) Algorithms
 
-# The firls() function has been retrieved from python ticket 648
-# http://projects.scipy.org/scipy/attachment/ticket/648/designtools.py
 # 
-# The multirate code has been used from the following site
-# http://mubeta06.github.io/python/sp/_modules/sp/multirate.html
 
-from pylal import Fr
+#from pylal import Fr
 import sys
 import scipy.signal as sig
 import numpy as np
 import scipy.linalg as linalg
 import scipy.interpolate as sinterp
 import os
-#from gwpy.timeseries import TimeSeries as TS
+from gwpy.timeseries import TimeSeries as TS
 
 class FrameCacheStruct:
   def __init__(self, sites, frameTypes, startTimes, stopTimes, durations, directories ):
@@ -442,7 +438,10 @@ def loadframecache(cachePath):
   
   return cache
   
-  
+# Function to check if the file exists AND is non-empty
+def is_non_zero_file(fpath):
+    return True if os.path.isfile(fpath) and os.path.getsize(fpath) > 0 else False
+
 def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
 		   allowRedundantFlag, debugLevel):
   #READFRAMEDATA Read a single channel of data from frame files
@@ -511,6 +510,9 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
   #
   # Rewritten in Python by Sudarshan Ghonge <sudu.ghonge@gmail.com>
   # 2015-09-04
+  # 
+  # Update 217-11-30 Ported to gwpy. The pipeline now uses lal-cache and 
+  # now does away with the need of the functions loadframecache
 
   #
   # if specified stop time precedes start time,
@@ -522,259 +524,266 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
   site = channelName[0]
   
   #if specified frame cache is invalid
-  if(frameCache==None):
+  if(not is_non_zero_file(frameCache)):
     if(debugLevel>=1):
       # Issue warning
-      print 'Warning: Invalid frame cache'
+      print 'Warning: Empty lal cache file ' + frameCache 
     
     data = []
     time = []
     sampleFrequency = 0
     return [data, sampleFrequency]
     # return empty results
+  data = np.array([])
+  time = np.array([])
+  sampleFrequency = None
+
+  try:
+     outputStruct  = TS.read(frameCache, channelName, start=startTime, end=stopTime, format='gwf.lalframe')
+     readData = np.array(outputStruct)
+     readSampleFrequency = outputStruct.sample_rate.value
+  except Exception as inst:
+     if(debugLevel>=2):
+       print  inst.message
+  if((len(readData)==0) | np.any(np.isnan(readData))):
+    if(debugLevel>=1):
+      print 'Warning: Error reading %s from %s.' %(channelName, frameFilePath)
+    data = []
+    time = []
+    sampleFrequency = 0
+    return [data, sampleFrequency]
+  if(sampleFrequency==None):
+    sampleFrequency = readSampleFrequency
+  elif(sampleFrequency!=readSampleFrequency):
+    if(debugLevel>=1):
+      print 'Warning: Inconsistent sample frequency for %s in frameFilePath.' %(channelname, frameFilePath)
+    data = []
+    time = []
+    sampleFrequency = 0
+    return [data, sampleFrequency]
+
+  data = np.append(data, readData)
+
+  return [data, sampleFrequency]
+
     
   
   # Identifying matching segments from frame cache
   
   # find overlap of cache segments with requested data
-  segmentStartTimes = np.maximum(startTime, frameCache.startTimes)
-  segmentStopTimes = np.minimum(stopTime, frameCache.stopTimes)
-  
-  # identify cache segments which overlap requested times
-  segments = np.where(segmentStopTimes > segmentStartTimes)[0]
-  # if no segments overlap with requested times
-  if(len(segments)==0):
-    
-    if debugLevel>=1:
-      print 'Warning: No data available for [%d, %d]' %(startTime, stopTime)
-    data = []
-    time = []
-    sampleFrequency = 0
-    # return empty results
-    return [data, sampleFrequency]
-  # otherwise, find overlapping segments
-  else:
-    # identify cache segments with requested site and frame type
-    siteMatches = []
-    sitesScanned=0
-    for iSite in frameCache.sites[segments]:
-      if site in iSite:
-	siteMatches.append(sitesScanned)
-      sitesScanned+=1
-      
-    siteMatches = np.asarray(siteMatches)
-    
-    frameTypeMatches = []
-    frameTypesScanned=0
-    for iType in frameCache.frameTypes[segments]:
-      if frameType in iType:
-	frameTypeMatches.append(frameTypesScanned)
-      frameTypesScanned+=1
-    
-    frameTypeMatches = np.asarray(frameTypeMatches)
-    
-    segIdx = np.intersect1d(siteMatches, frameTypeMatches)
-    if(len(segIdx)==0):
-      segments = []
-    else:
-      segments = segments[segIdx]
-  
-  # Identify available frame files
-  
-  # initialize list of available frame files
-  frameFilePaths = []
-  frameFileTypes = []
-  frameFileStartTimes = []
-  frameFileStopTimes = []
-  
-  # lopp over the matching segments
-  for segment in segments:
-    
-    # frame type of the frame files in segment
-    frameFileType = frameCache.frameTypes[segment]
-    
-    firstFrameFileStartTime = frameCache.startTimes[segment] + frameCache.durations[segment]*np.floor((segmentStartTimes[segment]-frameCache.startTimes[segment])/frameCache.durations[segment])
-    
-    
-    lastFrameFileStartTime = frameCache.startTimes[segment] + frameCache.durations[segment]*np.ceil((segmentStopTimes[segment] - frameCache.startTimes[segment])/frameCache.durations[segment] - 1)
-   
-    for frameFileStartTime in np.arange(firstFrameFileStartTime,
-					lastFrameFileStartTime + frameCache.durations[segment],
-					frameCache.durations[segment]):
-      
-      frameFileStopTime = frameFileStartTime +  frameCache.durations[segment]
-      
-      frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] + '-' + frameCache.frameTypes[segment] + '-' + '%09d' %(frameFileStartTime) + '-' + '%d' %(frameCache.durations[segment]) + '.gwf'
-      
-      # In case the frame file durations start becoming variable. The ls <name> with a '*' in place of the duration field
-      # returns the file name. we then use that file name
-      import os.path
-      if(not os.path.isfile(frameFilePath)):
-	frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] +'-' + frameCache.frameTypes[segment] + '-' + '%010d' %(frameFileStartTime) + '-' + '*'+ '.gwf'
-	tempPath = os.popen('ls %s'%(frameFilePath)).readlines()
-        if(len(tempPath)!=0):
-          frameFilePath=tempPath[0].split('\n')[0]
-      if(os.path.isfile(frameFilePath)):
-	frameFilePaths.append(frameFilePath)
-	frameFileTypes.append(frameFileType)
-	frameFileStartTimes.append(frameFileStartTime)
-	frameFileStopTimes.append(frameFileStopTime)
-  
-  frameFilePaths = np.asarray(frameFilePaths)
-  frameFileTypes = np.asarray(frameFileTypes)
-  frameFileStartTimes = np.asarray(frameFileStartTimes)
-  frameFileStopTimes = np.asarray(frameFileStopTimes)
-  
-  numberOfFrameFiles = len(frameFilePaths)
-  
-  
-  keepFrameFileNumbers = []
-  
-  for frameFileNumber in range(numberOfFrameFiles):
-    keepFrameFileFlag = True
-    
-    for previousFrameFileNumber in range(frameFileNumber):
-      
-      overlapStartTime = np.maximum(frameFileStartTimes[frameFileNumber],
-				    frameFileStartTimes[previousFrameFileNumber])
-      overlapStoptime = np.minimum(frameFileStopTimes[frameFileNumber],
-				   frameFileStopTimes[previousFrameFileNumber])
-      
-      if (overlapStartTime < overlapStoptime):
-	if(allowRedundantFlag):
-	  if((frameFileStartTimes[frameFileNumber]==frameFileStartTimes[previousFrameFileNumber])      & (frameFileStopTimes[frameFileNumber] == frameFileStopTimes[previousFrameFileNumber])
-          & (frameFileTypes[frameFileNumber]==frameFileTypes[previousFrameFileNumber])):
-	    keepFrameFileFlag = False
-	    continue
-	  else:
-	    if(debugLevel>=1):
-	      print 'Warning: Overlapping but dissimilar frame files %s and %s.' %(frameFilePaths[frameFileNumber], frameFilePaths[previousFrameFileNumber])
-	    data = []
-	    time = []
-	    sampleFrequency=0
-	    return [data, sampleFrequency]
-	else:
-	  if(debugLevel>=1):
-	    print 'Warning: Redundant frame files %s and %s.' %(frameFilePaths[frameFileNumber], frameFilePaths[previousFrameFileNumber])
-	  data = []
-	  time = []
-	  sampleFrequency = 0
-	  return [data, sampleFrequency]
-	
-    if(keepFrameFileFlag):
-      keepFrameFileNumbers.append(frameFileNumber)
-  keepFrameFileNumbers = np.asarray(keepFrameFileNumbers)
-  frameFilePaths = frameFilePaths[keepFrameFileNumbers]
-  frameFileTypes = frameFileTypes[keepFrameFileNumbers]
-  frameFileStartTimes = frameFileStartTimes[keepFrameFileNumbers]
-  frameFileStopTimes = frameFileStopTimes[keepFrameFileNumbers]
-  
-  sortedIndices = np.argsort(frameFileStartTimes)
-  frameFilePaths = frameFilePaths[sortedIndices]
-  frameFiletypes = frameFileTypes[sortedIndices]
-  frameFileStartTimes = frameFileStartTimes[sortedIndices]
-  frameFileStopTimes = frameFileStopTimes[sortedIndices]
-  
-  continuityStartTimes = np.append(np.maximum(startTime, frameFileStartTimes), stopTime)
-  continuityStopTimes = np.append(startTime, np.minimum(stopTime, frameFileStopTimes))
-  discontinuities =  np.where(continuityStartTimes!=continuityStopTimes)[0]
-  
-  if(len(discontinuities)>0):
-    if(debugLevel >=1):
-      print 'Warning: Missing %s '%(channelName), frameType[1:len(frameType)-1], ' data at ' , '%d'%(np.round(continuityStopTimes[discontinuities[0]])), '.'
-    data = []
-    time = []
-    sampleFrequency = 0
-    return [data, sampleFrequency]
-  
-  data = np.array([])
-  time = np.array([])
-  sampleFrequency = None
-  
-  numberOfFrameFiles = len(frameFilePaths)
-  for frameFileNumber in range(numberOfFrameFiles):
-    frameFilePath = frameFilePaths[frameFileNumber]
-    
-    if(debugLevel>=2):
-      print 'Reading %s...\n' %(frameFilePath)
-    
-    frameFileStartTime = frameFileStartTimes[frameFileNumber]
-    
-    frameFileStopTime = frameFileStopTimes[frameFileNumber]
-    
-    readData = []
-    
-    readStartTime = np.maximum(startTime, frameFileStartTime)
-    
-    #readEndTime = np.minimum(stopTime, frameFileStopTime)
-
-    readDuration = np.minimum(stopTime, frameFileStopTime) - readStartTime
-    
-    realChannelName = channelName
-    
-    try:
-     # There are two libraries one can use to read frame files. The gwpy or the frgetvect. 
-     # My observation is that frgetvect is considerably faster. I have, all the same, merely commented out the lines pertaining to the
-     # gwpy function calls should the library get better optimized in the future.
-     # Edit: 2016-07-29. Sudarshan Ghonge <sudu.ghonge@gmail.com>
-      outputStruct = Fr.frgetvect(frameFilePath, realChannelName, readStartTime, readDuration, False)
-      
-      readData = outputStruct[0]
-      readSampleFrequency = 1.0/outputStruct[3][0]
-      #outputStruct  = TS.read(frameFilePath, realChannelName, readStartTime, readEndTime)
-     # readData = np.array(outputStruct.data)
-     # readSampleFrequency = 1.0/outputStruct.dt.value
-      
-    except Exception as inst:
-      if(debugLevel>=2):
-	print  inst.message
-    if((len(readData)==0) | np.any(np.isnan(readData))):
-      if(debugLevel>=1):
-	print 'Warning: Error reading %s from %s.' %(channelName, frameFilePath)
-	
-      data = []
-      time = []
-      sampleFrequency = 0
-      return [data, sampleFrequency]
-    if(sampleFrequency==None):
-      sampleFrequency = readSampleFrequency
-    elif(sampleFrequency!=readSampleFrequency):
-      if(debugLevel>=1):
-	print 'Warning: Inconsistent sample frequency for %s in frameFilePath.' %(channelname, frameFilePath)
-      data = []
-      time = []
-      sampleFrequency = 0
-      return [data, sampleFrequency]
-    
-    data = np.append(data, readData)
-  
-  return [data, sampleFrequency]
-
-#def firls(N, frequencies, pass):
-  
-  #weight = np.ones(len(pass)/2.0)
-  #str = []
-  #if(len(frequencies)!=len(pass)):
-    #sys.exit('F and A must have equal lengths.')
-  
-  #N+=np.mod(N,2)
-  
-  #M = N/2
-  #w_len = len(weight)
-  #p_len = len(pass)
-  #w = np.kron(weight.reshape(w_len, 1), np.array([[-1], [1]]))
-  #omega = np.array([frequencies*np.pi])
-  #i1 = np.arange(1:p_len+1, 2)
-  #i2 = np.arange(2:p_len+1, 2)
-  
-  ## Generate the matrix Q
-  #cos_ints = np.append(omega, np.sin(np.kron(np.arange(1, N+1).reshape(N, 1), omega)), axis=0)
-  #q = np.append([1], [1.0/np.arange(1, 5)])*(np.dot(cos_ints,w).reshape(1, N+1)[0])
-  #Q = linalg.toeplitz(q[0:M+1] + linalg.hankel(q[0:M+1], q[M:len(q)]))
-  
-  #omega = omega[0]
-  #cos_ints2 = omega[i1]**2.0 - omega[i2]**2.0
-  
+#  segmentStartTimes = np.maximum(startTime, frameCache.startTimes)
+#  segmentStopTimes = np.minimum(stopTime, frameCache.stopTimes)
+#  
+#  # identify cache segments which overlap requested times
+#  segments = np.where(segmentStopTimes > segmentStartTimes)[0]
+#  # if no segments overlap with requested times
+#  if(len(segments)==0):
+#    
+#    if debugLevel>=1:
+#      print 'Warning: No data available for [%d, %d]' %(startTime, stopTime)
+#    data = []
+#    time = []
+#    sampleFrequency = 0
+#    # return empty results
+#    return [data, sampleFrequency]
+#  # otherwise, find overlapping segments
+#  else:
+#    # identify cache segments with requested site and frame type
+#    siteMatches = []
+#    sitesScanned=0
+#    for iSite in frameCache.sites[segments]:
+#      if site in iSite:
+#	siteMatches.append(sitesScanned)
+#      sitesScanned+=1
+#      
+#    siteMatches = np.asarray(siteMatches)
+#    
+#    frameTypeMatches = []
+#    frameTypesScanned=0
+#    for iType in frameCache.frameTypes[segments]:
+#      if frameType in iType:
+#	frameTypeMatches.append(frameTypesScanned)
+#      frameTypesScanned+=1
+#    
+#    frameTypeMatches = np.asarray(frameTypeMatches)
+#    
+#    segIdx = np.intersect1d(siteMatches, frameTypeMatches)
+#    if(len(segIdx)==0):
+#      segments = []
+#    else:
+#      segments = segments[segIdx]
+#  
+#  # Identify available frame files
+#  
+#  # initialize list of available frame files
+#  frameFilePaths = []
+#  frameFileTypes = []
+#  frameFileStartTimes = []
+#  frameFileStopTimes = []
+#  
+#  # lopp over the matching segments
+#  for segment in segments:
+#    
+#    # frame type of the frame files in segment
+#    frameFileType = frameCache.frameTypes[segment]
+#    
+#    firstFrameFileStartTime = frameCache.startTimes[segment] + frameCache.durations[segment]*np.floor((segmentStartTimes[segment]-frameCache.startTimes[segment])/frameCache.durations[segment])
+#    
+#    
+#    lastFrameFileStartTime = frameCache.startTimes[segment] + frameCache.durations[segment]*np.ceil((segmentStopTimes[segment] - frameCache.startTimes[segment])/frameCache.durations[segment] - 1)
+#   
+#    for frameFileStartTime in np.arange(firstFrameFileStartTime,
+#					lastFrameFileStartTime + frameCache.durations[segment],
+#					frameCache.durations[segment]):
+#      
+#      frameFileStopTime = frameFileStartTime +  frameCache.durations[segment]
+#      
+#      frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] + '-' + frameCache.frameTypes[segment] + '-' + '%09d' %(frameFileStartTime) + '-' + '%d' %(frameCache.durations[segment]) + '.gwf'
+#      
+#      # In case the frame file durations start becoming variable. The ls <name> with a '*' in place of the duration field
+#      # returns the file name. we then use that file name
+#      import os.path
+#      if(not os.path.isfile(frameFilePath)):
+#	frameFilePath = frameCache.directories[segment] + '/' + frameCache.sites[segment] +'-' + frameCache.frameTypes[segment] + '-' + '%010d' %(frameFileStartTime) + '-' + '*'+ '.gwf'
+#	tempPath = os.popen('ls %s'%(frameFilePath)).readlines()
+#        if(len(tempPath)!=0):
+#          frameFilePath=tempPath[0].split('\n')[0]
+#      if(os.path.isfile(frameFilePath)):
+#	frameFilePaths.append(frameFilePath)
+#	frameFileTypes.append(frameFileType)
+#	frameFileStartTimes.append(frameFileStartTime)
+#	frameFileStopTimes.append(frameFileStopTime)
+#  
+#  frameFilePaths = np.asarray(frameFilePaths)
+#  frameFileTypes = np.asarray(frameFileTypes)
+#  frameFileStartTimes = np.asarray(frameFileStartTimes)
+#  frameFileStopTimes = np.asarray(frameFileStopTimes)
+#  
+#  numberOfFrameFiles = len(frameFilePaths)
+#  
+#  
+#  keepFrameFileNumbers = []
+#  
+#  for frameFileNumber in range(numberOfFrameFiles):
+#    keepFrameFileFlag = True
+#    
+#    for previousFrameFileNumber in range(frameFileNumber):
+#      
+#      overlapStartTime = np.maximum(frameFileStartTimes[frameFileNumber],
+#				    frameFileStartTimes[previousFrameFileNumber])
+#      overlapStoptime = np.minimum(frameFileStopTimes[frameFileNumber],
+#				   frameFileStopTimes[previousFrameFileNumber])
+#      
+#      if (overlapStartTime < overlapStoptime):
+#	if(allowRedundantFlag):
+#	  if((frameFileStartTimes[frameFileNumber]==frameFileStartTimes[previousFrameFileNumber])      & (frameFileStopTimes[frameFileNumber] == frameFileStopTimes[previousFrameFileNumber])
+#          & (frameFileTypes[frameFileNumber]==frameFileTypes[previousFrameFileNumber])):
+#	    keepFrameFileFlag = False
+#	    continue
+#	  else:
+#	    if(debugLevel>=1):
+#	      print 'Warning: Overlapping but dissimilar frame files %s and %s.' %(frameFilePaths[frameFileNumber], frameFilePaths[previousFrameFileNumber])
+#	    data = []
+#	    time = []
+#	    sampleFrequency=0
+#	    return [data, sampleFrequency]
+#	else:
+#	  if(debugLevel>=1):
+#	    print 'Warning: Redundant frame files %s and %s.' %(frameFilePaths[frameFileNumber], frameFilePaths[previousFrameFileNumber])
+#	  data = []
+#	  time = []
+#	  sampleFrequency = 0
+#	  return [data, sampleFrequency]
+#	
+#    if(keepFrameFileFlag):
+#      keepFrameFileNumbers.append(frameFileNumber)
+#  keepFrameFileNumbers = np.asarray(keepFrameFileNumbers)
+#  frameFilePaths = frameFilePaths[keepFrameFileNumbers]
+#  frameFileTypes = frameFileTypes[keepFrameFileNumbers]
+#  frameFileStartTimes = frameFileStartTimes[keepFrameFileNumbers]
+#  frameFileStopTimes = frameFileStopTimes[keepFrameFileNumbers]
+#  
+#  sortedIndices = np.argsort(frameFileStartTimes)
+#  frameFilePaths = frameFilePaths[sortedIndices]
+#  frameFiletypes = frameFileTypes[sortedIndices]
+#  frameFileStartTimes = frameFileStartTimes[sortedIndices]
+#  frameFileStopTimes = frameFileStopTimes[sortedIndices]
+#  
+#  continuityStartTimes = np.append(np.maximum(startTime, frameFileStartTimes), stopTime)
+#  continuityStopTimes = np.append(startTime, np.minimum(stopTime, frameFileStopTimes))
+#  discontinuities =  np.where(continuityStartTimes!=continuityStopTimes)[0]
+#  
+#  if(len(discontinuities)>0):
+#    if(debugLevel >=1):
+#      print 'Warning: Missing %s '%(channelName), frameType[1:len(frameType)-1], ' data at ' , '%d'%(np.round(continuityStopTimes[discontinuities[0]])), '.'
+#    data = []
+#    time = []
+#    sampleFrequency = 0
+#    return [data, sampleFrequency]
+#  
+#  data = np.array([])
+#  time = np.array([])
+#  sampleFrequency = None
+#  
+#  numberOfFrameFiles = len(frameFilePaths)
+#  for frameFileNumber in range(numberOfFrameFiles):
+#    frameFilePath = frameFilePaths[frameFileNumber]
+#    
+#    if(debugLevel>=2):
+#      print 'Reading %s...\n' %(frameFilePath)
+#    
+#    frameFileStartTime = frameFileStartTimes[frameFileNumber]
+#    
+#    frameFileStopTime = frameFileStopTimes[frameFileNumber]
+#    
+#    readData = []
+#    
+#    readStartTime = np.maximum(startTime, frameFileStartTime)
+#    
+#    #readEndTime = np.minimum(stopTime, frameFileStopTime)
+#
+#    readDuration = np.minimum(stopTime, frameFileStopTime) - readStartTime
+#    
+#    realChannelName = channelName
+#    
+#    try:
+#     # There are two libraries one can use to read frame files. The gwpy or the frgetvect. 
+#     # My observation is that frgetvect is considerably faster. I have, all the same, merely commented out the lines pertaining to the
+#     # gwpy function calls should the library get better optimized in the future.
+#     # Edit: 2016-07-29. Sudarshan Ghonge <sudu.ghonge@gmail.com>
+#      outputStruct = Fr.frgetvect(frameFilePath, realChannelName, readStartTime, readDuration, False)
+#      
+#      readData = outputStruct[0]
+#      readSampleFrequency = 1.0/outputStruct[3][0]
+#      #outputStruct  = TS.read(frameFilePath, realChannelName, readStartTime, readEndTime)
+#     # readData = np.array(outputStruct.data)
+#     # readSampleFrequency = 1.0/outputStruct.dt.value
+#      
+#    except Exception as inst:
+#      if(debugLevel>=2):
+#	print  inst.message
+#    if((len(readData)==0) | np.any(np.isnan(readData))):
+#      if(debugLevel>=1):
+#	print 'Warning: Error reading %s from %s.' %(channelName, frameFilePath)
+#	
+#      data = []
+#      time = []
+#      sampleFrequency = 0
+#      return [data, sampleFrequency]
+#    if(sampleFrequency==None):
+#      sampleFrequency = readSampleFrequency
+#    elif(sampleFrequency!=readSampleFrequency):
+#      if(debugLevel>=1):
+#	print 'Warning: Inconsistent sample frequency for %s in frameFilePath.' %(channelname, frameFilePath)
+#      data = []
+#      time = []
+#      sampleFrequency = 0
+#      return [data, sampleFrequency]
+#    
+#    data = np.append(data, readData)
+#  
+#  return [data, sampleFrequency]
+#
 
 # Python module which contains the following functions
 # mcoinc, mhighpass mSpecgram

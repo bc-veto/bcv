@@ -846,9 +846,10 @@ def dag_maker():
     # --gaps option gives an error when there is a gap in returned frame cache
     # datafind_job.add_arg("--gaps")
     # hack - omegaveto can only read frame-cache and not lal-cache...
-    del datafind_job._CondorJob__options['lal-cache']   
-    datafind_job.add_opt("frame-cache","")
-
+#    del datafind_job._CondorJob__options['lal-cache']   
+#    datafind_job.add_opt("frame-cache","")
+#   Update, the source has moved to python which has gwpy.
+#   gwpy can read lal-cache
     omegaveto_job = omegavetoJob(cp)
     omegaveto_job.set_sub_file(os.path.join("dags","%s.omegaveto.sub"%tag))
 

@@ -6,7 +6,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChanX, samplFreqH, samplFreqX,
+def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTypeChanH, frameTypeChanX, samplFreqH, samplFreqX,
 		 highPassCutoff, TriggerHList, TriggerXList, couplingModel,
 		 transFnXtoH, analysisStartTime, analysisEndTime,
 		 timeShift, outDir, logFid, debugLevel):
@@ -207,10 +207,13 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	  %(bcvreadEndTime-bcvreadStartTime, MAX_LENGTH_DATA_SEG))
       else:
 	#Read the segment for channel H and channel X
-	[dataH, samplFreqH] = bcv.readData(frameCache, chanHName, frameTypeChanH, bcvreadStartTime,
+        if(debugLevel >= 1):
+          print 'Reading H channel'
+	[dataH, samplFreqH] = bcv.readData(frameCacheFileH, chanHName, frameTypeChanH, bcvreadStartTime,
 				    bcvreadEndTime, [0], debugLevel)
-	
-	[dataX, samplFreqX] = bcv.readData(frameCache, chanXName, frameTypeChanX, bcvreadStartTime,
+        if(debugLevel >= 1):
+          print 'Reading X channel'	
+	[dataX, samplFreqX] = bcv.readData(frameCacheFileX, chanXName, frameTypeChanX, bcvreadStartTime,
 				    bcvreadEndTime, timeShiftX, debugLevel)
 	#Check for a read error in the channel H data.
 	if(not all(samplFreqH)):
@@ -294,12 +297,15 @@ def vetoanalysis(frameCache, chanHName, chanXName, frameTypeChanH, frameTypeChan
 	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH[0], dataP, timeH, timeX,
 					     transFnXtoH, segStartTime, segEndTime, 
 					     timeShift, samplFreq, logFid, debugLevel)
-	    print '%d %f' %(timeShift, rHP)
+	    if(debugLevel>=1):
+              print 'Time shift: %d rHP: %f' %(timeShift, rHP)
 	  else:
 	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH[0],
 					     dataP, timeH, timeX, segStartTime,
 					     segEndTime,timeShift, samplFreq, logFid,
 					    debugLevel)
+            if(debugLevel>=1):
+              print 'Time shift: %d rHP: %f' %(timeShift, rHP)
 	  analysedTrigIdx+=1	  
 	  SIGNIFICANCE_THRESH_H = 200.0
           SIGNIFICANCE_THRESH_X = 10.0
