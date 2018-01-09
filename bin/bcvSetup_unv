@@ -629,27 +629,42 @@ def config_maker():
   else:
     verbose = ""
 
-  if cp.get("input","GW_trigger_file") == "KW":
-    # figure out GW channel name for KW
-    if cp.get("input","GW_KW") != "":
-      GWchan = cp.get("input","GW_KW")
-    elif ifo == "V1": # Virgo case
-      GWchan = "V1_PR_B1_ACP"
-    elif ifo in ("H1","H2","L1"): # LIGO case
-      GWchan = "%s:LSC-DARM_ERR"%ifo
-    # output file name
+  #if cp.get("input","GW_trigger_file") == "KW":
+    ## figure out GW channel name for KW
+    #if cp.get("input","GW_KW") != "":
+      #GWchan = cp.get("input","GW_KW")
+    #elif ifo == "V1": # Virgo case
+      #GWchan = "V1_PR_B1_ACP"
+    #elif ifo in ("H1","H2","L1"): # LIGO case
+      #GWchan = "%s:LSC-DARM_ERR"%ifo
+    ## output file name
+    #GWtrigFile = os.path.join("KWtrigs",original_tag+"_"+GWchan+".txt")
+    ## where KW triggers are retreived (?)
+    #if trigger_type == "OMICRON": 
+    	##cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, verbose)	
+    	#if opts.verbose: # this won't be necessary 
+      		#print "Omicron triggers selected for GW channel..."
+      		##print cmd
+    #elif trigger_type == "KW":
+	#cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min_freq %f --max_freq %f %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, cp.get("data_conditioning","trigMinFreq"), cp.get("data_conditioning","trigMaxFreq"), verbose)
+        #if opts.verbose:
+                #print "retrieving KW triggers for GW channel..."
+                #print cmd
+
+    #if not cp.getboolean("condor","only_postprocess"):
+      #exit = os.system(cmd)
+    #else:
+      #exit = 0
+    #if exit > 0:
+      #print >> sys.stderr, "Error: KW retrieval failed."
+      #sys.exit(1)
+  if trigger_type == "KW":
+    GWchan = cp.get("input","GW_KW")
     GWtrigFile = os.path.join("KWtrigs",original_tag+"_"+GWchan+".txt")
-    # where KW triggers are retreived (?)
-    if trigger_type == "OMICRON": 
-    	#cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, verbose)	
-    	if opts.verbose: # this won't be necessary 
-      		print "Omicron triggers selected for GW channel..."
-      		#print cmd
-    elif trigger_type == "KW":
-	cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min_freq %f --max_freq %f %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, cp.get("data_conditioning","trigMinFreq"), cp.get("data_conditioning","trigMaxFreq"), verbose)
-        if opts.verbose:
-                print "retrieving KW triggers for GW channel..."
-                print cmd
+    cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min_freq %f --max_freq %f %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, cp.get("data_conditioning","trigMinFreq"), cp.get("data_conditioning","trigMaxFreq"), verbose)
+    if opts.verbose:
+      print "retrieving KW triggers for GW channel..."
+      print cmd
 
     if not cp.getboolean("condor","only_postprocess"):
       exit = os.system(cmd)
@@ -657,8 +672,8 @@ def config_maker():
       exit = 0
     if exit > 0:
       print >> sys.stderr, "Error: KW retrieval failed."
-      sys.exit(1)
-  elif cp.get("input","GW_trigger_file") == "OMICRON":
+      sys.exit(1)      
+  elif trigger_type == "OMICRON":
       trigger_file = cp.get("input","GW_OMICRON")
       tf_1 = trigger_file.split(":")
       OMpath = KWLoc.split(" ")
@@ -679,53 +694,51 @@ def config_maker():
       	print >> sys.stderr, "Error: OMICRON retrieval failed."
       	sys.exit(1)
 
-#      ~/local/bilinear/omega_veto/bin/gOmicron -c IMC-F_OUT_DQ -s : -m 8 -o Omicron 
   else: # provided GW trigger file
     trigger_file = cp.get("input","GW_trigger_file")
     if not os.path.isfile(trigger_file):
       print >> sys.stderr, "Error: GW_trigger_file not found"
       sys.exit(1)
-    # read triggers and sanity check
-    # especially, later it's assumed that triggers are already trimmed by
-    # SNR cutoff and segment list
+    ## read triggers and sanity check
+    ## especially, later it's assumed that triggers are already trimmed by
+    ## SNR cutoff and segment list
 
     GWtrigs = [line.split() for line in open(trigger_file) if (line.split() != [] and not line.startswith("%") and not line.startswith("#"))]
 
-    # check if there is triggers
+    ## check if there is triggers
     if len(GWtrigs) == 0:
       print >> sys.stderr, "Error: no triggers found. Please check your trigger file %s."%trigger_file
       sys.exit(1)
 
-    # check the number of columns
-    if len(GWtrigs[0]) not in [8,9]:
+    ## check the number of columns
+    if len(GWtrigs[0]) not in [5]:
         print >> sys.stderr, """
-Error:
-  The file format is expected to be the same as KW; 8 columns with
-  start GPS time: 1st column
-  end GPS time: 2nd column
-  central GPS time: 3rd column
-  central frequency: 4th column
-  SNR: sqrt(6th column - 7th column)
-  Please check your trigger file %s.
-        """%trigger_file
+#Error:
+  #The file format is expected to be the same as KW; 8 columns with
+  #start GPS time: 1st column
+  #end GPS time: 2nd column
+  #central GPS time: 3rd column
+  #central frequency: 4th column
+  #SNR: 5th column
+  #Please check your trigger file %s.
+        #"""%trigger_file
         sys.exit(1)
 
-    ## get times and snrs
-    if trigger_type != 'OMICRON':
-    	contents = []
-    	for trig in GWtrigs:
-        	t = float(trig[2])
-        	s = sqrt(float(trig[5]) - float(trig[6]))
-        	if t in analyze_segments:
-          		if s >= minSNRH and s == s: # check NaN
-            			contents.append("\t".join(trig))
-    	GWtrigFile = os.path.join("KWtrigs",cp.get("general","tag")+"_"+os.path.basename(trigger_file))
-    	open(GWtrigFile,'w').write("".join(contents))
-    else:  #  may not need this now -> omicron GW trigger files will be created manually
-	#GWtrigFile = os.path.join("KWtrigs",cp.get("general","tag")+"_"+"H1_PSL-FSS_FAST_MON_OUT_DQ_omicron.txt")
-	#GWtrigFile_1 = os.path.join("trigs_pre",cp.get("general","tag")+"_"+"H1_PSL-FSS_FAST_MON_OUT_DQ_omicron.txt")
-	#shutil.copy2(GWtrigFile_1, GWtrigFile)
-	print >> sys.stderr, "Error: OMICRON trigger type selected in .ini file. Please set GW_trigger_file variable to OMICRON to use this trigger type."
+    ### get times and snrs
+    contents = []
+    for trig in GWtrigs:
+       	t = float(trig[2])
+       	s = float(trig[4])
+       	if t in analyze_segments:
+            if s >= minSNRH and s == s: # check NaN
+                contents.append("\t".join(trig))
+    GWtrigFile = os.path.join("KWtrigs",cp.get("general","tag")+"_"+os.path.basename(trigger_file))
+    open(GWtrigFile,'w').write("".join(contents))
+    #else:  #  may not need this now -> omicron GW trigger files will be created manually
+	##GWtrigFile = os.path.join("KWtrigs",cp.get("general","tag")+"_"+"H1_PSL-FSS_FAST_MON_OUT_DQ_omicron.txt")
+	##GWtrigFile_1 = os.path.join("trigs_pre",cp.get("general","tag")+"_"+"H1_PSL-FSS_FAST_MON_OUT_DQ_omicron.txt")
+	##shutil.copy2(GWtrigFile_1, GWtrigFile)
+	#print >> sys.stderr, "Error: OMICRON trigger type selected in .ini file. Please set GW_trigger_file variable to OMICRON to use this trigger type."
  
   ## produce config file for omegaveto
   ## common header - useful info
@@ -788,6 +801,12 @@ Error:
   """%(chan1[0], chan1[1], cp.getint("data_conditioning","sampleFrequency"), trigFile))
 
     for chan2 in chanData["slow"]:
+      if config.get("data_conditioning","pairing") == "subsystem":
+          chan1_prefix = chan1[0].split("-")[0]
+          chan2_prefix = chan2[0].split("-")[0]
+          if chan1_prefix != chan2_prefix:
+              print "Channels not of same subsystem"
+              continue
       config_name = os.path.join("configs","%s_%s+%s.conf"%(cp.get("general","tag"),chan1[0],chan2[0]))
       if chan2[0][3:] != "LINEAR":
         ## add configuration file content
@@ -1037,7 +1056,7 @@ if os.path.isdir("dags"):
 os.makedirs("dags")
 
 global trigger_type
-trigger_type = cp.get("veto","trigger_type")  # try this
+trigger_type = cp.get("veto","trigger_type")
 
 if opts.verbose:
   print "checking the parameters..."
