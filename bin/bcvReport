@@ -1057,13 +1057,13 @@ def setup_dir(channel_info):
     
     """
     
-    if(channel_info==None):
-        return None
-    
     for d in ("plots","channel_pages","info","results","logs","configs"):
       d = os.path.join(baseDir,d)
       if not os.path.isdir(d):
         os.makedirs(d)
+    
+    if(channel_info==None):
+      return None
     
     path_names = {}
 
