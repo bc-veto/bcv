@@ -661,7 +661,7 @@ def config_maker():
   if trigger_type == "KW":
     GWchan = cp.get("input","GW_KW")
     GWtrigFile = os.path.join("KWtrigs",original_tag+"_"+GWchan+".txt")
-    cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min_freq %f --max_freq %f %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, cp.get("data_conditioning","trigMinFreq"), cp.get("data_conditioning","trigMaxFreq"), verbose)
+    cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min_freq %f --max_freq %f %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, cp.getfloat("data_conditioning","trigMinFreq"), cp.getfloat("data_conditioning","trigMaxFreq"), verbose)
     if opts.verbose:
       print "retrieving KW triggers for GW channel..."
       print cmd
@@ -682,7 +682,7 @@ def config_maker():
       GWtrigFile = os.path.join("KWtrigs",cp.get("general","tag")+"_"+os.path.basename(trigger_file) + '.txt')
       print >> sys.stderr, "Expected name: %s"%GWtrigFile
       #cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, verbose)
-      cmd = "%s -c %s -s : -m %s -o Omicron -O %s -I %s -k %s -S %s -l %f -h %f"%(cp.get("condor","getKW"), tf_1[1], minSNRH, OMpath,tf_1[0], cp.get("general","tag"),cp.get("input","analyzed_seg_files"),cp.get("data_conditioning","trigMinFreq"), cp.get("data_conditioning","trigMaxFreq"))
+      cmd = "%s -c %s -s : -m %s -o Omicron -O %s -I %s -k %s -S %s -L %f -H %f"%(cp.get("condor","getKW"), tf_1[1], minSNRH, OMpath,tf_1[0], cp.get("general","tag"),cp.get("input","analyzed_seg_files"),cp.getfloat("data_conditioning","trigMinFreq"), cp.getfloat("data_conditioning","trigMaxFreq"))
       if opts.verbose:
                 print "retrieving OMICRON triggers for GW channel..."
                 print cmd
@@ -765,12 +765,12 @@ def config_maker():
     minSNRX = chan1[2]
     
     if trigger_type == 'KW':
-    	cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d %s"%(cp.get("condor","getKW"), KWLoc, chan1[0], segment_file, trigFile, cp.get("condor","scratchdir"), minSNRX, verbose)
+    	cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min_freq %f --max_freq %f %s"%(cp.get("condor","getKW"), KWLoc, chan1[0], segment_file, trigFile, cp.get("condor","scratchdir"), minSNRX, cp.getfloat("data_conditioning","trigMinFreq"), cp.getfloat("data_conditioning","trigMaxFreq"), verbose)
     elif trigger_type == 'OMICRON':
 	XchName = chan1[0].split(":")
 	XchName = XchName[1]
     	#cmd = "%s -c %s -s : -m %s -o Omicron"%(cp.get("condor","getKW"), chan1[0], minSNRX)
-	cmd = "%s -c %s -s : -m %s -o Omicron -O %s -I %s -k %s -S %s"%(cp.get("condor","getKW"), XchName, minSNRX, OMpath,tf_1[0], cp.get("general","tag"),cp.get("input","analyzed_seg_files"))
+	cmd = "%s -c %s -s : -m %s -o Omicron -O %s -I %s -k %s -S %s -L %f -H %f"%(cp.get("condor","getKW"), XchName, minSNRX, OMpath,tf_1[0], cp.get("general","tag"),cp.get("input","analyzed_seg_files"),cp.getfloat("data_conditioning","trigMinFreq"), cp.getfloat("data_conditioning","trigMaxFreq"))
     if opts.verbose:
       if trigger_type == 'KW':
       	print "retrieving KW triggers..."
@@ -801,7 +801,7 @@ def config_maker():
   """%(chan1[0], chan1[1], cp.getint("data_conditioning","sampleFrequency"), trigFile))
 
     for chan2 in chanData["slow"]:
-      if config.get("data_conditioning","pairing") == "subsystem":
+      if cp.get("data_conditioning","pairing") == "subsystem":
           chan1_prefix = chan1[0].split("-")[0]
           chan2_prefix = chan2[0].split("-")[0]
           if chan1_prefix != chan2_prefix:
@@ -959,6 +959,13 @@ def dag_maker():
       for chan1 in chanData['fast']:
         # bilinear case
         for chan2 in chanData['slow']:
+          if(cp.get("data_conditioning" ,"pairing")=="subsystem"):
+            chan1_prefix = chan1[0].split("-")[0]
+            chan2_prefix = chan2[0].split("-")[0]
+            if chan1_prefix != chan2_prefix:
+              print "Channels not of same subsystem"
+              continue
+          
           chan = chan1[0]+"+"+chan2[0]
           filePrefix = "-".join([tag,ifo,chan,str(start),str(end)])
           ## Add omegaveto nodes

@@ -47,9 +47,9 @@ def parse_commandline():
                       help="IFO entry.")
 	parser.add_option("-S", "--segFile", default=None,
                       help="User's segment file.")
-        parser.add_option("-l", "-min-freq", default=None,
+        parser.add_option("-L", "--min-freq", type="float", default=0,
                           help="Minumum frequency of trigger")
-        parser.add_option("-h", "-max-freq", default=None,
+        parser.add_option("-H", "--max-freq", type="float", default=8192,
                           help="Maximum frequency of trigger")
 
 	opts, args = parser.parse_args()

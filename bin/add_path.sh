@@ -1,8 +1,10 @@
 #!/bin/bash
 
-CURR_PATH="$(pwd)"
+BCV_BIN=/home/sudarshan.ghonge/bcv_pipeline/bcv/bin
 
-PATH=$PATH:$CURR_PATH
-PYTHONPATH=${PYTHONPATH}$CURR_PATH:
+PATH=$PATH:$BCV_BIN
+PYTHONPATH=${PYTHONPATH}$BCV_PATH:
+
+source /home/detchar/opt/virgosoft/environment.sh
 
 #export $PATH
