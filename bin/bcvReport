@@ -291,8 +291,8 @@ def applyVetoThreshold(channel, resultsDir, reqAccVetoRate, gpsTriggerHList, num
 
       # add each summary file to db
       summaryFile = os.path.join(timeDir,"summary.txt")
-      if not os.path.isdir(summaryFile):
-          print "Summary file does not exist"
+      if not os.path.isfile(summaryFile):
+          print "Summary file %s does not exist"%(summaryFile)
           continue
       summaryData = bcvUtils.read_summary(summaryFile)
 

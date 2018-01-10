@@ -253,7 +253,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   pylab.legend(loc='upper right')
   pylab.savefig("%s/Htriggers_freq_snr.png"%baseDir,dpi=100)
   
-  significances = array([float(channel_info[x]['vetoSignificance']) for x in channel_info.keys()])
+  significances = array([float(channel_info[x]['vetoSignificance']) if channel_info[x] is not None else 0 for x in channel_info.keys() ])
   fig  = plt.figure()
   ax = fig.add_subplot(1,1,1)
   ax.hist(significances, 30)
@@ -513,6 +513,11 @@ def summary_page(channel_info,veto_segs, chan_name_list):
     table3.append('<td>%s</td>'%(sc))
     for i, fc in enumerate(fast_channels):
       channel_name = "%s+%s"%(fc,sc)
+      if channel_name not in channel_info.keys():
+          color_hex = "sienna"
+          fom = "Unpaired"
+          table3.append('<td bgcolor="%s"or><a href="channel_pages/%s_%s-report_page.html">%s%%</a></td>'%(color_hex,name_tag,channel_name,fom))
+          continue          
       if channel_info[channel_name] is None:
           color_hex = "grey"
           fom="Incomplete"
@@ -744,7 +749,7 @@ for chan_dir in dir_list:
   	chan_name = chan_file.split("-",2)[-1]
   	chan_name_list.append(chan_name)
         textSummary = os.path.join(chan_dir,"summary.txt")
-        if not os.path.isdir(textSummary):
+        if not os.path.isfile(textSummary):
             print "No summary exists"
             channel_info[chan_name] = None
             veto_segs[chan_name] = segmentlist([])
