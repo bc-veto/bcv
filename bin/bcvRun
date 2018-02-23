@@ -23,7 +23,7 @@ parser.add_option("-e", "--gpsEnd", type="int", default=0,
                   help="GPS end time. Required")
 parser.add_option("-a", "--account", type="str", default="sudarshan.ghonge",
                   help="Account from which this code is run. For example, 'detchar', or 'isogait'")
-parser.add_option("-f", "--iniFile", type="str", default="/home/sudarshan.ghonge/weekly.ini",
+parser.add_option("-f", "--iniFile", type="str", default="/home/%s/weekly.ini"%(os.environ['USER']),
                   help=".ini file containing the run parameters")
 parser.add_option("-t", "--triggerDir", type="str", default="/archive/home/lindy/public_html/triggers/s6-online",
                   help="Root directory of triggers.")

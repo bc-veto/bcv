@@ -122,8 +122,8 @@ def parse_commandline():
                       help="Scratch directory to be used for database engine. Specify local scratch directory for better performance and less fileserver load.")
     parser.add_option("-v", "--verbose", action="store_true", default=False,
                       help="Run verbosely")
-    parser.add_option("-L", "--min-freq", default=None, help="Minumum frequency of trigger")
-    parser.add_option("-H", "--max-freq", default=None, help="Maximum frequency of trigger")
+    parser.add_option("-L", "--min-freq", default=None, type="float", help="Minumum frequency of trigger")
+    parser.add_option("-H", "--max-freq", default=None, type="float", help="Maximum frequency of trigger")
     
     opts, args = parser.parse_args()
     

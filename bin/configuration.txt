@@ -1,0 +1,504 @@
+# Only channels with ${IFO} given in 'ifo' in [general] section in the .ini file
+# will be used.
+#
+# Each channel needs 'channelType', 'frameType' and 'SNRcutoff'.
+#
+# channelType should be one of 'GW', 'fast', or 'slow'
+#
+# If -1 is supplied for SNRcutoff, it will be overwritten by SNRcutoff in
+# [data_conditioning] section in the .ini file.
+#
+# Other fields are automatically filled in before omegaveto runs.
+#
+# Only one channel is allowed for GW channelType.
+# All the combinations between fast and slow will be used.
+#
+# If
+#
+# [${IFO}:LINEAR]
+# channelType = slow
+# frameType = None
+# SNRcutoff = -2
+#
+# is given, linear coupling model on fast channels will also be tested.
+#
+# isogait
+# 5/26/2010
+# Nairwita
+# 12/01/2014
+# =============================================================================
+#
+#                           Gravitational Wave Channel
+#
+# =============================================================================
+
+################################## H1 #########################################
+[L1:GDS-CALIB_STRAIN]
+channelType = GW
+frameType = L1_HOFT_C00
+SNRcutoff = -1
+################################## L1 #########################################
+
+
+# =============================================================================
+#
+#                            Fast Channels
+#
+# =============================================================================
+
+################################## H1 #########################################
+[L1:LSC-MCL_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-POP_A_RF9_Q_ERR_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-REFL_A_LF_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-REFL_A_RF45_Q_ERR_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-REFL_A_RF45_I_ERR_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-SRCL_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-MICH_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-PRCL_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-POP_A_LF_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-AS_A_RF45_I_PIT_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-AS_A_RF45_I_YAW_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-AS_A_RF45_Q_YAW_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-AS_A_RF45_Q_PIT_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-AS_B_RF45_I_PIT_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-AS_B_RF45_I_YAW_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-AS_B_RF45_Q_PIT_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-AS_B_RF45_Q_YAW_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-Y_TR_A_NSUM_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-Y_TR_A_PIT_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-Y_TR_A_YAW_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-Y_TR_B_NSUM_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-Y_TR_B_PIT_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-Y_TR_B_YAW_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-X_TR_A_NSUM_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-X_TR_A_PIT_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-X_TR_A_YAW_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-X_TR_B_NSUM_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-X_TR_B_PIT_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-X_TR_B_YAW_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-F_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-I_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-TRANS_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-REFL_DC_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-WFS_A_DC_SUM_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-WFS_B_DC_SUM_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-LSC_I_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-PZT2_MON_AC_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-DCPD_SUM_OUT_DQ]
+channelType = fast
+frameType = L1_R
+SNRcutoff = -1
+
+################################## L1 ##########################################
+
+#=============================================================================
+#
+#                              Slow Channels
+#
+#
+#=============================================================================
+
+################################### H1 ##########################################
+[L1:LINEAR]
+channelType = slow
+frameType = none
+SNRcutoff = -2
+
+[L1:OMC-ASC_POS_Y_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-DHARD_Y_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-INP1_P_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-MC3_YAW_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-MC1_YAW_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-PRC2_Y_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-PZT_YAW_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-POP_A_LF_OUT_DQ~]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-MICH_OUT_DQ~]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-SRC2_P_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-MC2_TRANS_SUM_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-POP_A_RF9_Q_ERR_DQ~]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-MICH_Y_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-PRC2_P_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-CSOFT_P_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-PZT1_MON_DC_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-ASC_ANG_Y_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-REFL_A_RF45_Q_ERR_DQ~]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-IM4_TRANS_YAW_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-MC2_YAW_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-ASC_POS_X_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-DSOFT_P_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-MC2_TRANS_PIT_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-MICH_P_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-MC1_PIT_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-MC2_PIT_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-ASC_Y1_I_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-CHARD_Y_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-SRCL_OUT_DQ~]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-PZT2_MON_DC_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-IM4_TRANS_PIT_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-ASC_Y2_I_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-MCL_OUT_DQ~]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-DHARD_P_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-PZT_PIT_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-IM4_TRANS_SUM_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-MC2_TRANS_YAW_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-ASC_ANG_X_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-PRCL_OUT_DQ~]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-ASC_P1_I_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-INP1_Y_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-REFL_A_RF45_I_ERR_DQ~]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:OMC-ASC_P2_I_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:LSC-REFL_A_LF_OUT_DQ~]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-SRC2_Y_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-PRC1_P_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:IMC-MC3_PIT_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-CSOFT_Y_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-PRC1_Y_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+
+[L1:ASC-CHARD_P_OUT_DQ]
+channelType = slow
+frameType = L1_R
+SNRcutoff = -1
+

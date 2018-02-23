@@ -1,0 +1,1576 @@
+Source directory is  /gds-l1/dmt/triggers/L-KW_TRIGGERS/L-KW_TRIGGERS-11867
+Destination directory is  /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers/
+Source directory is  /gds-l1/dmt/triggers/L-KW_HOFT/L-KW_HOFT-11867
+Destination directory is  /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers/
+--2018-02-01 15:22:26--  https://virgo.physics.carleton.edu/public/omegaveto_inputfiles/vstyle.css
+Resolving virgo.physics.carleton.edu (virgo.physics.carleton.edu)... 137.22.6.125
+Connecting to virgo.physics.carleton.edu (virgo.physics.carleton.edu)|137.22.6.125|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 5898 (5.8K) [text/css]
+Saving to: ‘inputfiles/vstyle.css’
+
+     0K .....                                                 100% 94.0M=0s
+
+2018-02-01 15:22:26 (94.0 MB/s) - ‘inputfiles/vstyle.css’ saved [5898/5898]
+
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:GDS-CALIB_STRAIN
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:GDS-CALIB_STRAIN.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:GDS-CALIB_STRAIN...
+using '/usr1/sudarshan.ghonge/tmpPc_TIe.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_GDS-CALIB_STRAIN.
+Original channel name is L1:GDS-CALIB_STRAIN.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:GDS-CALIB_STRAIN.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpPc_TIe.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:LSC-MICH_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:LSC-MICH_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:LSC-MICH_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpA1XGyU.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_LSC-MICH_OUT_DQ.
+Original channel name is L1:LSC-MICH_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:LSC-MICH_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpA1XGyU.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:LSC-PRCL_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:LSC-PRCL_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:LSC-PRCL_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpma_7ph.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_LSC-PRCL_OUT_DQ.
+Original channel name is L1:LSC-PRCL_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:LSC-PRCL_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpma_7ph.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:LSC-SRCL_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:LSC-SRCL_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:LSC-SRCL_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpu5vvX4.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_LSC-SRCL_OUT_DQ.
+Original channel name is L1:LSC-SRCL_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:LSC-SRCL_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpu5vvX4.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:LSC-POP_A_LF_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:LSC-POP_A_LF_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:LSC-POP_A_LF_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpKf7t8v.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_LSC-POP_A_LF_OUT_DQ.
+Original channel name is L1:LSC-POP_A_LF_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:LSC-POP_A_LF_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpKf7t8v.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:LSC-REFL_A_LF_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:LSC-REFL_A_LF_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:LSC-REFL_A_LF_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpiaP5sj.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_LSC-REFL_A_LF_OUT_DQ.
+Original channel name is L1:LSC-REFL_A_LF_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:LSC-REFL_A_LF_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpiaP5sj.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:LSC-PRCL_IN1_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:LSC-PRCL_IN1_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:LSC-PRCL_IN1_DQ...
+using '/usr1/sudarshan.ghonge/tmpD_vEvI.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_LSC-PRCL_IN1_DQ.
+Original channel name is L1:LSC-PRCL_IN1_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:LSC-PRCL_IN1_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpD_vEvI.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:LSC-SRCL_IN1_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:LSC-SRCL_IN1_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:LSC-SRCL_IN1_DQ...
+using '/usr1/sudarshan.ghonge/tmpdTzaOT.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_LSC-SRCL_IN1_DQ.
+Original channel name is L1:LSC-SRCL_IN1_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:LSC-SRCL_IN1_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpdTzaOT.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:LSC-MICH_IN1_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:LSC-MICH_IN1_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:LSC-MICH_IN1_DQ...
+using '/usr1/sudarshan.ghonge/tmpPhJQ_9.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_LSC-MICH_IN1_DQ.
+Original channel name is L1:LSC-MICH_IN1_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:LSC-MICH_IN1_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpPhJQ_9.sqlite'...
+Parsed command line arguments...
+Read ini files...
+checking the parameters...
+general:
+('tag', 'L1_1186704018_1186750418')
+('ifo', 'L1')
+
+condor:
+('logdir', '/usr1/sudarshan.ghonge')
+('scratchdir', '/usr1/sudarshan.ghonge')
+('datafind', '/usr/bin/gw_data_find')
+('getkw', '/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW')
+('omegaveto_wrapper', '/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/bcvOmegaveto')
+('compiled_omegaveto', '/home/sudarshan.ghonge/bcv_pipeline/bcv/srcPkg/bcv_runscript.py')
+('veto_report', '/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/bcvReport')
+('veto_summarypage', '/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/bcvSummaryPage')
+('veto_insert-bin', '/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/bcvInsert')
+('retry', '1')
+('maxreportjobnum', '150')
+('maxomegavetojobnum', '500')
+('reportrequiredmemory', '1000')
+('omegavetorequiredmemory', '1000')
+('duration_upper_limit', '1800')
+('duration_lower_limit', '0')
+('only_postprocess', 'False')
+
+datafind:
+('url-type', 'file')
+
+data_conditioning:
+('snrcutoff', '8')
+('highpasscutoff', '20')
+('samplefrequency', '8192')
+('reqaccvetorate', '1.15e-5')
+('vetosignificancethresh', '3')
+('rmax', 'False')
+('positive_window', '0.5')
+('negative_window', '0.5')
+('safety_thresh', '-3')
+('timeshiftmin', '-50')
+('timeshiftmax', '50')
+('numtimeshifts', '14')
+('trigminfreq', '20')
+('trigmaxfreq', '4096')
+('pairing', 'all')
+
+output:
+('outdir', 'results')
+('logfile', 'log.txt')
+('generatereport', 'True')
+('debuglevel', '0')
+
+input:
+('configuration_file', '/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/L1_1186704018_1186750418_conf.txt')
+('analyzed_seg_files', '/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/L1_1186704018_1186750418_segs.txt')
+('server', 'https://segments.ligo.org')
+('cat1', 'False')
+('cat2', 'False')
+('cat3', 'False')
+('cat4', 'False')
+('cat5', 'False')
+('flag_seg_files', '')
+('kw_location', '')
+('gw_trigger_file', 'KW')
+('gw_kw', 'L1:GDS-CALIB_STRAIN')
+('injection_file', 'off')
+
+webpage:
+('outdir', '/home/sudarshan.ghonge/public_html/BCV/results/')
+
+veto:
+('xml', 'False')
+('insert', 'False')
+('server', 'https://segments.ligo.org')
+('web_address', 'https://ldas-jobs.ligo-la.caltech.edu/~sudarshan.ghonge/BCV/results/L1_1186704018_1186750418_webpage/index.html')
+('unsafe_channels', '')
+('trigger_type', 'KW')
+
+follow_up:
+
+creating config files and getting KW triggers...
+reading /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/L1_1186704018_1186750418_conf.txt...
+getting segments to be analyzed...
+making segment list...
+getting analyzed segments...
+added seg files: ['/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/L1_1186704018_1186750418_segs.txt']
+subtracting flag_seg_files...
+subtracted seg files: []
+analysed_segs:  [segment(1186704018.0, 1186707551.0), segment(1186711196.0, 1186719875.0), segment(1186723943.0, 1186733722.0), segment(1186735200.0, 1186750418.0)]
+[segment(1186704018.0, 1186707551.0), segment(1186711196.0, 1186719875.0), segment(1186723943.0, 1186733722.0), segment(1186735200.0, 1186750418.0)]
+segs to be analyzed:
+[segment(1186704018.0, 1186707551.0), segment(1186711196.0, 1186719875.0), segment(1186723943.0, 1186733722.0), segment(1186735200.0, 1186750418.0)]
+saving the segment list in segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt...
+trigger type is KW
+retrieving KW triggers for GW channel...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:GDS-CALIB_STRAIN --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:GDS-CALIB_STRAIN.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:LSC-MICH_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:LSC-MICH_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:LSC-PRCL_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:LSC-PRCL_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:LSC-SRCL_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:LSC-SRCL_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:LSC-POP_A_LF_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:LSC-POP_A_LF_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:LSC-REFL_A_LF_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:LSC-REFL_A_LF_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:LSC-PRCL_IN1_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:LSC-PRCL_IN1_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:LSC-SRCL_IN1_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:LSC-SRCL_IN1_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:LSC-MICH_IN1_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:LSC-MICH_IN1_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:IMC-MC1_PIT_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:IMC-MC1_PIT_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --mingetKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:IMC-MC1_PIT_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:IMC-MC1_PIT_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:IMC-MC1_PIT_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpmh8mbq.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_IMC-MC1_PIT_OUT_DQ.
+Original channel name is L1:IMC-MC1_PIT_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:IMC-MC1_PIT_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpmh8mbq.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:IMC-MC1_YAW_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:IMC-MC1_YAW_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:IMC-MC1_YAW_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmp9Zj7Fr.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_IMC-MC1_YAW_OUT_DQ.
+Original channel name is L1:IMC-MC1_YAW_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:IMC-MC1_YAW_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmp9Zj7Fr.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:IMC-MC3_PIT_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:IMC-MC3_PIT_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:IMC-MC3_PIT_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpicNcTz.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_IMC-MC3_PIT_OUT_DQ.
+Original channel name is L1:IMC-MC3_PIT_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:IMC-MC3_PIT_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpicNcTz.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:IMC-PZT_PIT_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:IMC-PZT_PIT_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:IMC-PZT_PIT_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpOnS7XZ.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_IMC-PZT_PIT_OUT_DQ.
+Original channel name is L1:IMC-PZT_PIT_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:IMC-PZT_PIT_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpOnS7XZ.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:IMC-PZT_YAW_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:IMC-PZT_YAW_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:IMC-PZT_YAW_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpok2Gxr.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_IMC-PZT_YAW_OUT_DQ.
+Original channel name is L1:IMC-PZT_YAW_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:IMC-PZT_YAW_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpok2Gxr.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:IMC-F_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:IMC-F_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:IMC-F_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpwu_6gH.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_IMC-F_OUT_DQ.
+Original channel name is L1:IMC-F_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:IMC-F_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpwu_6gH.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:OMC-LSC_I_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:OMC-LSC_I_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:OMC-LSC_I_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpJyPcMt.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_OMC-LSC_I_OUT_DQ.
+Original channel name is L1:OMC-LSC_I_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:OMC-LSC_I_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpJyPcMt.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:OMC-PZT2_MON_AC_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:OMC-PZT2_MON_AC_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:OMC-PZT2_MON_AC_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpl6qsi0.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_OMC-PZT2_MON_AC_OUT_DQ.
+Original channel name is L1:OMC-PZT2_MON_AC_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:OMC-PZT2_MON_AC_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpl6qsi0.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:PSL-ISS_SECONDLOOP_SUM58_REL_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:PSL-ISS_SECONDLOOP_SUM58_REL_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:PSL-ISS_SECONDLOOP_SUM58_REL_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpo9fV2u.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_PSL-ISS_SECONDLOOP_SUM58_REL_OUT_DQ.
+Original channel name is L1:PSL-ISS_SECONDLOOP_SUM58_REL_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:PSL-ISS_SECONDLOOP_SUM58_REL_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpo9fV2u.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:ISI-HAM6_BLND_GS13Z_IN1_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:ISI-HAM6_BLND_GS13Z_IN1_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:ISI-HAM6_BLND_GS13Z_IN1_DQ...
+using '/usr1/sudarshan.ghonge/tmpaMb1p2.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_ISI-HAM6_BLND_GS13Z_IN1_DQ.
+Original channel name is L1:ISI-HAM6_BLND_GS13Z_IN1_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:ISI-HAM6_BLND_GS13Z_IN1_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpaMb1p2.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:ASC-AS_A_RF45_Q_PIT_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_A_RF45_Q_PIT_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:ASC-AS_A_RF45_Q_PIT_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpRR0_Cc.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_ASC-AS_A_RF45_Q_PIT_OUT_DQ.
+Original channel name is L1:ASC-AS_A_RF45_Q_PIT_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_A_RF45_Q_PIT_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpRR0_Cc.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:ASC-REFL_A_RF45_I_YAW_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:ASC-REFL_A_RF45_I_YAW_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:ASC-REFL_A_RF45_I_YAW_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpCAnSdr.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_ASC-REFL_A_RF45_I_YAW_OUT_DQ.
+Original channel name is L1:ASC-REFL_A_RF45_I_YAW_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:ASC-REFL_A_RF45_I_YAW_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpCAnSdr.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:ASC-REFL_A_RF9_I_YAW_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:ASC-REFL_A_RF9_I_YAW_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:ASC-REFL_A_RF9_I_YAW_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpVUaHg_.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_ASC-REFL_A_RF9_I_YAW_OUT_DQ.
+Original channel name is L1:ASC-REFL_A_RF9_I_YAW_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:ASC-REFL_A_RF9_I_YAW_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpVUaHg_.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:ASC-AS_B_RF45_I_PIT_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_B_RF45_I_PIT_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:ASC-AS_B_RF45_I_PIT_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpfRPD49.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_ASC-AS_B_RF45_I_PIT_OUT_DQ.
+Original channel name is L1:ASC-AS_B_RF45_I_PIT_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_B_RF45_I_PIT_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpfRPD49.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:ASC-AS_B_RF36_Q_PIT_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_B_RF36_Q_PIT_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:ASC-AS_B_RF36_Q_PIT_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpxUWDCx.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_ASC-AS_B_RF36_Q_PIT_OUT_DQ.
+Original channel name is L1:ASC-AS_B_RF36_Q_PIT_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_B_RF36_Q_PIT_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpxUWDCx.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:ASC-X_TR_B_NSUM_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:ASC-X_TR_B_NSUM_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:ASC-X_TR_B_NSUM_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmp_gB1Yc.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_ASC-X_TR_B_NSUM_OUT_DQ.
+Original channel name is L1:ASC-X_TR_B_NSUM_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:ASC-X_TR_B_NSUM_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmp_gB1Yc.sqlite'...
+-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:IMC-MC1_YAW_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:IMC-MC1_YAW_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:IMC-MC3_PIT_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:IMC-MC3_PIT_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:IMC-PZT_PIT_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:IMC-PZT_PIT_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:IMC-PZT_YAW_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:IMC-PZT_YAW_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:IMC-F_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:IMC-F_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:OMC-LSC_I_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:OMC-LSC_I_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:OMC-PZT2_MON_AC_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:OMC-PZT2_MON_AC_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:PSL-ISS_SECONDLOOP_SUM58_REL_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:PSL-ISS_SECONDLOOP_SUM58_REL_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:ISI-HAM6_BLND_GS13Z_IN1_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:ISI-HAM6_BLND_GS13Z_IN1_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:ASC-AS_A_RF45_Q_PIT_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_A_RF45_Q_PIT_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:ASC-REFL_A_RF45_I_YAW_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:ASC-REFL_A_RF45_I_YAW_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:ASC-REFL_A_RF9_I_YAW_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:ASC-REFL_A_RF9_I_YAW_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:ASC-AS_B_RF45_I_PIT_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_B_RF45_I_PIT_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:ASC-AS_B_RF36_Q_PIT_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_B_RF36_Q_PIT_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:ASC-X_TR_B_NSUM_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:ASC-X_TR_B_NSUM_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:ISI-HAM4_BLND_GS13RZ_IN1_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:ISI-HAM4_BLND_GS13RZ_IN1_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:ISI-HAM4_BLND_GS13RZ_IN1_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:ISI-HAM4_BLND_GS13RZ_IN1_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:ISI-HAM4_BLND_GS13RZ_IN1_DQ...
+using '/usr1/sudarshan.ghonge/tmpvrKXge.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_ISI-HAM4_BLND_GS13RZ_IN1_DQ.
+Original channel name is L1:ISI-HAM4_BLND_GS13RZ_IN1_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:ISI-HAM4_BLND_GS13RZ_IN1_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpvrKXge.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:ASC-REFL_A_RF45_I_PIT_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:ASC-REFL_A_RF45_I_PIT_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:ASC-REFL_A_RF45_I_PIT_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmp12UQWC.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_ASC-REFL_A_RF45_I_PIT_OUT_DQ.
+Original channel name is L1:ASC-REFL_A_RF45_I_PIT_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:ASC-REFL_A_RF45_I_PIT_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmp12UQWC.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:PEM-EX_MAINSMON_EBAY_3_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:PEM-EX_MAINSMON_EBAY_3_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:PEM-EX_MAINSMON_EBAY_3_DQ...
+using '/usr1/sudarshan.ghonge/tmpsLRZEV.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_PEM-EX_MAINSMON_EBAY_3_DQ.
+Original channel name is L1:PEM-EX_MAINSMON_EBAY_3_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:PEM-EX_MAINSMON_EBAY_3_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpsLRZEV.sqlite'...
+getKW.py...
+Branch: master
+Tag: None
+Id: 47f28bcaae8ab01c98333a7a6087925c3a1c729e
+
+Builder: Sudarshan <sudu.ghonge@gmail.com>
+Build date: 2015-10-26 12:27:10 +0000
+Repository status: CLEAN: All modifications committed
+
+******************* PARAMETERS ********************
+min_freq:
+20.0
+order_by:
+centralTime asc
+verbose:
+True
+scratch_dir:
+/usr1/sudarshan.ghonge
+segment_file:
+segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt
+gps_start_time:
+None
+max_freq:
+4096.0
+channel_name:
+L1:ASC-AS_A_RF45_Q_YAW_OUT_DQ
+min_thresh:
+8.0
+out_name:
+KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_A_RF45_Q_YAW_OUT_DQ.txt
+gps_end_time:
+None
+KW_location:
+/home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+
+getting data for L1:ASC-AS_A_RF45_Q_YAW_OUT_DQ...
+using '/usr1/sudarshan.ghonge/tmpsGr8hn.sqlite' as workspace
+trigs_loc ISSSSSsss.../home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers
+Channel name is L1_ASC-AS_A_RF45_Q_YAW_OUT_DQ.
+Original channel name is L1:ASC-AS_A_RF45_Q_YAW_OUT_DQ.
+IFO is L1.
+d_test: L
+d_test: 1
+This file uses a newer naming convention.  Continuing...
+saving data in KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_A_RF45_Q_YAW_OUT_DQ.txt...
+removing temporary workspace '/usr1/sudarshan.ghonge/tmpsGr8hn.sqlite'...
+Traceback (most recent call last):
+  File "/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/copySRC", line 23, in <module>
+    from bcv import git_version
+ImportError: No module named bcv
+.sub(s) located -> ['L1_1186704018_1186750418.datafind.sub', 'L1_1186704018_1186750418.omegaveto.sub', 'L1_1186704018_1186750418.report.sub', 'L1_1186704018_1186750418.summaryPage.sub']
+20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:ASC-REFL_A_RF45_I_PIT_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:ASC-REFL_A_RF45_I_PIT_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:PEM-EX_MAINSMON_EBAY_3_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:PEM-EX_MAINSMON_EBAY_3_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+retrieving KW triggers...
+/home/sudarshan.ghonge/bcv_pipeline/bcv/bin/getKW --KW_location /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/triggers --channel_name L1:ASC-AS_A_RF45_Q_YAW_OUT_DQ --segment_file segfiles/L1_1186704018_1186750418-1186704018-46400-segs.txt --out_name KWtrigs/L1_1186704018_1186750418_L1:ASC-AS_A_RF45_Q_YAW_OUT_DQ.txt --order_by 'centralTime asc' --scratch_dir /usr1/sudarshan.ghonge --min_thresh 8 --min-freq 20.000000 --max-freq 4096.000000 --verbose
+Linear coupling model selected...
+creating dag files...
+Removing redundancy tags...
+Done!
+Copying updated MATLAB binary source file...
+Done!
+Adding accounting group to .sub files...
+Done!
+
+********************************************************************************
+Ready to run the dag file!
+To run:
+$ condor_submit_dag dags/L1_1186704018_1186750418.dag
+To check the status:
+$ tail -f dags/L1_1186704018_1186750418.dag.dagman.out
+or
+$ condor_q ${USER}
+********************************************************************************
+
+Submitting job(s).
+1 job(s) submitted to cluster 2308864.
+
+-----------------------------------------------------------------------
+File for submitting this DAG to HTCondor           : dags/L1_1186704018_1186750418.dag.condor.sub
+Log of DAGMan debugging messages                 : dags/L1_1186704018_1186750418.dag.dagman.out
+Log of HTCondor library output                     : dags/L1_1186704018_1186750418.dag.lib.out
+Log of HTCondor library error messages             : dags/L1_1186704018_1186750418.dag.lib.err
+Log of the life of condor_dagman itself          : dags/L1_1186704018_1186750418.dag.dagman.log
+
+-----------------------------------------------------------------------
+running veto code on L1:GDS-CALIB_STRAIN
+date: 02-01-2018 15:20:55
+user: sudarshan.ghonge
+triggerDir = /archive/home/lindy/public_html/triggers/s6-online gpsStart = 1186704018 gpsEnd = 1186750418
+2018-02-01 15:20:55.608881
+Creating tag directory
+Creating directory /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418
+Getting segment file...
+ligolw_segment_query_dqsegdb --segment-url=https://segments.ligo.org  --query-segments --gps-start-time 1186704018 --gps-end-time 1186750418 --include-segments='L1:DMT-ANALYSIS_READY:1' -o /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/L1_1186704018_1186750418_segs.xml
+lwtprint /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/L1_1186704018_1186750418_segs.xml -c start_time -c end_time -t segment -d ' ' > /home/sudarshan.ghonge/BCV/L1_1186704018_1186750418/L1_1186704018_1186750418_segs.txt
+getting configuration file...
+editing parameter file...
+running dags/L1_1186704018_1186750418.dag...

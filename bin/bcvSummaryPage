@@ -116,6 +116,10 @@ def summary_page(channel_info,veto_segs, chan_name_list):
 
   ############################## header ######################################
   title = "Bilinear Coupling Veto"
+  for cn in channel_info:
+    if channel_info[cn] is not None:
+      chan_name = cn
+      break
   
   # get UTC time for start and end time
   start_gps = channel_info[chan_name]["analysisStartTime"]

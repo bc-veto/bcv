@@ -210,8 +210,6 @@ class insertJob(pipeline.CondorDAGJob):
 '''
       
 class followupJob(pipeline.CondorDAGJob):
-  """
-  """
   def __init__(self, cp):
       """
       cp = a ConfigParser instance
@@ -237,25 +235,17 @@ class followupJob(pipeline.CondorDAGJob):
         self.add_opt("w_config",cp.get("follow_up","wscan_config"))
         self.add_opt("w_framecache",cp.get("follow_up","wscan_framecache"))
       self.add_arg("--verbose")
-      
+     
 class wscanRunJob(pipeline.CondorDAGJob):
-  """
-  submission file will be replaced by KW_veto_qscanSetup
-  """
   def __init__(self, cp):
-      """
-      cp = a ConfigParser instance
-      """
       self.__executable = cp.get('condor','KW_veto_runOmega-bin')
       self.__universe = "local"
       pipeline.CondorDAGJob.__init__(self,self.__universe, self.__executable)
-      
       self.set_stdout_file('logs/$(logname)-$(cluster).out')
       self.set_stderr_file('logs/$(logname)-$(cluster).err')
       self.add_condor_cmd('getenv','True')
       
       output = os.path.join(web_outdir,"followup")
-
       self.add_opt("time_file",os.path.join(output,"omega_times.txt"))
       self.add_opt("w_executable",cp.get("condor","wscan-bin"))
       self.add_opt("w_config",cp.get("follow_up","wscan_config"))
@@ -658,10 +648,16 @@ def config_maker():
     #if exit > 0:
       #print >> sys.stderr, "Error: KW retrieval failed."
       #sys.exit(1)
+  trigMinFreq = cp.getfloat("data_conditioning","trigMinFreq")
+  trigMinFreq = trigMinFreq if trigMinFreq is not None else 0.0
+  trigMaxFreq = cp.getfloat("data_conditioning","trigMaxFreq")
+  trigMaxFreq = trigMaxFreq if trigMaxFreq is not None else 40000.0 
+
+  print "trigger type is %s"%(trigger_type)
   if trigger_type == "KW":
     GWchan = cp.get("input","GW_KW")
     GWtrigFile = os.path.join("KWtrigs",original_tag+"_"+GWchan+".txt")
-    cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min_freq %f --max_freq %f %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, cp.getfloat("data_conditioning","trigMinFreq"), cp.getfloat("data_conditioning","trigMaxFreq"), verbose)
+    cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min-freq %f --max-freq %f %s"%(cp.get("condor","getKW"), KWLoc, GWchan, segment_file, GWtrigFile, cp.get("condor","scratchdir"), minSNRH, cp.getfloat("data_conditioning","trigMinFreq"), cp.getfloat("data_conditioning","trigMaxFreq"), verbose)
     if opts.verbose:
       print "retrieving KW triggers for GW channel..."
       print cmd
@@ -714,7 +710,7 @@ def config_maker():
     if len(GWtrigs[0]) not in [5]:
         print >> sys.stderr, """
 #Error:
-  #The file format is expected to be the same as KW; 8 columns with
+  #The file format is expected to be the same as KW; 5 columns with
   #start GPS time: 1st column
   #end GPS time: 2nd column
   #central GPS time: 3rd column
@@ -763,9 +759,9 @@ def config_maker():
     ## get KW
     trigFile = os.path.join("KWtrigs",cp.get("general","tag")+"_"+chan1[0]+".txt")
     minSNRX = chan1[2]
-    
+     
     if trigger_type == 'KW':
-    	cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min_freq %f --max_freq %f %s"%(cp.get("condor","getKW"), KWLoc, chan1[0], segment_file, trigFile, cp.get("condor","scratchdir"), minSNRX, cp.getfloat("data_conditioning","trigMinFreq"), cp.getfloat("data_conditioning","trigMaxFreq"), verbose)
+    	cmd = "%s %s --channel_name %s --segment_file %s --out_name %s --order_by 'centralTime asc' --scratch_dir %s --min_thresh %d --min-freq %f --max-freq %f %s"%(cp.get("condor","getKW"), KWLoc, chan1[0], segment_file, trigFile, cp.get("condor","scratchdir"), minSNRX, cp.getfloat("data_conditioning","trigMinFreq"), cp.getfloat("data_conditioning","trigMaxFreq"), verbose)
     elif trigger_type == 'OMICRON':
 	XchName = chan1[0].split(":")
 	XchName = XchName[1]
@@ -801,14 +797,17 @@ def config_maker():
   """%(chan1[0], chan1[1], cp.getint("data_conditioning","sampleFrequency"), trigFile))
 
     for chan2 in chanData["slow"]:
-      if cp.get("data_conditioning","pairing") == "subsystem":
+      config_name = os.path.join("configs","%s_%s+%s.conf"%(cp.get("general","tag"),chan1[0],chan2[0])) 
+      if(chan2[0][3:] == "LINEAR"):
+        print "Linear coupling model selected..."
+        open(config_name,'w').write("".join(content))
+      else:
+        if cp.get("data_conditioning","pairing") == "subsystem":
           chan1_prefix = chan1[0].split("-")[0]
           chan2_prefix = chan2[0].split("-")[0]
           if chan1_prefix != chan2_prefix:
-              print "Channels not of same subsystem"
-              continue
-      config_name = os.path.join("configs","%s_%s+%s.conf"%(cp.get("general","tag"),chan1[0],chan2[0]))
-      if chan2[0][3:] != "LINEAR":
+            print "Channels not of same subsystem"
+            continue 
         ## add configuration file content
         bilinear_content = [l for l in content] # make a copy
         bilinear_content.append("""
@@ -819,9 +818,8 @@ def config_maker():
 } 
         """%(chan2[0],chan2[1],cp.getint("data_conditioning","sampleFrequency")))
         open(config_name,'w').write("".join(bilinear_content))
-      else: # just fast channel for linear coupling model
-	print "Linear coupling model selected..."
-        open(config_name,'w').write("".join(content))
+
+        
 
   return start_time, duration, segment_file, analyze_segments, chanData, GWtrigFile
 
@@ -959,13 +957,16 @@ def dag_maker():
       for chan1 in chanData['fast']:
         # bilinear case
         for chan2 in chanData['slow']:
-          if(cp.get("data_conditioning" ,"pairing")=="subsystem"):
-            chan1_prefix = chan1[0].split("-")[0]
-            chan2_prefix = chan2[0].split("-")[0]
-            if chan1_prefix != chan2_prefix:
-              print "Channels not of same subsystem"
-              continue
-          
+          if(chan2[0][3:]=="LINEAR"):
+            chan2Frame = None
+          else:
+            if(cp.get("data_conditioning" ,"pairing")=="subsystem"):
+              chan1_prefix = chan1[0].split("-")[0]
+              chan2_prefix = chan2[0].split("-")[0]
+              if chan1_prefix != chan2_prefix:
+                print "Channels not of same subsystem"
+                continue
+            chan2Frame = dfXs[chan2[1]].get_output()
           chan = chan1[0]+"+"+chan2[0]
           filePrefix = "-".join([tag,ifo,chan,str(start),str(end)])
           ## Add omegaveto nodes
@@ -973,10 +974,6 @@ def dag_maker():
           dagNodeName = "omegaveto-%s-%d-%d"%(chan,start,end)
           configFile = os.path.join("configs","%s_%s.conf"%(tag,chan))
           outDir = os.path.join(cp.get("output","outDir"), "-".join([tag,ifo,chan]), "%d_%d"%(start,end))
-          if chan2[0][3:]!="LINEAR":
-            chan2Frame = dfXs[chan2[1]].get_output()
-          else:
-            chan2Frame = None
           ov = omegavetoNode(omegaveto_job,dagNodeName,retry,segfile_name,configFile,dfH.get_output(),dfXs[chan1[1]].get_output(),chan2Frame,outDir,filePrefix,chanData['GW'][2],chan1[2])
           added_parents = []
           ov.add_parent(dfH)
@@ -1076,7 +1073,7 @@ if opts.verbose:
 inputfiles = {}
 if not os.path.isdir("inputfiles"): os.mkdir("inputfiles")
 
-for f in ("vstyle.css","MatlabSetup_R2008a_glnxa64.sh"):
+for f in ["vstyle.css"]:
   if not os.path.isfile("inputfiles/%s"%f):
     inputfile = "https://virgo.physics.carleton.edu/public/omegaveto_inputfiles/%s"%f
     outfile = os.path.join("inputfiles",f)
@@ -1085,7 +1082,6 @@ for f in ("vstyle.css","MatlabSetup_R2008a_glnxa64.sh"):
       print >> sys.stderr, "Error: could not download %s. Please check the address."%cp.get("input","veto_definer_file")
       sys.exit(1)
 
-os.system("chmod +x inputfiles/MatlabSetup_R2008a_glnxa64.sh")
 
 ############################################################################
 # check config and make sure they are sane
