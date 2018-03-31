@@ -74,10 +74,7 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
   
   ##Check if the sample frequencies of Channel H X are the same. If not, throw error
   
-  #if(samplFreqH!=samplFreqX):
-    #sys.exit('Error: samplFreqH DOES NOT equal samplFreqX')
-  #else:
-    #samplFreq = samplFreqH
+
   samplFreq = samplFreqH
   # Apply time shift to the X/Y data. In case of bilinear coupling, there are multiple
   # channels (X and Y); thus a vector of length 2 or more
@@ -120,12 +117,6 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
     trigXAnalysdDurationVec = []
     
     
-    #testId = open('test_' + '%d'%(analysisStartTime) + '.dat', 'w+')
-    #np.savetxt(testId, trigHCentralTimeVec)
-    #testId.close()
-    #outFileString = '/corrstat_timeshift%d_seg%d-%d.dat'%(timeShift, analysisStartTime, analysisEndTime)
-    #outFileName = outDir[iP] + '/' + outFileString
-    #outFid = open(outFileName, 'w+')
     
     analysedTrigIdx = 0  
     for coincIndex in range(len(coincTrigH)):
@@ -170,10 +161,12 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
       # IMPORTANT NOTE: One second of data in the beginning is used to train the high
       # pass filter and hecne should not be used for the analysis (this explains 
       # the "floor(segStartTime) - 1" below).
+      # 
+      # Edit: That has changed now since the correlation calculation is done in f space
       
       
-      bcvreadStartTime = np.floor(segStartTime) - 1
-      bcvreadEndTime = np.ceil(segEndTime) + 1
+      bcvreadStartTime = np.floor(segStartTime)
+      bcvreadEndTime = np.ceil(segEndTime)
       
       if (debugLevel >=1):
 	#print values of different variables
@@ -241,15 +234,10 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	    else:
 	      tempArray.append(bcv.resample2(dataX[iChan], samplFreqX[iChan], samplFreq))
 	  dataX = np.asarray(tempArray)
-	  #if(not all(samplFreqX==samplFreq)):
-	    #index = np.where(samplFreqX!=samplFreq)[0]
-	    #for iDs in index:
-	      #tempArray = bcv.resample2(dataX[iDs], samplFreqX[iDs], samplFreq)
 
 	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
-	  if(highPassCutoff>0):
-	    dataH = bcv.highpass(dataH, samplFreq, highPassCutoff)
+	  
 	  # In case of bilinear coupling multiply the X and Y channels
 	  # to form a pseudo channel (which a combination of X and Y)
 	  # Also compute some parameters descrining the slow channels(s)
@@ -286,8 +274,6 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	    #mindY = 0
 	    #maxdY = 0
 	    #meandY = 0
-	  if(highPassCutoff>0):
-	    dataP = bcv.highpass(dataP, samplFreq, highPassCutoff)
           
 
 	      
