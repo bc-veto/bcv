@@ -113,6 +113,7 @@ class omegavetoJob(pipeline.CondorDAGJob):
     self.add_opt("timeShiftMax",cp.get("data_conditioning","timeShiftMax"))
     self.add_opt("numTimeShifts",cp.get("data_conditioning","numTimeShifts"))
     self.add_opt("debugLevel",cp.get("output","debugLevel"))
+    self.add_opt("sampleFrequency", cp.get("data_conditioning", "sampleFrequency"))
 
     
 class reportJob(pipeline.CondorDAGJob):
@@ -208,33 +209,6 @@ class insertJob(pipeline.CondorDAGJob):
     self.add_arg("--verbose")
       
 '''
-      
-class followupJob(pipeline.CondorDAGJob):
-  def __init__(self, cp):
-      """
-      cp = a ConfigParser instance
-      """
-      self.__executable = cp.get('condor','KW_veto_followup-bin')
-      self.__universe = "local"
-      pipeline.CondorDAGJob.__init__(self,self.__universe, self.__executable)
-
-      self.set_stdout_file('logs/$(logname)-$(cluster).out')
-      self.set_stderr_file('logs/$(logname)-$(cluster).err')
-      self.add_condor_cmd('getenv','True')
-      
-      self.add_opt("ifo",cp.get("input","ifo"))
-      self.add_opt("result_dir",cp.get("output","out_dir"))
-      self.add_opt("min_coinc",cp.get("data_conditioning","min_kw"))
-      self.add_opt("scratch_dir",cp.get("condor","scratchdir"))
-      self.add_opt("out_dir",os.path.join(web_outdir,"followup"))
-      if cp.getboolean("follow_up","dq_flag"):
-        self.add_arg("--DQFlags")
-      if cp.getboolean("follow_up","wscans"):
-        self.add_arg("--wscan")
-        self.add_opt("w_executable",cp.get("condor","wscan-bin"))
-        self.add_opt("w_config",cp.get("follow_up","wscan_config"))
-        self.add_opt("w_framecache",cp.get("follow_up","wscan_framecache"))
-      self.add_arg("--verbose")
      
 class wscanRunJob(pipeline.CondorDAGJob):
   def __init__(self, cp):
@@ -261,7 +235,7 @@ class wscanRunJob(pipeline.CondorDAGJob):
 ################################################################################
 
 class omegavetoNode(pipeline.CondorDAGNode):
-  def __init__(self, job, name, retry, segfile_name, configFile, frameCacheFileH, frameCacheFileX, frameCacheFileY, outDir, filePrefix, SNRcutoffH, SNRcutoffX):
+  def __init__(self, job, name, retry, segfile_name, configFile, frameCacheFileH, frameCacheFileX, frameCacheFileY, outDir, filePrefix, SNRcutoffH, SNRcutoffX, sampleFrequency):
     """
     A omegavetoNode runs an instance of omegaveto in a Condor DAG.
     """
@@ -330,17 +304,6 @@ class insertNode(pipeline.CondorDAGNode):
     self.add_macro("logname","insert-"+filePrefix) # used for log name
         
 '''
-class followupNode(pipeline.CondorDAGNode):
-    def __init__(self, job, name, retry, filePrefix):
-        """
-        """
-        
-        pipeline.CondorDAGNode.__init__(self, job)
-        
-        self.set_name(name)
-        self.set_retry(retry)
-        
-        self.add_macro("logname","followup-"+filePrefix) # used for log name
         
         
 class wscanRunNode(pipeline.CondorDAGNode):
@@ -356,18 +319,6 @@ class wscanRunNode(pipeline.CondorDAGNode):
         self.add_macro("logname","wscanRun-"+filePrefix) # used for log name
         
 
-class reportPageNode(pipeline.CondorDAGNode):
-  def __init__(self, job, name, retry,filePrefix):
-    """
-    A reportPage runs an instance of KW_veto_reportPage in a Condor DAG.
-    """
-    
-    pipeline.CondorDAGNode.__init__(self, job)
-
-    self.set_name(name)
-    self.set_retry(retry)
-    self.add_var_opt("result_dir", cp.get("output","out_dir"))
-    self.add_macro("logname","reportPage-"+filePrefix) # used for log name
 '''     
         
 ################################################################################

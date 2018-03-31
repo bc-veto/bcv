@@ -94,6 +94,8 @@ def parse_commandline():
                       help="Number of time slides.")
     parser.add_option("-d", "--debugLevel", type="int", default=0,
                       help="Verboseness of debug level output.")
+    parser.add_option("-f", "--sampleFrequency", type="float", default=4096.0,
+                      help="Sample Frequency")
     
     opts, args = parser.parse_args()
     
@@ -174,13 +176,13 @@ def main():
 
     # run omegaveto
    
-    cmd = "%s %s %s %s %s %s %f %d %d %s %s %d %d %d %d"%(opts.omegaveto_bin,
+    cmd = "%s %s %s %s %s %s %f %d %d %s %s %d %d %d %d %f"%(opts.omegaveto_bin,
             opts.segmentFile, 
             opts.configurationFile, frameCacheFileH, frameCacheFileX, opts.couplingModel,
             opts.highPassCutoff, opts.SNRcutoffX, opts.SNRcutoffH,
             opts.outDir, os.path.basename(opts.logFile), 
             opts.timeShiftMin, opts.timeShiftMax, opts.numTimeShifts,
-            opts.debugLevel)
+            opts.debugLevel, opts.sampleFrequency)
             
 #    cmd = "source inputfiles/MatlabSetup_R2008a_glnxa64.sh; %s %s %s %s %s %f %d %d %s %s %d %d %d %d"%(opts.omegaveto_bin,
 #            opts.segmentFile, 

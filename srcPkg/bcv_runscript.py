@@ -70,8 +70,6 @@ def is_non_zero_file(fpath):
   #print '\nSudarshan Ghonge, P Ajith 2015'
   #sys.exit()
 
-# Defaults#######
-defaultSampleFrequency=4096.0
 import argparse
 parser = argparse.ArgumentParser(description='Veto analysis pipeline using instrumental coupling models')
 parser.add_argument('segmentFile', type=str, help='Name of file where information of the segments (in seconds) to be analysed is stored')
@@ -88,6 +86,8 @@ parser.add_argument('timeShiftMin', type=float, help='Minimum amount of time shi
 parser.add_argument('timeShiftMax', type=float, help='Maximum amount of time shift between H and X data')
 parser.add_argument('numTimeShifts', type=int, help='Number of time shifts between H and X data')
 parser.add_argument('debugLevel', type=int,help='Provide debug level', choices=[0, 1, 2])
+parser.add_argument('sampleFrequency', type=float, help='Sample Frequency')
+
 
 args = parser.parse_args()
 
@@ -105,6 +105,7 @@ timeShiftMin = args.timeShiftMin
 timeShiftMax = args.timeShiftMax
 numTimeShifts = args.numTimeShifts
 debugLevel = args.debugLevel
+sampleFrequency = args.sampleFrequency
 
 
 print "Reading segment file %s..\n" %(segmentFile)
@@ -192,7 +193,7 @@ with open(configurationFile, 'r') as configurationFID:
       if(configuration[channelNumber].sampleFrequency==None):
 	print 'Warning: Incomplete configuration.\n Sample frequency not specified for channel number %d'%(channelNumber)
 	
-	configuration[channelNumber].sampleFrequency=defaultSampleFrequency
+	configuration[channelNumber].sampleFrequency=sampleFrequency
       
       if((channelNumber==0)&(len(configuration[channelNumber].triggerListChH)==0)):
 	print 'Warning: Incomplete configuration\nChannel H trigger list not specified for channel number %d'%(channelNumber)
@@ -380,11 +381,12 @@ if(triggerListChHFID):
   
   startTimeH = trigDataMatrixH[:, 0]
   endTimeH = trigDataMatrixH[:, 1]
-  #np.savetxt('test.dat', trigDataMatrixH[:, 2], fmt='%lf')
   
-  trigIdxH = np.intersect1d(np.where(triggerSignificanceH >= trigSignThreshH)[0],
+  
+  # Edit: No need to filter SNR threshold as the files in KWtrigs already come with
+  # thresholded triggers <2018-03-30>
+  trigIdxH = np.intersect1d(np.where(endTimeH <= analysisEndTime)[0],
 			    np.where(startTimeH>=analysisStartTime)[0])
-  trigIdxH = np.intersect1d(trigIdxH, 	np.where(endTimeH <= analysisEndTime)[0])
   # Filter out triggers whose duration is greater than 1 second
   #trigIdxH = np.intersect1d(trigIdxH, np.where((endTimeH - startTimeH)<1.0)[0])
   
@@ -416,9 +418,10 @@ if(triggerListChXFID):
   startTimeX = trigDataMatrixX[:, 0]
   endTimeX = trigDataMatrixX[:, 1]
   
-  trigIdxX = np.intersect1d(np.where(triggerSignificanceX >= trigSignThreshX)[0],
+  # Edit: No need to filter SNR threshold as the files in KWtrigs already come with
+  # thresholded triggers <2018-03-30>
+  trigIdxX = np.intersect1d(np.where(endTimeX <= analysisEndTime)[0],
 			    np.where(startTimeX>=analysisStartTime)[0])
-  trigIdxX = np.intersect1d(trigIdxX, np.where(endTimeX <= analysisEndTime)[0])
   # Filter out triggers whose duration is greater than 1 second
   #trigidxX = np.intersect1d(trigIdxX, np.where((endTimeX - startTimeX)<1.0)[0])
   
