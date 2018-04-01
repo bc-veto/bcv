@@ -235,7 +235,7 @@ class wscanRunJob(pipeline.CondorDAGJob):
 ################################################################################
 
 class omegavetoNode(pipeline.CondorDAGNode):
-  def __init__(self, job, name, retry, segfile_name, configFile, frameCacheFileH, frameCacheFileX, frameCacheFileY, outDir, filePrefix, SNRcutoffH, SNRcutoffX, sampleFrequency):
+  def __init__(self, job, name, retry, segfile_name, configFile, frameCacheFileH, frameCacheFileX, frameCacheFileY, outDir, filePrefix, SNRcutoffH, SNRcutoffX):
     """
     A omegavetoNode runs an instance of omegaveto in a Condor DAG.
     """
