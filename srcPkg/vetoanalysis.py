@@ -5,7 +5,11 @@ from trigstruct import TrigStruct
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from memory_profiler import profile
 
+precision=10
+fp = open('memory_profiler_basic_mean.log', 'w+')
+@profile(precision=precision, stream=fp)
 def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTypeChanH, frameTypeChanX, samplFreqH, samplFreqX,
 		 highPassCutoff, TriggerHList, TriggerXList, couplingModel,
 		 transFnXtoH, analysisStartTime, analysisEndTime,

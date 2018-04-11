@@ -13,8 +13,9 @@ import numpy as np
 import scipy.linalg as linalg
 import scipy.interpolate as sinterp
 import os
-from gwpy.timeseries import TimeSeries as TS
-
+#from gwpy.timeseries import TimeSeries as TS
+#from pycbc.frame import frame
+import lalframe.frread as fr
 class FrameCacheStruct:
   def __init__(self, sites, frameTypes, startTimes, stopTimes, durations, directories ):
     self.sites = sites
@@ -539,11 +540,13 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
   sampleFrequency = None
 
   try:
-     outputStruct  = TS.read(frameCache, channelName, start=startTime, end=stopTime, format='gwf.lalframe')
-     readData = np.array(outputStruct)
-     readSampleFrequency = outputStruct.sample_rate.value
+     #outputStruct  = TS.read(frameCache, channelName, start=startTime, end=stopTime, format='gwf.lalframe')
+     #outputStruct = frame.read_frame(frameCache, channelName, start_time=startTime, end_time=stopTime, check_integrity=False)
+     outputStruct = fr.read_timeseries(frameCache, channelName, start=startTime, duration = stopTime-startTime)
+     readData = np.array(outputStruct.data.data)
+     readSampleFrequency = 1/outputStruct.deltaT
   except Exception as inst:
-     if(debugLevel>=2):
+     if(debugLevel>=1):
        print  inst.message
   if((len(readData)==0) | np.any(np.isnan(readData))):
     if(debugLevel>=1):
