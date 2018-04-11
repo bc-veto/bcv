@@ -26,6 +26,17 @@ class FrameCacheStruct:
     self.directories = directories
 
 
+def getPSD(data, fs, seglen, overlap):
+  # print 'nperseg= ', seglen*fs
+  # print 'noverlap = ', overlap*fs 
+   f, psd= sig.welch(data, fs=fs, nperseg=seglen*fs, noverlap=overlap*fs)
+   return psd
+
+def whiten(data, psd):
+  dataf = np.fft.rfft(data)
+  if(len(dataf)!=len(psd)):
+    print 'Length of data and psd do not match'
+  return np.fft.irfft(dataf/np.sqrt(psd))
 
 def readData(frameCache, channelNames,frameTypes, startTime, stopTime, timeShifts, debugLevel):
   numberOfChannels = len(channelNames)
