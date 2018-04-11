@@ -48,7 +48,7 @@ import os
 import sys
 import optparse
 sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
-from bcv import git_version
+#from bcv import git_version
 
 __author__ = "Tomoki Isogai <isogait@carleton.edu>"
 __date__ = "12/26/2009"
@@ -58,7 +58,7 @@ def parse_commandline():
     """
     Parse the options given on the command-line.
     """
-    parser = optparse.OptionParser(usage = __doc__,version=git_version.verbose_msg)
+    parser = optparse.OptionParser(usage = __doc__)
 
     parser.add_option("-O", "--omegaveto_bin", default=None,
                       help="Path to compilied omegaveto.m.")
@@ -131,7 +131,7 @@ def parse_commandline():
 
     # show parameters
     print >> sys.stderr, "running omegaveto.py..."
-    print >> sys.stderr, git_version.verbose_msg
+    #print >> sys.stderr, git_version.verbose_msg
     print >> sys.stderr, ""
     print >> sys.stderr, "***************** PARAMETERS ********************"
     for o in opts.__dict__.items():

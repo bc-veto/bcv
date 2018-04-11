@@ -54,8 +54,8 @@ except ImportError:
 from glue.segments import segment, segmentlist
 from glue import segmentsUtils
 sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
-from bcv import git_version
-from bcv import bcvUtils
+import git_version
+import bcvUtils
 
 __author__ = "Tomoki Isogai <isogait@carleton.edu>, P. Ajith <ajith_p@ligo.caltech.edu>"
 __date__ = "1/5/2010"

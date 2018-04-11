@@ -9,8 +9,8 @@ import datetime
 from glue.segments import segment, segmentlist
 from glue.iterutils import *
 sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
-from bcv import bcvUtils
-
+#from bcv import bcvUtils
+import bcvUtils
 
 
 

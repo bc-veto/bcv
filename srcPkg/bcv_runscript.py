@@ -39,7 +39,10 @@ import vetoanalysis
 import bcv
 import gwpy.time as gtime
 import re
-
+import sys
+sys.path.append('/home/sudarshan.ghonge/bcv_pipeline/bcv/srcPkg')
+from glue.lal import Cache
+import gc
 # Class to store the configuration information of a particular channel
 class ConfigurationClass:
   def __init__(self):
@@ -93,8 +96,8 @@ args = parser.parse_args()
 
 segmentFile = args.segmentFile
 configurationFile = args.configurationFile
-frameCacheFileH = args.frameCacheFileH
-frameCacheFileX = args.frameCacheFileX
+frameCacheH = Cache.fromfile(open(args.frameCacheFileH, 'r'))
+frameCacheX = Cache.fromfile(open(args.frameCacheFileX, 'r'))
 couplingModel = args.couplingModel
 highPassCutoff = args.highPassCutoff
 trigSignThreshX = args.trigSignThreshX
@@ -357,7 +360,7 @@ if (couplingModel == 'linear'):
     transFnXtoHRead = np.loadtxt(transferFunctionXtoH)
     transFnXtoH = TransferFunctionXtoH(transFnXtoHRead[:, 0], transFnXtoHRead[:, 1])
   else:
-    freq = np.linspace(0.1, 1000.0, num=1001, endpoint=True)
+    freq = np.linspace(0.1, 4000.0, num=4001, endpoint=True)
     transFnXtoH = TransferFunctionXtoH(freq, np.ones(len(freq), dtype=float))
     
     
@@ -487,10 +490,11 @@ for iSeg in xrange(nSeg):
     
     for iTimeShift in xrange(len(timeShiftVec)):
       timeShift = timeShiftVec[iTimeShift]
-      vetoanalysis.vetoanalysis(frameCacheFileH, frameCacheFileX, [chanHName], chanXName, [frameTypeH], frameTypeX, samplFreqH, samplFreqX,
+      vetoanalysis.vetoanalysis(frameCacheH, frameCacheX, chanHName, chanXName, [frameTypeH], frameTypeX, samplFreqH, samplFreqX,
 				highPassCutoff, triggerListHSeg, triggerListXSeg,
 				couplingModel, transFnXtoH, segStartTime, segEndTime,
 				timeShift, outDirList, logFid, debugLevel)
+      gc.collect()
   else:
     logFid.write('LOG: No triggers in this segment numTrigsHseg = %d numTrigsXseg = %d\n'%(numTrigsHseg, numTrigsXseg))
   
@@ -506,8 +510,8 @@ for iDir in xrange(len(outDirList)):
   textSummaryFID.write('analysisStartTime UTC : %s\n' %(gtime.from_gps(analysisStartTime)))
   textSummaryFID.write('segEndTime UTC : %s\n' %(gtime.from_gps(segEndTime)))
   textSummaryFID.write('configurationFile : %s\n' %(configurationFile))
-  textSummaryFID.write('frameCacheFileH : %s\n'%(frameCacheFileH))
-  textSummaryFID.write('frameCacheFileX : %s\n'%(frameCacheFileX))
+  textSummaryFID.write('frameCacheFileH : %s\n'%(args.frameCacheFileH))
+  textSummaryFID.write('frameCacheFileX : %s\n'%(args.frameCacheFileX))
   textSummaryFID.write('couplingModel :%s\n' %(couplingModel))
   textSummaryFID.write('highPassCutoff : %3.2f\n' %(highPassCutoff))
   textSummaryFID.write('outDir : %s\n' %(outDirList[iDir]))
@@ -529,34 +533,3 @@ logFid.close()
 for iDir in range(1, len(outDirList)):
   os.system('cp %s %s/%s'%(logFile, outDirList[iDir], logFileName))
 
-
-      
-      
-   
-    
-  
-
-  
-
-
-  
-    
-  
-	
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-
-
-
-  

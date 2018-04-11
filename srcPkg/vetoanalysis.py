@@ -5,6 +5,14 @@ from trigstruct import TrigStruct
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from gwpy.timeseries import TimeSeries as TS
+#from gwpy.timeseries import TimeSeriesDict as TSD
+from memory_profiler import profile
+
+precision=10
+fp = open('memory_profiler_basic_mean.log', 'w+')
+@profile(precision=precision, stream=fp)
+
 
 def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTypeChanH, frameTypeChanX, samplFreqH, samplFreqX,
 		 highPassCutoff, TriggerHList, TriggerXList, couplingModel,
@@ -190,7 +198,8 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
                 'trigXSignific', trigXSignific, 
                 '--- Veto Analysis Parameters ---', '', 
                 'meanTrigCentTime',meanTrigCentTime,
-                'totalDuration', totalDuration)
+                'totalDuration', totalDuration,
+                'segmentDuration', segmentDuration)
 	
       #Check if data is sensible	
       if((segStartTime<analysisStartTime) | (segEndTime>analysisEndTime)): 
@@ -202,75 +211,169 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	#Read the segment for channel H and channel X
         if(debugLevel >= 1):
           print 'Reading H channel'
+<<<<<<< Updated upstream
+        [dataHlong, samplFreqH] = bcv.readData(frameCacheFileH, chanHName, frameTypeChanH, bcvreadStartTime-16,
+                                    bcvreadEndTime+16, [0], debugLevel)
+        
+        
+
 	[dataH, samplFreqH] = bcv.readData(frameCacheFileH, chanHName, frameTypeChanH, bcvreadStartTime,
 				    bcvreadEndTime, [0], debugLevel)
         if(debugLevel >= 1):
           print 'Reading X channel'	
+        [dataXlong, samplFreqX] = bcv.readData(frameCacheFileX, chanXName, frameTypeChanX, bcvreadStartTime-16,
+                                    bcvreadEndTime+16, timeShiftX, debugLevel)
+        #dataXpsd = [bcv.getPSD(data, fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, overlap=(bcvreadEndTime-bcvreadStartTime)/2) for data in dataX]
+
 	[dataX, samplFreqX] = bcv.readData(frameCacheFileX, chanXName, frameTypeChanX, bcvreadStartTime,
 				    bcvreadEndTime, timeShiftX, debugLevel)
+=======
+	#[dataH, samplFreqH] = bcv.readData(frameCacheFileH, chanHName, frameTypeChanH, bcvreadStartTime,
+	#			    bcvreadEndTime, [0], debugLevel)
+        hsuccess=True
+        xsuccess=True
+        try:
+          #dataHlong = TS.read(frameCacheFileH, chanHName, bcvreadStartTime-8, bcvreadStartTime+8)
+          #dataHSamplFreq = dataHlong.sample_rate.value
+          #if(dataHSamplFreq!=samplFreq):
+          #  dataHlong=dataHlong.resample(samplFreq)
+          #dataHasd = dataHlong.asd(segmentDuration , (segmentDuration)/2, 'welch')
+          #dataH = dataHlong.crop(segStartTime, segEndTime, copy=True)
+          #dataH = dataH.whiten(segmentDuration, (segmentDuration)/2, asd=dataHasd)
+          #del dataHlong
+          #del dataHasd
+          dataH = TS.read(frameCacheFileH, chanHName, bcvreadStartTime, bcvreadEndTime)
+          if(dataH.sample_rate.value!=samplFreq):
+            dataH=dataH.resample(samplFreq)
+          
+          dataH = dataH.whiten((bcvreadEndTime - bcvreadStartTime)/4, (bcvreadEndTime-bcvreadStartTime)/8, method='welch')
+          dataH = dataH.crop(segStartTime, segEndTime)
+        except Exception as inst:
+          if(debugLevel>=1):
+            print inst.message
+          hsuccess=False
+        if(debugLevel >= 1):
+          print 'Reading X channel'	
+#	[dataX, samplFreqX] = bcv.readData(frameCacheFileX, chanXName, frameTypeChanX, bcvreadStartTime,
+#				    bcvreadEndTime, timeShiftX, debugLevel)
+        
+        try:
+          #dataXlong = TSD.read(frameCacheFileX, chanXName, bcvreadStartTime-timeShift-8, bcvreadStartTime+8-timeShift)
+          #for key in dataXlong.iterkeys():
+          #  if(dataXlong[key].sample_rate.value!=samplFreq):
+          #    dataXlong[key]=dataXlong[key].resample(samplFreq)
+              
+          #dataXasd = [dataXlong[key].asd(segmentDuration, (segmentDuration)/2, 'welch') for k,key in enumerate(dataXlong.keys())]
+          #dataX = [dataXlong[key].crop(segStartTime-timeShift, segEndTime-timeShift, copy=True) for key in dataXlong.keys()]
+          
+          #dataX = [dataX[k].whiten(segmentDuration, (segmentDuration)/2, asd=dataXasd[k])
+          #       for k in range(len(dataX))]
+          #del dataXlong
+          #del dataXasd
+          dataX = [TS.read(frameCacheFileX, chan, bcvreadStartTime-timeShift, bcvreadEndTime-timeShift) for chan in chanXName]
+          for key in xrange(len(dataX)):
+            if(dataX[key].sample_rate.value!=samplFreq):
+              dataX[key]=dataX[key].resample(samplFreq)
+          #dataX = [dataX[key].whiten(bcvreadEndtime - bcvreadStartTime)/4, (bcvreadEndTime-bcvreadStartTime)/8, method='welch') for key in dataX.keys()]
+        except Exception as inst:
+          if(debugLevel>=1):
+            print inst.message
+          xsuccess=False
+        #dataX = [dataX[k].whiten(bcvreadEndTime - bcvreadStartTime, (bcvreadEndTime - bcvreadStartTime)/2, asd=dataXasd[k]) 
+        #         for k in range(len(dataX))]
+
+>>>>>>> Stashed changes
 	#Check for a read error in the channel H data.
-	if(not all(samplFreqH)):
+	if(not hsuccess):
 	  logFid.write('ERROR: Cannot load frame data for channel H...\n')
 	  logFid.write('ERROR: Channel H - bcvreadStartTime: %f bcvreadEndTime: %f\n'%( bcvreadStartTime, bcvreadEndTime))
-	elif(not all(samplFreqX)):
-	  if(len(samplFreqX)==1):
+	elif(not xsuccess):
+          if(len(chanXName)==1):
 	    logFid.write('ERROR: Cannot load frame data for channel X\n')
 	    logFid.write('ERROR: Channel X -  bcvreadStartTime: %f bcvreadEndTime: %f..\n'%(bcvreadEndTime, bcvreadEndTime ))
-	  elif(len(samplFreqX)==2):
+	  elif(len(chanXName)==2):
 	    if(samplFreqX[1]==0):
 	      logFid.write('ERROR: Cannot load frame data for channel Y\n')
 	      logFid.write('ERROR: Channel Y -  bcvreadStartTime: %f bcvreadEndTime: %f..\n'%(bcvreadEndTime, bcvreadEndTime ))	      
 	      
 	  
 	else:
+<<<<<<< Updated upstream
 	  tempArray = []  
 	  # If sampling frequency is different from the one specified,
 	  # resample the data
+          
 	  if(samplFreqH != samplFreq):
 	    dataH = np.asarray([bcv.resample2(dataH[0], samplFreqH[0], samplFreq)])
+            dataHlong = np.asarray([bcv.resample2(dataHlong[0], samplFreqH[0], samplFreq)])
 	  for iChan in xrange(len(dataX)):
 	    if(samplFreqX[iChan]==samplFreq):
 	      tempArray.append(dataX[iChan])
 	    else:
 	      tempArray.append(bcv.resample2(dataX[iChan], samplFreqX[iChan], samplFreq))
 	  dataX = np.asarray(tempArray)
+          
+          tempArray = []
+          for iChan in xrange(len(dataXlong)):
+            if(samplFreqX[iChan]==samplFreq):
+              tempArray.append(dataXlong[iChan])
+            else:
+              tempArray.append(bcv.resample2(dataXlong[iChan], samplFreqX[iChan], samplFreq))
+          dataXlong = np.asarray(tempArray)
+          dataHpsd = bcv.getPSD(dataHlong[0], fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, overlap=(bcvreadEndTime-bcvreadStartTime)/2)
+          dataHw = bcv.whiten(dataH[0], dataHpsd)
 
 	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
+=======
+          #timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
+	  #timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
+>>>>>>> Stashed changes
 	  
 	  # In case of bilinear coupling multiply the X and Y channels
 	  # to form a pseudo channel (which a combination of X and Y)
 	  # Also compute some parameters descrining the slow channels(s)
 	  # and store them in vectors.
 	  if(couplingModel=='bilinear'):
-	    segIdx = np.intersect1d(np.where(timeX + timeShift>=segStartTime)[0], np.where(timeX+timeShift<segEndTime)[0])
+	    #segIdx = np.intersect1d(np.where(timeX + timeShift>=segStartTime)[0], np.where(timeX+timeShift<segEndTime)[0])
 	    
-	    meanY = np.mean(dataX[1][segIdx])
-	    varY  = np.var(dataX[1][segIdx])
-	    maxY  = np.max(dataX[1][segIdx])
-	    minY  = np.min(dataX[1][segIdx])
+	    meanY = np.mean(dataX[1].data)
+	    varY  = np.var(dataX[1].data)
+	    maxY  = np.max(dataX[1].data)
+	    minY  = np.min(dataX[1].data)
 	    maxYMat.append(maxY)
 	    meanYMat.append(meanY)
 	    varYMat.append(varY)
 	    minYMat.append(minY)
+<<<<<<< Updated upstream
 	    #mindY = np.min(np.diff(dataX[iChan][segIdx]))
 	    #maxdY = np.max(np.diff(dataX[iChan][segIdx]))
 	    #meandY= np.mean(np.diff(dataX[iChan][segIdx]))
-	    
-	    dataP = np.asarray([dataX[0]*dataX[1]])	    
+	    dataXpsd = bcv.getPSD(dataXlong[0]*dataXlong[1], fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, noverlap=(bcvreadEndTime-bcvreadStartTime)/2)
+	    dataP = np.asarray(dataX[0]*dataX[1])
+            dataP = [bcv.whiten(dataP, dataXpsd)]
 	    #del dataX
 	    #dataX = dataP
 	    #del dataP
+=======
+	    
+	    #dataP = [dataX[0]*dataX[1]]
+            dataP = dataP.whiten((bcvreadEndTime - bcvreadStartTime)/4, (bcvreadEndTime - bcvreadStartTime)/8, method='welch')
+            dataP = [dataP.crop(segStartTime-timeShift, segEndTime-timeShift)]
+>>>>>>> Stashed changes
 	  else:
 	    meanY = 0
 	    varY = 0
 	    maxY = 0
-	    minY = 0
+	    minY = 0	
 	    maxYMat.append(maxY)
 	    meanYMat.append(meanY)
 	    varYMat.append(varY)
 	    minYMat.append(minY)
-	    dataP = np.asarray([dataX[0]])
+<<<<<<< Updated upstream
+	    dataP = dataX[0]
+            dataXpsd = bcv.getPSD(dataXlong[0], fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, overlap=(bcvreadEndTime-bcvreadStartTime)/2)
+            dataP = [bcv.whiten(dataP, dataXpsd)]
 	    #mindY = 0
 	    #maxdY = 0
 	    #meandY = 0
@@ -280,18 +383,30 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
   
 	  
 	  if(couplingModel=='linear'):
-	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH[0], dataP, timeH, timeX,
+	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataHw, dataP, timeH, timeX,
 					     transFnXtoH, segStartTime, segEndTime, 
 					     timeShift, samplFreq, logFid, debugLevel)
+=======
+            dataP = [dataX[key].whiten((bcvreadEndTime - bcvreadStartTime)/4, (bcvreadEndTime - bcvreadStartTime)/8, method='welch') for key in xrange(len(dataX))]
+	    dataP = dataP[0].crop(segStartTime-timeShift, segEndTime-timeShift)
+           #dataP = dataX[0]
+	  
+	  if(couplingModel=='linear'):
+	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH, dataP, logFid, debugLevel)
+>>>>>>> Stashed changes
 	    if(debugLevel>=1):
-              print 'Time shift: %d rHP: %f' %(timeShift, rHP)
+              print 'Time shift: %d rHP: %f rMaxHP: %f' %(timeShift, rHP, rMaxHP)
 	  else:
-	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH[0],
+<<<<<<< Updated upstream
+	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataHw,
 					     dataP, timeH, timeX, segStartTime,
 					     segEndTime,timeShift, samplFreq, logFid,
 					    debugLevel)
+=======
+	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH, dataP, logFid, debugLevel)
+>>>>>>> Stashed changes
             if(debugLevel>=1):
-              print 'Time shift: %d rHP: %f' %(timeShift, rHP)
+              print 'Time shift: %d rHP: %f rMaxHP: %f' %(timeShift, rHP, rMaxHP)
 	  analysedTrigIdx+=1	  
 	  SIGNIFICANCE_THRESH_H = 10.0
           SIGNIFICANCE_THRESH_X = 8.0
@@ -427,7 +542,8 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	  #mindYMat.append(mindY)
 	  #maxdYMat.append(maxdY)
 	  #meandYMat.append(meandY)
-	  
+	  del dataH, dataX, dataP
+          return 
 	  trigHAnalysdCentTimeVec.append(trigHCentTime)
 	  trigXAnalysdCentTimeVec.append(trigXCentTime)
 	  trigHAnalysdCentFreqVec.append(trigHCentFreq)
@@ -478,7 +594,8 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	
 	np.savetxt(outFileName, resultsMatrix, delimiter = ' ', fmt = '%f')
 	
-	del resultsMatrix, timeShiftVec, rHPMat, rMaxHPMat
+        
+ 	del resultsMatrix, timeShiftVec, rHPMat, rMaxHPMat
 	del trigHAnalysdCentTimeVec, trigXAnalysdCentTimeVec, trigHAnalysdCentFreqVec
 	del trigXAnalysdCentFreqVec, trigHAnalysdSignificVec, trigXAnalysdSignificVec
 	del trigHAnalysdDurationVec, trigXAnalysdDurationVec
