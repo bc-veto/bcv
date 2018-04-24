@@ -433,17 +433,20 @@ def get_analyze_segment(ifo):
       Returns glue.segments.segmentlist 
       """
       seg_list = segmentlist()
-      i = 0
+      i=0
       for i in range(int(math.floor(abs(seg)/upper))):
-         seg_list.append(segment(seg[0]+i*upper,seg[0]+(i+1)*upper))
+         mseg = segment(seg[0]+i*upper,seg[0]+(i+1)*upper)
+         seg_list.append(mseg)
+      i+=1;
       seg_list.append(segment(seg[0]+i*upper,seg[-1]))
       return seg_list
   
     for s in analyzed_segs:
-      analysis_segments += divide_seg(s,upper_seconds)
+      analysis_segments.extend(divide_seg(s,upper_seconds))
   
     if opts.verbose: 
-        print "segs to be analyzed:"; print analyzed_segs
+        print "segs to be analyzed: %d"%(len(analyzed_segs)); print analyzed_segs
+        print "segs broken up to be analyzed: %d"%(len(analysis_segments)); print analysis_segments
     # for name
     start_time = int(analyzed_segs[0][0])
     end_time = int(analyzed_segs[-1][1])
@@ -453,7 +456,7 @@ def get_analyze_segment(ifo):
     
     output_name = os.path.join("segfiles","%s-%s-%s-segs.txt"%(cp.get("general","tag"),str(start_time),str(duration)))
     if opts.verbose: print "saving the segment list in %s..."%output_name
-    segmentsUtils.tosegwizard(open(output_name,"w"),analyzed_segs,\
+    segmentsUtils.tosegwizard(open(output_name,"w"),analysis_segments,\
                               coltype=float)
 
     ## if running postprocess only, retrieve the original segment
@@ -467,7 +470,7 @@ def get_analyze_segment(ifo):
     start_time = analyzed_segs[0][0]
     duration = abs(analyzed_segs)
 
-  return start_time, duration, output_name, analyzed_segs
+  return start_time, duration, output_name, analysis_segments
 
 def config_reader():
   """
