@@ -14,7 +14,7 @@ from numpy import sqrt, pi, log
 sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
 #from numpy import matrix
 
-from bcv import git_version
+import git_version
 
 
 #tag = "L1_1102809616_1102896016"

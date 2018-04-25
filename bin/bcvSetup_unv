@@ -46,8 +46,8 @@ from glue import segmentsUtils
 from glue.segments import segment, segmentlist
 from glue.iterutils import *
 sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
-from bcv import git_version
-from bcv import bcvUtils
+import git_version
+import bcvUtils
 
 __author__ = "Tomoki Isogai <isogait@carleton.edu>"
 __date__ = "12/25/2009"

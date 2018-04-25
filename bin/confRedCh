@@ -13,7 +13,7 @@ import sys
 from numpy import sqrt
 #from numpy import matrix
 sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
-from bcv import git_version
+import git_version
 
 ##############################FUNCTIONS##############################
 def parse_commandline():

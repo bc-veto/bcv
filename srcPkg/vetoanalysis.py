@@ -206,21 +206,20 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	#Read the segment for channel H and channel X
         if(debugLevel >= 1):
           print 'Reading H channel'
-        [dataHlong, samplFreqH] = bcv.readData(frameCacheFileH, chanHName, frameTypeChanH, bcvreadStartTime-16,
-                                    bcvreadEndTime+16, [0], debugLevel)
-        
-        
 
 	[dataH, samplFreqH] = bcv.readData(frameCacheFileH, chanHName, frameTypeChanH, bcvreadStartTime,
 				    bcvreadEndTime, [0], debugLevel)
+        [dataHlong, samplFreqH] = bcv.readData(frameCacheFileH, chanHName, frameTypeChanH, bcvreadStartTime-16,
+                                    bcvreadEndTime+16, [0], debugLevel)
         if(debugLevel >= 1):
           print 'Reading X channel'	
-        [dataXlong, samplFreqX] = bcv.readData(frameCacheFileX, chanXName, frameTypeChanX, bcvreadStartTime-16,
-                                    bcvreadEndTime+16, timeShiftX, debugLevel)
         #dataXpsd = [bcv.getPSD(data, fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, overlap=(bcvreadEndTime-bcvreadStartTime)/2) for data in dataX]
 
 	[dataX, samplFreqX] = bcv.readData(frameCacheFileX, chanXName, frameTypeChanX, bcvreadStartTime,
 				    bcvreadEndTime, timeShiftX, debugLevel)
+        [dataXlong, samplFreqX] = bcv.readData(frameCacheFileX, chanXName, frameTypeChanX, bcvreadStartTime-16,
+                                    bcvreadEndTime+16, timeShiftX, debugLevel)
+
 	#Check for a read error in the channel H data.
 	if(not all(samplFreqH)):
 	  logFid.write('ERROR: Cannot load frame data for channel H...\n')
@@ -281,7 +280,7 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	    #mindY = np.min(np.diff(dataX[iChan][segIdx]))
 	    #maxdY = np.max(np.diff(dataX[iChan][segIdx]))
 	    #meandY= np.mean(np.diff(dataX[iChan][segIdx]))
-	    dataXpsd = bcv.getPSD(dataXlong[0]*dataXlong[1], fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, noverlap=(bcvreadEndTime-bcvreadStartTime)/2)
+	    dataXpsd = bcv.getPSD(dataXlong[0]*dataXlong[1], fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, overlap=(bcvreadEndTime-bcvreadStartTime)/2)
 	    dataP = np.asarray(dataX[0]*dataX[1])
             dataP = [bcv.whiten(dataP, dataXpsd)]
 	    #del dataX

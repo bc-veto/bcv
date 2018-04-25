@@ -33,7 +33,8 @@ def getPSD(data, fs, seglen, overlap):
    return psd
 
 def whiten(data, psd):
-  dataf = np.fft.rfft(data)
+  window = sig.get_window('hann', len(data))
+  dataf = np.fft.rfft(sig.detrend(data)*window)
   if(len(dataf)!=len(psd)):
     print 'Length of data and psd do not match'
   return np.fft.irfft(dataf/np.sqrt(psd))
@@ -557,11 +558,12 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
      readData = np.array(outputStruct.data.data)
      readSampleFrequency = 1/outputStruct.deltaT
   except Exception as inst:
+     readData=[]
      if(debugLevel>=1):
        print  inst.message
   if((len(readData)==0) | np.any(np.isnan(readData))):
     if(debugLevel>=1):
-      print 'Warning: Error reading %s from %s.' %(channelName, frameFilePath)
+      print 'Warning: Error reading %s from %s.' %(channelName, frameCache)
     data = []
     time = []
     sampleFrequency = 0
@@ -570,7 +572,7 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     sampleFrequency = readSampleFrequency
   elif(sampleFrequency!=readSampleFrequency):
     if(debugLevel>=1):
-      print 'Warning: Inconsistent sample frequency for %s in frameFilePath.' %(channelname, frameFilePath)
+      print 'Warning: Inconsistent sample frequency for %s in frameCache.' %(channelname, frameCache)
     data = []
     time = []
     sampleFrequency = 0
