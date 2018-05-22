@@ -39,7 +39,7 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
   maxNumCoinc = len(TriggerHList.centralTime)*len(TriggerXList.centralTime)
   
   #Time window for identifying coincidences between channel H and X
-  COINC_TIME_WINDOW = 0.5
+  COINC_TIME_WINDOW = 1.0
   
   #Maximum length of one data segment used for the analysis
   MAX_LENGTH_DATA_SEG = 64
