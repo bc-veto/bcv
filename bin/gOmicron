@@ -137,8 +137,8 @@ for line in seg:
 		sd = Q/(f0*pi)
 		hwhm = const_fwhm*sd/2.0 # Half width at half maximum.
 		trigger_peak = float(line[0])
-		trigger_start = trigger_peak - hwhm
-		trigger_end = trigger_peak + hwhm
+		trigger_start = trigger_peak - 3*hwhm
+		trigger_end = trigger_peak + 3*hwhm
 		trigger_snr = float(line[3])
 		line1 = '%.4f %.4f %.4f %.4f %.2f'%(trigger_start, trigger_end, trigger_peak, f0, trigger_snr )
 		line1 = line1.split()
