@@ -48,7 +48,7 @@ import os
 import sys
 import optparse
 sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
-from bcv import git_version
+import git_version
 
 __author__ = "Tomoki Isogai <isogait@carleton.edu>"
 __date__ = "12/26/2009"

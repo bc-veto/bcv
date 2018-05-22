@@ -5,7 +5,11 @@ from trigstruct import TrigStruct
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from memory_profiler import profile
 
+precision=10
+fp = open('memory_profiler_basic_mean.log', 'w+')
+@profile(precision=precision, stream=fp)
 def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTypeChanH, frameTypeChanX, samplFreqH, samplFreqX,
 		 highPassCutoff, TriggerHList, TriggerXList, couplingModel,
 		 transFnXtoH, analysisStartTime, analysisEndTime,
@@ -35,7 +39,7 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
   maxNumCoinc = len(TriggerHList.centralTime)*len(TriggerXList.centralTime)
   
   #Time window for identifying coincidences between channel H and X
-  COINC_TIME_WINDOW = 0.5
+  COINC_TIME_WINDOW = 1.0
   
   #Maximum length of one data segment used for the analysis
   MAX_LENGTH_DATA_SEG = 64
@@ -202,12 +206,20 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	#Read the segment for channel H and channel X
         if(debugLevel >= 1):
           print 'Reading H channel'
+
 	[dataH, samplFreqH] = bcv.readData(frameCacheFileH, chanHName, frameTypeChanH, bcvreadStartTime,
 				    bcvreadEndTime, [0], debugLevel)
+        [dataHlong, samplFreqH] = bcv.readData(frameCacheFileH, chanHName, frameTypeChanH, bcvreadStartTime-16,
+                                    bcvreadEndTime+16, [0], debugLevel)
         if(debugLevel >= 1):
           print 'Reading X channel'	
+        #dataXpsd = [bcv.getPSD(data, fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, overlap=(bcvreadEndTime-bcvreadStartTime)/2) for data in dataX]
+
 	[dataX, samplFreqX] = bcv.readData(frameCacheFileX, chanXName, frameTypeChanX, bcvreadStartTime,
 				    bcvreadEndTime, timeShiftX, debugLevel)
+        [dataXlong, samplFreqX] = bcv.readData(frameCacheFileX, chanXName, frameTypeChanX, bcvreadStartTime-16,
+                                    bcvreadEndTime+16, timeShiftX, debugLevel)
+
 	#Check for a read error in the channel H data.
 	if(not all(samplFreqH)):
 	  logFid.write('ERROR: Cannot load frame data for channel H...\n')
@@ -226,14 +238,26 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	  tempArray = []  
 	  # If sampling frequency is different from the one specified,
 	  # resample the data
+          
 	  if(samplFreqH != samplFreq):
 	    dataH = np.asarray([bcv.resample2(dataH[0], samplFreqH[0], samplFreq)])
+            dataHlong = np.asarray([bcv.resample2(dataHlong[0], samplFreqH[0], samplFreq)])
 	  for iChan in xrange(len(dataX)):
 	    if(samplFreqX[iChan]==samplFreq):
 	      tempArray.append(dataX[iChan])
 	    else:
 	      tempArray.append(bcv.resample2(dataX[iChan], samplFreqX[iChan], samplFreq))
 	  dataX = np.asarray(tempArray)
+          
+          tempArray = []
+          for iChan in xrange(len(dataXlong)):
+            if(samplFreqX[iChan]==samplFreq):
+              tempArray.append(dataXlong[iChan])
+            else:
+              tempArray.append(bcv.resample2(dataXlong[iChan], samplFreqX[iChan], samplFreq))
+          dataXlong = np.asarray(tempArray)
+          dataHpsd = bcv.getPSD(dataHlong[0], fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, overlap=(bcvreadEndTime-bcvreadStartTime)/2)
+          dataHw = bcv.whiten(dataH[0], dataHpsd)
 
 	  timeH = np.arange(bcvreadStartTime, bcvreadEndTime, 1.0/samplFreq)
 	  timeX = np.arange(bcvreadStartTime-timeShift, bcvreadEndTime-timeShift, 1.0/samplFreq)
@@ -256,8 +280,9 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	    #mindY = np.min(np.diff(dataX[iChan][segIdx]))
 	    #maxdY = np.max(np.diff(dataX[iChan][segIdx]))
 	    #meandY= np.mean(np.diff(dataX[iChan][segIdx]))
-	    
-	    dataP = np.asarray([dataX[0]*dataX[1]])	    
+	    dataXpsd = bcv.getPSD(dataXlong[0]*dataXlong[1], fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, overlap=(bcvreadEndTime-bcvreadStartTime)/2)
+	    dataP = np.asarray(dataX[0]*dataX[1])
+            dataP = [bcv.whiten(dataP, dataXpsd)]
 	    #del dataX
 	    #dataX = dataP
 	    #del dataP
@@ -270,7 +295,9 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
 	    meanYMat.append(meanY)
 	    varYMat.append(varY)
 	    minYMat.append(minY)
-	    dataP = np.asarray([dataX[0]])
+	    dataP = dataX[0]
+            dataXpsd = bcv.getPSD(dataXlong[0], fs=samplFreq, seglen=bcvreadEndTime-bcvreadStartTime, overlap=(bcvreadEndTime-bcvreadStartTime)/2)
+            dataP = [bcv.whiten(dataP, dataXpsd)]
 	    #mindY = 0
 	    #maxdY = 0
 	    #meandY = 0
@@ -280,13 +307,13 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
   
 	  
 	  if(couplingModel=='linear'):
-	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataH[0], dataP, timeH, timeX,
+	    [rHP, rMaxHP] = bcv.linearCouplingCoeff(dataHw, dataP, timeH, timeX,
 					     transFnXtoH, segStartTime, segEndTime, 
 					     timeShift, samplFreq, logFid, debugLevel)
 	    if(debugLevel>=1):
               print 'Time shift: %d rHP: %f' %(timeShift, rHP)
 	  else:
-	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataH[0],
+	    [rHP, rMaxHP] = bcv.bilinearCouplingCoeff(dataHw,
 					     dataP, timeH, timeX, segStartTime,
 					     segEndTime,timeShift, samplFreq, logFid,
 					    debugLevel)

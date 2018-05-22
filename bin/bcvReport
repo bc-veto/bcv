@@ -54,8 +54,8 @@ except ImportError:
 from glue.segments import segment, segmentlist
 from glue import segmentsUtils
 sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
-from bcv import git_version
-from bcv import bcvUtils
+import git_version
+import bcvUtils
 
 __author__ = "Tomoki Isogai <isogait@carleton.edu>, P. Ajith <ajith_p@ligo.caltech.edu>"
 __date__ = "1/5/2010"
@@ -656,12 +656,17 @@ def applyVetoThreshold(channel, resultsDir, reqAccVetoRate, gpsTriggerHList, num
     close('all')
   
     # frequency vs SNR
-    loglog(gpsTriggerHList["centralFrequency"], gpsTriggerHList["triggerSignificance"], 'c.', markersize=10, label = "All trigs.")
+    plot(gpsTriggerHList["centralFrequency"], gpsTriggerHList["triggerSignificance"], 'r.',markersize=12, label = "All trigs.")
     if locals().has_key("trigHCentFreq"):
       plot(trigHCentFreq, trigHTrgSignf, 'k.', label = "Vetoed trigs.")
       del trigHCentFreq, trigHTrgSignf
+    ax = gca()
+    #ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.set_xlim(1000, 4000)
+    ax.set_ylim(5, 100)
     legend(loc='upper left')
-    grid()
+    #grid()
     xlabel("Central Frequency")
     ylabel("Trigger SNR")
     title("Trigger SNR Vs Central frequency")
@@ -967,7 +972,7 @@ function gotoSection(section) {
 <tr><td><b>Veto Efficiency:</b></td>       <td>%.2f %%</td> <td>(%d H trigs in total)</td>
 <tr><td><b>Dead Time:</b></td> <td> %.4f %%</td> <td>(%d s/ %d s)</td>
 <tr><td><b>Veto Efficiency / Deadtime:</b></td>       <td>%.2f </td>
-<tr><td><b>rThresh:</b></td>       <td>%.2f </td>
+<tr><td><b>rThresh:</b></td>       <td>%.3f </td>
 <tr><td><b>Accidental Veto Probability:</b></td> <td>%.2e</td>
 <tr><td><b>Accidental Veto Rate (Hz):</b></td> <td>%.2e</td>
 <tr><td><b>Veto Significance:</b></td> <td>%.2f</td>

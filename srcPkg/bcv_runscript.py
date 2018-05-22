@@ -1,4 +1,5 @@
-#!/home/detchar/opt/gwpysoft/bin/python
+#!/bin/env python
+#/home/detchar/opt/gwpysoft/bin/python
 
 '''
 - bcv_runscript - perform veto analysis using different coupling models between 
@@ -357,7 +358,7 @@ if (couplingModel == 'linear'):
     transFnXtoHRead = np.loadtxt(transferFunctionXtoH)
     transFnXtoH = TransferFunctionXtoH(transFnXtoHRead[:, 0], transFnXtoHRead[:, 1])
   else:
-    freq = np.linspace(0.1, 1000.0, num=1001, endpoint=True)
+    freq = np.linspace(0.1, 4000.0, num=4001, endpoint=True)
     transFnXtoH = TransferFunctionXtoH(freq, np.ones(len(freq), dtype=float))
     
     

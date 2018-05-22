@@ -13,8 +13,9 @@ import numpy as np
 import scipy.linalg as linalg
 import scipy.interpolate as sinterp
 import os
-from gwpy.timeseries import TimeSeries as TS
-
+#from gwpy.timeseries import TimeSeries as TS
+#from pycbc.frame import frame
+import lalframe.frread as fr
 class FrameCacheStruct:
   def __init__(self, sites, frameTypes, startTimes, stopTimes, durations, directories ):
     self.sites = sites
@@ -25,6 +26,18 @@ class FrameCacheStruct:
     self.directories = directories
 
 
+def getPSD(data, fs, seglen, overlap):
+  # print 'nperseg= ', seglen*fs
+  # print 'noverlap = ', overlap*fs 
+   f, psd= sig.welch(data, fs=fs, nperseg=seglen*fs, noverlap=overlap*fs)
+   return psd
+
+def whiten(data, psd):
+  window = sig.get_window('hann', len(data))
+  dataf = np.fft.rfft(sig.detrend(data)*window)
+  if(len(dataf)!=len(psd)):
+    print 'Length of data and psd do not match'
+  return np.fft.irfft(dataf/np.sqrt(psd))
 
 def readData(frameCache, channelNames,frameTypes, startTime, stopTime, timeShifts, debugLevel):
   numberOfChannels = len(channelNames)
@@ -80,7 +93,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
   # instrumental channel X is projected to the domain of the H using a linear coupling
   # function Txh
 
-  MIN_FREQ = 20.0
+  MIN_FREQ = 0.1
   MAX_FREQ = 4000.0  
   IFO_LENGTH = 4000
   rXH = np.asarray([])
@@ -168,7 +181,7 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
   # Set the frequency range of the veto analysis
   
   
-  MIN_FREQ = 20.0
+  MIN_FREQ = 0.1
   MAX_FREQ = 4000.0
   
   # Meta Data
@@ -539,15 +552,18 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
   sampleFrequency = None
 
   try:
-     outputStruct  = TS.read(frameCache, channelName, start=startTime, end=stopTime, format='gwf.lalframe')
-     readData = np.array(outputStruct)
-     readSampleFrequency = outputStruct.sample_rate.value
+     #outputStruct  = TS.read(frameCache, channelName, start=startTime, end=stopTime, format='gwf.lalframe')
+     #outputStruct = frame.read_frame(frameCache, channelName, start_time=startTime, end_time=stopTime, check_integrity=False)
+     outputStruct = fr.read_timeseries(frameCache, channelName, start=startTime, duration = stopTime-startTime)
+     readData = np.array(outputStruct.data.data)
+     readSampleFrequency = 1/outputStruct.deltaT
   except Exception as inst:
-     if(debugLevel>=2):
+     readData=[]
+     if(debugLevel>=1):
        print  inst.message
   if((len(readData)==0) | np.any(np.isnan(readData))):
     if(debugLevel>=1):
-      print 'Warning: Error reading %s from %s.' %(channelName, frameFilePath)
+      print 'Warning: Error reading %s from %s.' %(channelName, frameCache)
     data = []
     time = []
     sampleFrequency = 0
@@ -556,7 +572,7 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
     sampleFrequency = readSampleFrequency
   elif(sampleFrequency!=readSampleFrequency):
     if(debugLevel>=1):
-      print 'Warning: Inconsistent sample frequency for %s in frameFilePath.' %(channelname, frameFilePath)
+      print 'Warning: Inconsistent sample frequency for %s in frameCache.' %(channelname, frameCache)
     data = []
     time = []
     sampleFrequency = 0
