@@ -60,16 +60,8 @@ class TransferFunctionXtoH:
 def is_non_zero_file(fpath):  
     return True if os.path.isfile(fpath) and os.path.getsize(fpath) > 0 else False
 
-#if(len(sys.argv)<13):
-  #print 'Veto analysis pipeline using instrumental coupling models\n'
-  #print 'Usage (Python executable from unix shell)\n'
-  #print '\tbcv_runscript.py <segmentFile> <configurationFile> <frameCacheFile>'
-  #print '\t\t<couplingModel> <highPassCutoff> <trigSignThreshX> <trigSignThreshH>'
-  #print '\t\t <outDir> <logFile> <timeShiftMin> <timeShiftMax> <numTimeShifts>'
-  #print 'debugLevel'
   
   #print '\nSudarshan Ghonge, P Ajith 2015'
-  #sys.exit()
 
 import argparse
 parser = argparse.ArgumentParser(description='Veto analysis pipeline using instrumental coupling models')
@@ -532,36 +524,4 @@ if(debugLevel>=0):
 logFid.close()
 
 for iDir in range(1, len(outDirList)):
-  os.system('cp %s %s/%s'%(logFile, outDirList[iDir], logFileName))
-
-
-      
-      
-   
-    
-  
-
-  
-
-
-  
-    
-  
-	
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-
-
-
-  
+  os.system('cp %s %s/%s'%(logFile, outDirList[iDir], logFileName)  
