@@ -261,10 +261,6 @@ sectionStart = np.asarray(sectionStart)
 
 configurationFID.close()
   
-numberOfChannels = len(configuration)
-  
-numberOfSections = len(sectionName)
-  
   
 # Create/read channel names
   
@@ -328,7 +324,7 @@ for iDir in xrange(len(outDirList)):
   os.system('cp %s %s/configuration.txt'%(configurationFile, outDirList[iDir]))
   
 if(debugLevel>=2):
-  os.system('mkdir -p %s//debug_plots'%(outDirList[0]))
+  os.system('mkdir -p %s/debug_plots'%(outDirList[0]))
 
 logFile = outDirList[0] + '/' + logFileName
 logFid = open(logFile, 'w+')
@@ -340,11 +336,6 @@ if(debugLevel>=0):
   logFid.write('## Bilinear coupling veto analysis [%d - %d]\n'%(analysisStartTime, analysisEndTime))
   logFid.write('## Created by %s on %s at %s\n' %(os.getenv('USER'), strftime("%Y-%m-%d"), strftime("%H:%M:%S")))
   
-
-# Load Frame cache file, segment list etc
-
-#logFid.write('LOG: Reading framecache file %s...\n'%( frameCacheFile))
-#frameCache = bcv.loadframecache(frameCacheFile)
 
 numTrigsH = 0
 numTrigsX = 0
@@ -441,7 +432,7 @@ if(nSeg!=len(segEndTimeVec)):
   sys.exit('Segment start and end time vectors have diff. length. Check seg file\n')
 
 for iSeg in xrange(nSeg):
-  segStartTime = segStartTimeVec[iSeg]
+	segStartTime = segStartTimeVec[iSeg]
   segEndTime = segEndTimeVec[iSeg]
   
   logFid.write('# Processing segment # %d .[%d, %d]\n' %(iSeg, segStartTime, segEndTime))
@@ -486,12 +477,25 @@ for iSeg in xrange(nSeg):
     timeShiftVec = np.linspace(timeShiftMin, timeShiftMax, numTimeShifts)
     timeShiftVec = np.unique(np.append([0], np.round(timeShiftVec)))
     
-    for iTimeShift in xrange(len(timeShiftVec)):
-      timeShift = timeShiftVec[iTimeShift]
-      vetoanalysis.vetoanalysis(frameCacheFileH, frameCacheFileX, [chanHName], chanXName, [frameTypeH], frameTypeX, samplFreqH, samplFreqX,
+		COINC_TIME_WINDOW = 1.0
+
+		segLength = 3600
+
+		uniqueArgument = 'nonunique'
+    
+		[coincTrigH, coincTrigX] = bcv.mcoinc(maxNumCoinc, triggerListHSeg.centralTime, triggerListXSeg.centralTime, COINC_TIME_WINDOW, segLength, uniqueArgument)
+		if(len(coincTrigH)==len(coincTrigX) & len(coincTrigH)>0):
+			#Read data for timeShift from frameCache
+			logFid.write('LOG: Number of coincidences : %d...\n' %(len(coincTrigH)))
+			
+			for iTimeShift in xrange(len(timeShiftVec)):
+				timeShift = timeShiftVec[iTimeShift]
+				vetoanalysis.vetoanalysis(frameCacheFileH, frameCacheFileX, [chanHName], chanXName, [frameTypeH], frameTypeX, samplFreqH, samplFreqX, coincTrigH, coincTrigX,
 				highPassCutoff, triggerListHSeg, triggerListXSeg,
 				couplingModel, transFnXtoH, segStartTime, segEndTime,
 				timeShift, outDirList, logFid, debugLevel)
+		else:
+			logFid.write('LOG: No coincident triggers found in this segment')
   else:
     logFid.write('LOG: No triggers in this segment numTrigsHseg = %d numTrigsXseg = %d\n'%(numTrigsHseg, numTrigsXseg))
   

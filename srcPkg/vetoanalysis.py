@@ -10,7 +10,7 @@ from memory_profiler import profile
 precision=10
 fp = open('memory_profiler_basic_mean.log', 'w+')
 @profile(precision=precision, stream=fp)
-def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTypeChanH, frameTypeChanX, samplFreqH, samplFreqX,
+def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTypeChanH, frameTypeChanX, samplFreqH, samplFreqX, coincTrigH, coincTrigX,
 		 highPassCutoff, TriggerHList, TriggerXList, couplingModel,
 		 transFnXtoH, analysisStartTime, analysisEndTime,
 		 timeShift, outDir, logFid, debugLevel):
@@ -49,10 +49,10 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
   
   uniqueArgument = 'nonunique'
   
-  logFid.write( 'LOG: Finding coincidences... Num trigs H = %d, Num trigs X = %d\n'\
-    %(len(TriggerHList.centralTime), len(TriggerXList.centralTime)))
+  #logFid.write( 'LOG: Finding coincidences... Num trigs H = %d, Num trigs X = %d\n'\
+   # %(len(TriggerHList.centralTime), len(TriggerXList.centralTime)))
   
-  [coincTrigH, coincTrigX] = bcv.mcoinc(maxNumCoinc, TriggerHList.centralTime, TriggerXList.centralTime + timeShift, COINC_TIME_WINDOW, segLength, uniqueArgument)
+  #[coincTrigH, coincTrigX] = bcv.mcoinc(maxNumCoinc, TriggerHList.centralTime, TriggerXList.centralTime + timeShift, COINC_TIME_WINDOW, segLength, uniqueArgument)
   
   trigHCentralTimeVec = TriggerHList.centralTime[coincTrigH]
   trigXCentralTimeVec = TriggerXList.centralTime[coincTrigX]
@@ -74,10 +74,6 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
   
   del TriggerHList, TriggerXList
   
-  ##Read Data Segments Using a Time-Window Around Coi-incident Triggers
-  
-  ##Check if the sample frequencies of Channel H X are the same. If not, throw error
-  
 
   samplFreq = samplFreqH
   # Apply time shift to the X/Y data. In case of bilinear coupling, there are multiple
@@ -89,11 +85,12 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
     timeShiftX = np.zeros(len(chanXName))
     for iX in range(len(chanXName)):
       timeShiftX[iX] = timeShift
+  
   #Check number of triggers in channel H that are coincident in channel X (coincTrigH) 
   #is the same the number of triggers in Channel X that are coincident in Channel H
   #(coincTrigX)
-  if(len(coincTrigH)==len(coincTrigX) & len(coincTrigH)>0):
-    
+	
+	if(len(coincTrigH)==len(coincTrigX) & len(coincTrigH)>0):
     #Read data for timeShift from frameCache
     logFid.write('LOG: Performing veto analysis for time shift %d..\n' %(timeShift))
     logFid.write('LOG: Number of coincidences : %d...\n' %(len(coincTrigH)))
@@ -167,14 +164,13 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
       # the "floor(segStartTime) - 1" below).
       # 
       # Edit: That has changed now since the correlation calculation is done in f space
-      
+      # 2018-05-14 (Sudarshan Ghonge)
       
       bcvreadStartTime = np.floor(segStartTime)
       bcvreadEndTime = np.ceil(segEndTime)
       
       if (debugLevel >=1):
-	#print values of different variables
-	bcv.printvar('--- Analysis Window ---',''
+				bcv.printvar('--- Analysis Window ---',''
 		 ,'analysisStartTime',analysisStartTime, 
 		 'analysisEndTime', analysisEndTime,
                 'wreadStartTime', bcvreadStartTime, 
@@ -196,7 +192,7 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
                 'meanTrigCentTime',meanTrigCentTime,
                 'totalDuration', totalDuration)
 	
-      #Check if data is sensible	
+      #Check if data are sensible	
       if((segStartTime<analysisStartTime) | (segEndTime>analysisEndTime)): 
 	logFid.write('ERROR: segment startTime (%d)/stopTime (%d) is outside the analysis interval [%d, %d]\n'%( bcvreadEndTime, bcvreadEndTime, analysisStartTime, analysisEndTime))
       elif(bcvreadEndTime-bcvreadStartTime>MAX_LENGTH_DATA_SEG):
