@@ -7,7 +7,7 @@ import os.path
 import fileinput
 
 subs = os.listdir('dags')
-acGroup = 'accounting_group = ligo.dev.o1.detchar.nonlin_coup.bcv'
+acGroup = 'accounting_group = ligo.dev.o3.detchar.nonlin_coup.bcv'
 
 if any('.sub' in item for item in subs):
 	Ffile = filter(lambda x: '.sub' in x, subs)
