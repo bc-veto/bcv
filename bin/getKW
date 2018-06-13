@@ -122,6 +122,8 @@ def parse_commandline():
                       help="Scratch directory to be used for database engine. Specify local scratch directory for better performance and less fileserver load.")
     parser.add_option("-v", "--verbose", action="store_true", default=False,
                       help="Run verbosely")
+    parser.add_option("-L", "--min-freq", default=None, type="float", help="Minumum frequency of trigger")
+    parser.add_option("-H", "--max-freq", default=None, type="float", help="Maximum frequency of trigger")
     
     opts, args = parser.parse_args()
     
@@ -221,7 +223,7 @@ def find_file_from_channel(channel,daily_dir,trigs_loc): #used within getKW trig
 
         return [os.path.join(daily_dir,c) for c in candidates]
 
-def get_trigs(channel, segs, min_thresh, trigs_loc=None,\
+def get_trigs(channel, segs, min_thresh, min_freq=None, max_freq=None,trigs_loc=None,\
               scratch_dir=".",verbose=True):
     """
     Get time and KW significance of KW triggers for a particular channel that
@@ -395,14 +397,19 @@ def get_trigs(channel, segs, min_thresh, trigs_loc=None,\
             # is above the minimum specified
             # FIXME: check inf/nan just in case
                  if d_flag == 0:
-                      if channel in str(trig[8]) and central_time in segs and snr > min_thresh: #commented out (added)
-                          KWcursor.execute("insert into KWtrigs values (?, ?, ?, ?, ?)", (start_time, end_time, central_time, "%d"%frequency, snr))
+                      if min_freq is None or max_freq is None:
+                          if channel in str(trig[8]) and central_time in segs and snr > min_thresh:
+                              KWcursor.execute("insert into KWtrigs values (?, ?, ?, ?, ?)", (start_time, end_time, central_time, "%d"%frequency, snr))
+                      else:
+                          if channel in str(trig[8]) and central_time in segs and snr > min_thresh and frequency > min_freq and frequency < max_freq:
+                              KWcursor.execute("insert into KWtrigs values (?, ?, ?, ?, ?)", (start_time, end_time, central_time, "%d"%frequency, snr))
                  else:
-                      if channel in str(trig[8]) and (central_time in segs) and snr > min_thresh: #added
-
-              # insert into the database
-              # micro second for GPS time is accurate enough
-                          KWcursor.execute("insert into KWtrigs values (?, ?, ?, ?, ?)", (start_time, end_time, central_time, "%d"%frequency, snr))
+                      if min_freq is None or max_freq is None:
+                          if channel in str(trig[8]) and central_time in segs and snr > min_thresh:
+                              KWcursor.execute("insert into KWtrigs values (?, ?, ?, ?, ?)", (start_time, end_time, central_time, "%d"%frequency, snr))
+                      else:
+                          if channel in str(trig[8]) and central_time in segs and snr > min_thresh and frequency > min_freq and frequency < max_freq:
+                              KWcursor.execute("insert into KWtrigs values (?, ?, ?, ?, ?)", (start_time, end_time, central_time, "%d"%frequency, snr))
   
 
     # commit the insertions to the database
@@ -439,7 +446,7 @@ def main():
     try:
       ## get triggers
       dbname, KW_working_filename, KWconnection, KWcursor = \
-          get_trigs(opts.channel_name,seg_list,opts.min_thresh,trigs_loc=opts.KW_location,scratch_dir=opts.scratch_dir,verbose=opts.verbose)
+          get_trigs(opts.channel_name,seg_list,opts.min_thresh,opts.min_freq, opts.max_freq,trigs_loc=opts.KW_location,scratch_dir=opts.scratch_dir,verbose=opts.verbose)
   
       # save/display the result
       utils.save_db(KWcursor, "KWtrigs", opts.out_name, KW_working_filename,
