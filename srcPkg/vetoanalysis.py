@@ -90,7 +90,7 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
   #is the same the number of triggers in Channel X that are coincident in Channel H
   #(coincTrigX)
 	
-	if(len(coincTrigH)==len(coincTrigX) & len(coincTrigH)>0):
+  if(len(coincTrigH)==len(coincTrigX) & len(coincTrigH)>0):
     #Read data for timeShift from frameCache
     logFid.write('LOG: Performing veto analysis for time shift %d..\n' %(timeShift))
     logFid.write('LOG: Number of coincidences : %d...\n' %(len(coincTrigH)))
@@ -140,8 +140,8 @@ def vetoanalysis(frameCacheFileH, frameCacheFileX, chanHName, chanXName, frameTy
       trigXDuration = trigXEndTime - trigXStartTime
       
       # Find the segent of data used for analysis      
-      segStartTime = min(trigHStartTime, trigXStartTime+timeShift)
-      segEndTime   = max(trigHEndTime, trigXEndTime + timeShift)
+      segStartTime = min(trigHStartTime, trigXStartTime)
+      segEndTime   = max(trigHEndTime, trigXEndTime )
       meanTrigCentTime = (segStartTime + segEndTime)/2.0
       totalDuration = segEndTime - segStartTime
       
