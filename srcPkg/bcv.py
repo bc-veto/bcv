@@ -13,7 +13,8 @@ import numpy as np
 import scipy.linalg as linalg
 import scipy.interpolate as sinterp
 import os
-from gwpy.timeseries import TimeSeries as TS
+#from gwpy.timeseries import TimeSeries as TS
+import lalframe.frread as fr
 
 class FrameCacheStruct:
   def __init__(self, sites, frameTypes, startTimes, stopTimes, durations, directories ):
@@ -80,7 +81,7 @@ def linearCouplingCoeff(dataH, dataX, timeH, timeX, transFnXtoH, segStartTime,
   # instrumental channel X is projected to the domain of the H using a linear coupling
   # function Txh
 
-  MIN_FREQ = 10.0
+  MIN_FREQ = 20.0
   MAX_FREQ = 4000.0  
   IFO_LENGTH = 4000
   rXH = np.asarray([])
@@ -168,7 +169,7 @@ def bilinearCouplingCoeff(dataH, dataP, timeH, timeP,
   # Set the frequency range of the veto analysis
   
   
-  MIN_FREQ = 40.0
+  MIN_FREQ = 20.0
   MAX_FREQ = 4000.0
   
   # Meta Data
@@ -539,9 +540,9 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
   sampleFrequency = None
 
   try:
-     outputStruct  = TS.read(frameCache, channelName, start=startTime, end=stopTime, format='gwf.lalframe')
-     readData = np.array(outputStruct)
-     readSampleFrequency = outputStruct.sample_rate.value
+     outputStruct  = fr.read_timeseries(frameCache, channelName, start=startTime, duration=stopTime-startTime)
+     readData = np.array(outputStruct.data.data)
+     readSampleFrequency = 1./outputStruct.deltaT
   except Exception as inst:
      if(debugLevel>=2):
        print  inst.message

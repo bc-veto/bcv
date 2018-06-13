@@ -1,4 +1,13 @@
-Dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
+
+Dir=${1}
+while [[ $Dir = "" ]]
+do
+    read -p 'Specify install path: ' Dir
+done
+echo "Installing to ${Dir}"
+
 mkdir -p ${Dir}/bcv_installed
 python setup.py install --prefix=${Dir}/bcv_installed
-cp -r bin/* ${Dir}/bcv_installed/bin/.
+cp -r bin/* ${Dir}/bcv_installed/bin/
+cp -r srcPkg ${Dir/bcv_installed}/
