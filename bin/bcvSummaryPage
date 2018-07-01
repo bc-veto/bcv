@@ -50,8 +50,8 @@ import matplotlib.pyplot as plt
 from glue.segments import segment, segmentlist
 from glue import segmentsUtils
 sys.path.append("/home/sudarshan.ghonge/bcv_pipeline/bcv")
-from bcv import git_version
-from bcv import bcvUtils
+import git_version
+import bcvUtils
 
 __author__ = "Tomoki Isogai <isogait@carleton.edu>"
 __date__ = "1/5/2010"
@@ -116,6 +116,10 @@ def summary_page(channel_info,veto_segs, chan_name_list):
 
   ############################## header ######################################
   title = "Bilinear Coupling Veto"
+  for cn in channel_info:
+    if channel_info[cn] is not None:
+      chan_name = cn
+      break
   
   # get UTC time for start and end time
   start_gps = channel_info[chan_name]["analysisStartTime"]
@@ -253,7 +257,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   pylab.legend(loc='upper right')
   pylab.savefig("%s/Htriggers_freq_snr.png"%baseDir,dpi=100)
   
-  significances = array([float(channel_info[x]['vetoSignificance']) for x in channel_info.keys()])
+  significances = array([float(channel_info[x]['vetoSignificance']) if channel_info[x] is not None else 0 for x in channel_info.keys() ])
   fig  = plt.figure()
   ax = fig.add_subplot(1,1,1)
   ax.hist(significances, 30)
@@ -267,7 +271,8 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   ax.axvline(x=3)
   pylab.savefig('%s/Hist_significances.png'%baseDir, dpi=100)  
   
-  # Compuations done to get plot of cumulative efficiency v/s primary channel names
+  """ Compuations done to get plot of cumulative efficiency v/s primary channel names"""
+  
   #primary_chan_names = []
   #for channel in chan_name_list:
     #tempName = channel.split('+')[0]
@@ -321,7 +326,8 @@ def summary_page(channel_info,veto_segs, chan_name_list):
     #cumm_efficiency[i] = eff
     #i+=1
     
-  ## Plot of Cumulative plot efficiencies v/s primary channel list
+  """ Plot of Cumulative plot efficiencies v/s primary channel list """
+  
   #fig = plt.figure(figsize=(8, 8))
   #ax = fig.add_subplot(1, 1, 1)
   #ax.plot(channel_number, cumm_efficiency*100)
@@ -410,7 +416,8 @@ def summary_page(channel_info,veto_segs, chan_name_list):
 
     
     
-  ## Plot of Cumulative plot efficiencies v/s secondary channel list
+  """ Plot of Cumulative plot efficiencies v/s secondary channel list """
+  
   #fig = plt.figure(figsize=(8, 8))
   #ax = fig.add_subplot(1, 1, 1)
   #ax.plot(channel_number, cumm_efficiency*100)
@@ -510,6 +517,17 @@ def summary_page(channel_info,veto_segs, chan_name_list):
     table3.append('<td>%s</td>'%(sc))
     for i, fc in enumerate(fast_channels):
       channel_name = "%s+%s"%(fc,sc)
+      if channel_name not in channel_info.keys():
+          color_hex = "sienna"
+          fom = "Unpaired"
+          table3.append('<td bgcolor="%s"or><a href="channel_pages/%s_%s-report_page.html">%s%%</a></td>'%(color_hex,name_tag,channel_name,fom))
+          continue          
+      if channel_info[channel_name] is None:
+          color_hex = "grey"
+          fom="Incomplete"
+          table3.append('<td bgcolor="%s"or><a href="channel_pages/%s_%s-report_page.html">%s%%</a></td>'%(color_hex,name_tag,channel_name,fom))
+          continue
+      
       fom = float(channel_info[channel_name]["vetoEfficiency"])
       # normalize to 255 
       # FIXME: instead of nomalizing to 30%, weigh more on low percentage
@@ -519,6 +537,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
       # change to html format
       rgb = color_map(color_num)[:3]
       color_hex = matplotlib.colors.rgb2hex(rgb)
+          
       if channel_info[channel_name]["candidate"] == "False":
         color_hex = "white"
       table3.append('<td bgcolor="%s"><a href="channel_pages/%s_%s-report_page.html">%.2f%%</a></td>'%(color_hex,name_tag,channel_name,fom))
@@ -532,7 +551,7 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   ######################### candidate channel table ##########################
   
   ## make a summary
-  sorted_keys_by_significance = sorted(channel_info, key=lambda x: float(channel_info[x]['vetoSignificance']), reverse=True)
+  sorted_keys_by_significance = sorted(channel_info, key=lambda x: (float(channel_info[x]['vetoSignificance']) if channel_info[x] is not None else 0), reverse=True)
   nVetoCandidates=0
   table = ["""
   <big><big><b>- Summary Table </b></big></big> <br><br> 
@@ -553,6 +572,8 @@ def summary_page(channel_info,veto_segs, chan_name_list):
   """]
 
   for chan in sorted_keys_by_significance:
+    if channel_info[chan] is None:
+      continue
     if channel_info[chan]["safety"] == "Unsafe":
       color = "red"
     elif channel_info[chan]["candidate"] == "True":
@@ -731,12 +752,17 @@ for chan_dir in dir_list:
   	chan_file = os.path.basename(chan_dir)
   	chan_name = chan_file.split("-",2)[-1]
   	chan_name_list.append(chan_name)
-
+        textSummary = os.path.join(chan_dir,"summary.txt")
+        if not os.path.isfile(textSummary):
+            print "No summary exists"
+            channel_info[chan_name] = None
+            veto_segs[chan_name] = segmentlist([])
+            continue
   	channel_info[chan_name] = bcvUtils.read_summary(os.path.join(chan_dir,"summary.txt"))
   	if channel_info[chan_name]["candidate"] == "True":
-    		veto_segs[chan_name] = bcvUtils.read_segfile(os.path.join(chan_dir,"vetoSegments.txt"))
+            veto_segs[chan_name] = bcvUtils.read_segfile(os.path.join(chan_dir,"vetoSegments.txt"))
 
-effs = [float(channel_info[c]["vetoEfficiency"]) for c in channel_info.keys()]
+effs = [float(channel_info[c]["vetoEfficiency"]) for c in channel_info.keys() if channel_info[c] is not None ]
 eff_scale = int(max(effs)) / 10 + 1
 
 # overlap table color scaling
