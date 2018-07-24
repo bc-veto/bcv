@@ -10,4 +10,4 @@ echo "Installing to ${Dir}"
 mkdir -p ${Dir}/bcv_installed
 python setup.py install --prefix=${Dir}/bcv_installed
 cp -r bin/* ${Dir}/bcv_installed/bin/
-cp -r srcPkg ${Dir/bcv_installed}/
+cp -r srcPkg ${Dir}/bcv_installed/
