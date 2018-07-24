@@ -546,6 +546,10 @@ def  readframedata(frameCache, channelName, frameType, startTime, stopTime,
   except Exception as inst:
      if(debugLevel>=2):
        print  inst.message
+     data = []
+     time = []
+     sampleFrequency=0
+     return [data, sampleFrequency]
   if((len(readData)==0) | np.any(np.isnan(readData))):
     if(debugLevel>=1):
       print 'Warning: Error reading %s from %s.' %(channelName, frameFilePath)
